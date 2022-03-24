@@ -20,9 +20,5 @@ public class MealEntityConfiguration : IEntityTypeConfiguration<Meal>
         builder.Property(m => m.UpdatedAtUtc).HasColumnName("updated_at_utc");
         builder.Property(m => m.Text).HasColumnName("text");
         builder.Property(m => m.Type).HasColumnName("type");
-
-        builder.HasMany<InsulinApplication>()
-            .WithOne()
-            .HasForeignKey(i => i.MealId);
     }
 }

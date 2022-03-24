@@ -16,5 +16,10 @@ public class InsulinApplicationEntityConfiguration : IEntityTypeConfiguration<In
         builder.Property(i => i.UpdatedAtUtc).HasColumnName("updated_at_utc");
         builder.Property(i => i.Units).HasColumnName("units");
         builder.Property(i => i.MealId).HasColumnName("meal_id");
+
+        builder
+            .HasOne<Meal>()
+            .WithMany(m => m.InsulinApplications)
+            .HasForeignKey(i => i.MealId);
     }
 }

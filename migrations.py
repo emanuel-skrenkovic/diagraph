@@ -3,26 +3,35 @@
 import os
 import sys
 
-def add_migration(name):
-    before = os.getcwd()
-    os.chdir('src/Diagraph.Api')
+PROJECT_DIR = 'src/Diagraph.Api'
+SCRIPT_DIR = os.getcwd()
 
-    result = os.system('dotnet ef migrations add ' + name + ' --project ../Diagraph.Infrastructure')
-
-    os.chdir(before)
+def run_command(command, *args):
+    os.chdir(PROJECT_DIR)
+    result = command(*args)
+    os.chdir(SCRIPT_DIR)
 
     return result
+
+
+def run_with_project(command):
+    return os.system(command + ' --project ../Diagraph.Infrastructure')
+
+
+def add_migration(name):
+    return run_with_project('dotnet ef migrations add ' + name)
 
 
 def apply_migrations():
-    before = os.getcwd()
-    os.chdir('src/Diagraph.Api')
+    return run_with_project('dotnet ef database update --context DiagraphDbContext')
 
-    result = os.system('dotnet ef database update --context DiagraphDbContext --project ../Diagraph.Infrastructure')
 
-    os.chdir(before)
+def list_migrations():
+    return run_with_project('dotnet ef migrations list')
 
-    return result
+
+def remove_last_migration():
+    return run_with_project('dotnet ef migrations remove')
 
 
 if __name__ == '__main__':
@@ -30,10 +39,12 @@ if __name__ == '__main__':
 
     result = 0
 
-    if command_name == 'add':
-        result = add_migration(sys.argv[2])
-    elif command_name == 'apply':
-        result = apply_migrations()
+    match command_name:
+        case 'add':    result = run_command(add_migration, sys.argv[2])
+        case 'apply':  result = run_command(apply_migrations)
+        case 'list':   result = run_command(list_migrations)
+        case 'remove': result = run_command(remove_last_migration)
+        case _:        sys.exit('Could not recognize command \'' + command_name + '\'')
 
     sys.exit(result)
 

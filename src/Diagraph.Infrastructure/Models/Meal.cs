@@ -12,5 +12,5 @@ public class Meal : DbEntity
     
     public MealType Type { get; set; }
     
-    public ICollection<InsulinApplication> InsulinApplications { get; set; }
+    public virtual ICollection<InsulinApplication> InsulinApplications { get; set; }
 }
