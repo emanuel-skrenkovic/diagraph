@@ -4,5 +4,5 @@ namespace Diagraph.Infrastructure.Parsing;
 
 public interface IGlucoseDataParser
 {
-    Import Parse(Import import, string data);
+    IEnumerable<GlucoseMeasurement> Parse(string data);
 }

@@ -1,5 +1,5 @@
-using System.Security.Cryptography;
-using System.Text;
+using Diagraph.Core.Extensions;
+using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Models;
 using Diagraph.Infrastructure.Parsing;
@@ -14,11 +14,21 @@ public class ImportsController : ControllerBase
 {
     private readonly DiagraphDbContext _context;
     private readonly IGlucoseDataParser _dataParser;
+    private readonly GlucoseDataImport _dataImport;
+    private readonly IHashTool _hashTool;
 
-    public ImportsController(DiagraphDbContext context, IGlucoseDataParser dataParser)
+    public ImportsController
+    (
+        DiagraphDbContext context, 
+        IGlucoseDataParser dataParser,
+        GlucoseDataImport dataImport,
+        IHashTool hashTool
+    )
     {
         _context    = context;
         _dataParser = dataParser;
+        _dataImport = dataImport;
+        _hashTool   = hashTool;
     } 
     
     [HttpPost]
@@ -26,19 +36,17 @@ public class ImportsController : ControllerBase
     {
         if (file == null) return BadRequest("TODO file null reason");
 
-        MemoryStream dataStream = new MemoryStream();
-        await file.CopyToAsync(dataStream);
-
-        string data = Encoding.UTF8.GetString(dataStream.ToArray());
-
-        using SHA1 sha1  = SHA1.Create();
-        byte[] hashBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(data));
-        string hash      = Convert.ToBase64String(hashBytes);
+        string data = await file.ReadAsync();
+        string hash = _hashTool.ComputeHash(data);
 
         if (await _context.Imports.AnyAsync(i => i.Hash == hash)) return Ok();
 
-        Import import = new() { Hash = hash };
-        import = _dataParser.Parse(import, data);
+        IEnumerable<GlucoseMeasurement> measurementData = _dataParser.Parse(data);
+        
+        Import import = await _dataImport.CreateAsync(measurementData);
+        if (import == null) return Ok(); // No data to import
+        
+        import.Hash = _hashTool.ComputeHash(data);
         
         _context.Imports.Add(import);
         

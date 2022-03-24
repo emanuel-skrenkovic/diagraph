@@ -1,3 +1,4 @@
+using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Parsing;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IGlucoseDataParser, LibreViewCsvGlucoseDataParser>();
+builder.Services.AddScoped<IHashTool, Sha1HashTool>();
+builder.Services.AddScoped<GlucoseDataImport>();
 
 // Add services to the container.
 builder.Services.AddDbContext<DiagraphDbContext>

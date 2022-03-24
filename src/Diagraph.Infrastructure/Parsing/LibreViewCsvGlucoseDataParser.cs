@@ -16,7 +16,7 @@ public class LibreViewCsvGlucoseDataParser : IGlucoseDataParser
         HasHeaderRecord = true
     };
     
-    public Import Parse(Import import, string data)
+    public IEnumerable<GlucoseMeasurement> Parse(string data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
@@ -28,8 +28,7 @@ public class LibreViewCsvGlucoseDataParser : IGlucoseDataParser
         // TODO: find a way to avoid through configuration.
         csv.Read();
         
-        import.Measurements = csv
-            .GetRecords<LibreViewRow>()
+       return csv.GetRecords<LibreViewRow>()
             .Select
             (
                 record => new GlucoseMeasurement
@@ -38,13 +37,9 @@ public class LibreViewCsvGlucoseDataParser : IGlucoseDataParser
                     Level = record.StripGlucose 
                             ?? record.ScanGlucose 
                             ?? record.HistoricGlucose.GetValueOrDefault(),
-                    TakenAt = record.DeviceTimestamp.GetValueOrDefault(),
-                    ImportId = import.Id
-                    
+                    TakenAt = record.DeviceTimestamp.GetValueOrDefault()
                 }
             ).ToList();
-
-        return import;
     }
 
     private class LibreViewDateTimeConverter : TypeConverter
