@@ -16,6 +16,7 @@ public class GlucoseMeasurementEntityConfiguration : IEntityTypeConfiguration<Gl
         builder.Property(m => m.CreatedAtUtc).HasColumnName("created_at_utc");
         builder.Property(m => m.UpdatedAtUtc).HasColumnName("updated_at_utc");
         builder.Property(m => m.Level).HasColumnName("level");
+        builder.Property(m => m.TakenAt).HasColumnName("taken_at");
         builder.Property(m => m.Unit).HasColumnName("unit");
 
         builder.Property(m => m.ImportId).HasColumnName("import_id");

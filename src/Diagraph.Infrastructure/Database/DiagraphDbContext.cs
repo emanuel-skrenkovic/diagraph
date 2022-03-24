@@ -10,6 +10,9 @@ public class DiagraphDbContext : DbContextBase
     public DbSet<InsulinApplication> InsulinApplications { get; set; }
     public DbSet<MiscellanousEvent> MiscellanousEvents { get; set; }
     
+    public DbSet<Import> Imports { get; set; }
+    public DbSet<GlucoseMeasurement> GlucoseMeasurements { get; set; }
+    
     public DiagraphDbContext(DbContextOptions<DiagraphDbContext> dbContextOptions) 
         : base(dbContextOptions)
     { }

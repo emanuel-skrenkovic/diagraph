@@ -3,6 +3,7 @@ using System;
 using Diagraph.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Infrastructure.Migrations
 {
     [DbContext(typeof(DiagraphDbContext))]
-    partial class DiagraphDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220324160556_glucose-level-float")]
+    partial class glucoselevelfloat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,10 +44,6 @@ namespace Diagraph.Infrastructure.Migrations
                     b.Property<float>("Level")
                         .HasColumnType("real")
                         .HasColumnName("level");
-
-                    b.Property<DateTime>("TakenAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("taken_at");
 
                     b.Property<int>("Unit")
                         .HasColumnType("integer")

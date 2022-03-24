@@ -6,9 +6,11 @@ public class GlucoseMeasurement : DbEntity
 {
     public long Id { get; set; }
     
-    public int Level { get; set; }
+    public float Level { get; set; }
     
-    public GlucoseUnit Unit { get; set; } 
+    public DateTime TakenAt { get; set; }
+
+    public GlucoseUnit Unit { get; set; } = GlucoseUnit.MmolPerLitre;
     
     public int ImportId { get; set; }
 }
