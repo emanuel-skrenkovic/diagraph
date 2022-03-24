@@ -3,7 +3,7 @@
 import os
 import sys
 
-PROJECT_DIR = 'src/Diagraph.Api'
+PROJECT_DIR = 'src/api/Diagraph.Api'
 SCRIPT_DIR = os.getcwd()
 
 def run_command(command, *args):
