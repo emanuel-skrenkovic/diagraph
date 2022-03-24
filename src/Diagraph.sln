@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagraph.Core", "Diagraph.Core\Diagraph.Core.csproj", "{D02F6356-49E2-41C6-A29E-DDFFE952AB42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagraph.Infrastructure", "Diagraph.Infrastructure\Diagraph.Infrastructure.csproj", "{EABBF6B6-D69E-4EA0-84BE-F87996E2576F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagraph.Api", "Diagraph.Api\Diagraph.Api.csproj", "{C554593C-4620-4091-9523-0073FBDD3DA6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D02F6356-49E2-41C6-A29E-DDFFE952AB42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02F6356-49E2-41C6-A29E-DDFFE952AB42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02F6356-49E2-41C6-A29E-DDFFE952AB42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02F6356-49E2-41C6-A29E-DDFFE952AB42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EABBF6B6-D69E-4EA0-84BE-F87996E2576F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EABBF6B6-D69E-4EA0-84BE-F87996E2576F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EABBF6B6-D69E-4EA0-84BE-F87996E2576F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EABBF6B6-D69E-4EA0-84BE-F87996E2576F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C554593C-4620-4091-9523-0073FBDD3DA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C554593C-4620-4091-9523-0073FBDD3DA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C554593C-4620-4091-9523-0073FBDD3DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C554593C-4620-4091-9523-0073FBDD3DA6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,18 @@
+version: '2.4'
+services:
+  dg-postgres:
+    container_name: dg.postgres
+    image: postgres:14-alpine
+    command: ["postgres"]
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=diagraph
+    ports:
+      - "5432:5432"
+    networks:
+      - dg-network
+
+networks:
+  dg-network:
+    name: dg-network
