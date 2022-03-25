@@ -6,10 +6,7 @@ namespace Diagraph.Infrastructure.Database;
 
 public class DiagraphDbContext : DbContextBase
 {
-    public DbSet<Meal> Meals { get; set; }
-    public DbSet<InsulinApplication> InsulinApplications { get; set; }
-    public DbSet<MiscellanousEvent> MiscellanousEvents { get; set; }
-    
+    public DbSet<Event> Events { get; set; }
     public DbSet<Import> Imports { get; set; }
     public DbSet<GlucoseMeasurement> GlucoseMeasurements { get; set; }
     

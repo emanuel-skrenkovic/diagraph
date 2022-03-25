@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Diagraph.Infrastructure.Database;
 
-public class ImportEntityConfiguration : IEntityTypeConfiguration<Import>
+public class ImportConfiguration : IEntityTypeConfiguration<Import>
 {
     public void Configure(EntityTypeBuilder<Import> builder)
     {
