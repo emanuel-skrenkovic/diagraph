@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Diagraph.Infrastructure.Database;
 
-public class GlucoseMeasurementEntityConfiguration : IEntityTypeConfiguration<GlucoseMeasurement>
+public class GlucoseMeasurementConfiguration : IEntityTypeConfiguration<GlucoseMeasurement>
 {
     public void Configure(EntityTypeBuilder<GlucoseMeasurement> builder)
     {

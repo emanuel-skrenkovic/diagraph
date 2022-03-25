@@ -1,4 +1,6 @@
+using AutoMapper;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,51 +11,60 @@ namespace Diagraph.Api.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly DiagraphDbContext _context;
+    private readonly IMapper _mapper;
 
-    public EventsController(DiagraphDbContext context) 
-        => _context = context;
+    public EventsController(DiagraphDbContext context, IMapper mapper)
+    {
+        _context = context;   
+        _mapper = mapper;
+    }
 
     [HttpGet]
-    [Route("meals")]
-    public async Task<IActionResult> GetMeals
+    public async Task<IActionResult> GetEvents
     (
         [FromQuery] DateTime from,
         [FromQuery] DateTime to
-    )
-        => Ok
-        (
-            await _context
-                .Meals
-                .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
-                .ToListAsync()
-        );
+    ) => Ok
+    (
+        await _context
+            .Events
+            .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
+            .ToListAsync()
+    );
     
-    [HttpGet]
-    [Route("insulin-applications")]
-    public async Task<IActionResult> GetInsulinApplications
-    (
-        [FromQuery] DateTime from,
-        [FromQuery] DateTime to
-    )
-        => Ok
-        (
-            await _context
-                .InsulinApplications
-                .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
-                .ToListAsync()
-        );
+    [HttpPost]
+    public async Task<IActionResult> CreateEvent([FromBody] Event @event)
+    {
+        Event createdEvent = _context.Events.Add(@event).Entity;
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction("GetEvent", new { id = createdEvent.Id });
+    }
 
     [HttpGet]
-    [Route("misc")]
-    public async Task<IActionResult> GetMiscellaneousEvents
+    [Route("{id:int}")]
+    public async Task<IActionResult> GetEvent([FromRoute] int id)
+    {
+        Event @event = await _context.FindAsync<Event>(id);
+        return @event is null ? NotFound() : Ok(@event);
+    }
+
+    [HttpPut]
+    [Route("{id:int}")]
+    public async Task<IActionResult> UpdateEvent
     (
-        [FromQuery] DateTime from,
-        [FromQuery] DateTime to
+        [FromRoute] int id, 
+        [FromBody] Event newEventData
     )
-        => Ok
-        (
-            await _context.MiscellanousEvents
-                .Where(e => e.OccurredAtUtc >= from && e.OccurredAtUtc < to)
-                .ToListAsync()
-        );
+    {
+        Event @event = await _context.FindAsync<Event>(id);
+        if (@event is null) return NotFound();
+
+        _mapper.Map(newEventData, @event);
+
+        _context.Update(@event);
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
 }
