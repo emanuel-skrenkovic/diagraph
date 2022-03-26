@@ -10,6 +10,7 @@ namespace Diagraph.Api.Controllers;
 [Route("[controller]")]
 public class EventsController : ControllerBase
 {
+    // TODO: have a single event entity with tags, add extra data as jsonb
     private readonly DiagraphDbContext _context;
     private readonly IMapper _mapper;
 

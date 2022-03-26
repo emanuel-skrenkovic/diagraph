@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IGlucoseDataParser, LibreViewCsvGlucoseDataParser>();
 builder.Services.AddScoped<IHashTool, Sha1HashTool>();
 builder.Services.AddScoped<GlucoseDataImport>();
+builder.Services.AddAutoMapper(typeof(DiagraphDbContext).Assembly);
 
 // Add services to the container.
 builder.Services.AddDbContext<DiagraphDbContext>
