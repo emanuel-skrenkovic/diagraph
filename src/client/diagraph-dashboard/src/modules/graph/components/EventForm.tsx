@@ -26,13 +26,13 @@ export function EventForm(props: EventFormProps) {
 
     // this seems so bad.
     const onChangeTime = (e: FormEvent<HTMLInputElement>) => {
-        const newOccurredAt = new Date(event.occurredAt);
+        const newOccurredAtUtc = new Date(event.occurredAtUtc);
 
         const [hours, minutes] = e.currentTarget.value.split(':');
-        newOccurredAt.setHours(Number(hours));
-        newOccurredAt.setMinutes(Number(minutes));
+        newOccurredAtUtc.setHours(Number(hours));
+        newOccurredAtUtc.setMinutes(Number(minutes));
 
-        setEvent({ ...event, occurredAt: newOccurredAt });
+        setEvent({ ...event, occurredAtUtc: newOccurredAtUtc });
     };
 
     return (
@@ -48,10 +48,10 @@ export function EventForm(props: EventFormProps) {
                 <input
                     id="eventOccurredAt"
                     type="time"
-                    value={hoursFormat(event.occurredAt)}
+                    value={hoursFormat(event.occurredAtUtc)}
                     onChange={onChangeTime} />
             </div>
-            <button className="button submit" onClick={onClickSubmit} type="submit">
+            <button className="submit button" onClick={onClickSubmit} type="submit">
                 {props.submitButtonText ?? 'Submit'}
             </button>
         </form>

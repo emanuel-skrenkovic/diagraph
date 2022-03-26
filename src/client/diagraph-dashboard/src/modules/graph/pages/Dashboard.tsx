@@ -8,26 +8,19 @@ import { useCreateEventMutation, useGetEventsQuery } from 'services';
 
 import 'App.css';
 
+function toLocalISOString(date: Date) {
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+}
+
 function graphDateLimits() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    today.setHours(0, 0, 0, 0);
+    tomorrow.setHours(0, 0, 0, 0);
 
     return { today, tomorrow };
-}
-
-function displayEvents(events: Event[]) {
-    if (!events) return null;
-
-    return events.map(e => (
-        <div id={e.id.toString()}>
-            <label>Event</label>
-            {e.text}
-        </div>
-    ));
 }
 
 export function Dashboard() {
@@ -38,8 +31,8 @@ export function Dashboard() {
     const { today, tomorrow } = graphDateLimits();
 
     const { data, error, isLoading } = useGetEventsQuery({
-        from: today.toISOString(),
-        to: tomorrow.toISOString()
+        from: toLocalISOString(today),
+        to: toLocalISOString(tomorrow)
     });
 
     if (error) {
@@ -66,7 +59,7 @@ export function Dashboard() {
                 <div className="item">
                     <EventForm
                         initialValue={{
-                            occurredAt: new Date(),
+                            occurredAtUtc: new Date(),
                             text: ''
                         } as Event}
                         onSubmit={createEvent}

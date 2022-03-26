@@ -5,7 +5,7 @@ export interface Tag {
 export interface Event {
     id: number;
     text: string;
-    occurredAt: Date;
+    occurredAtUtc: Date;
     tags: Tag[];
 }
 

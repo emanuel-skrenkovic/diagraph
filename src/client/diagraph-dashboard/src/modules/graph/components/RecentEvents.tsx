@@ -1,4 +1,5 @@
 import React from 'react';
+import { For, LocalTime } from 'modules/common';
 import { Event } from 'types';
 
 import 'App.css';
@@ -7,17 +8,6 @@ import './RecentEvents.css';
 export interface RecentEventsProps {
     events: Event[];
     pageSize: number;
-}
-
-function renderEvents(events: Event[]) {
-    if (!events) return null;
-
-    return events.map(e => (
-        <tr id={e.id.toString()}>
-            <td>{e.occurredAt}</td>
-            <td>{e.text}</td>
-        </tr>
-    ));
 }
 
 export const RecentEvents: React.FC<RecentEventsProps> = ({ events, pageSize }) => {
@@ -32,7 +22,16 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events, pageSize }) 
                 </tr>
                 </thead>
                 <tbody>
-                {renderEvents(events)}
+                <For each={events}
+                     onEach={e => (
+                        <tr key={e.id.toString()}>
+                            <td>
+                                <LocalTime date={e.occurredAtUtc} />
+                            </td>
+                            <td>{e.text}</td>
+                        </tr>
+                    )}
+                />
                 </tbody>
             </table>
         </div>
