@@ -5,6 +5,11 @@ export interface Tag {
 export interface Event {
     id: number;
     text: string;
-    occurredAtUtc: Date;
+    occurredAt: Date;
     tags: Tag[];
+}
+
+export interface GlucoseMeasurement {
+    value: number;
+    occurredAt: Date;
 }

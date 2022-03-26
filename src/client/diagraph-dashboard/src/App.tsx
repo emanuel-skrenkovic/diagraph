@@ -1,15 +1,14 @@
 import React from 'react';
 import { Dashboard } from 'modules/graph';
-import { useCreateEventMutation } from 'services';
+import 'App.css';
 
 function App() {
-    const [createEvent, _] = useCreateEventMutation();
-
     return (
-        <>
-            <Dashboard />
-
-        </>
+        <div className="container">
+            <div className="item">
+                <Dashboard />
+            </div>
+        </div>
     );
 }
 
