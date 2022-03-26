@@ -1,10 +1,16 @@
 import React from 'react';
-import { GlucoseGraph } from 'modules/graph';
+import { Dashboard } from 'modules/graph';
+import { useCreateEventMutation } from 'services';
 
 function App() {
-  return (
-      <GlucoseGraph />
-  );
+    const [createEvent, _] = useCreateEventMutation();
+
+    return (
+        <>
+            <Dashboard />
+
+        </>
+    );
 }
 
 export default App;
