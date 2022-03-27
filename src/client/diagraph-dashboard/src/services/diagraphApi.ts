@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Event } from 'types';
+import { Event, GlucoseMeasurement } from 'types';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',
@@ -25,6 +25,10 @@ export const diagraphApi = createApi({
                 body: request
             })
         }),
+
+        getData: builder.query<GlucoseMeasurement[], any>({
+            query: ({from, to}) => ({ url: 'data', params: {from, to}})
+        })
     })
 });
 
@@ -32,4 +36,5 @@ export const {
     useGetEventQuery,
     useGetEventsQuery,
     useCreateEventMutation,
-    useUpdateEventMutation } = diagraphApi;
+    useUpdateEventMutation,
+    useGetDataQuery } = diagraphApi;

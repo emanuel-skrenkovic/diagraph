@@ -10,14 +10,14 @@ namespace Diagraph.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ImportsController : ControllerBase
+public class DataController : ControllerBase
 {
     private readonly DiagraphDbContext _context;
     private readonly IGlucoseDataParser _dataParser;
     private readonly GlucoseDataImport _dataImport;
     private readonly IHashTool _hashTool;
 
-    public ImportsController
+    public DataController
     (
         DiagraphDbContext context, 
         IGlucoseDataParser dataParser,
@@ -29,7 +29,19 @@ public class ImportsController : ControllerBase
         _dataParser = dataParser;
         _dataImport = dataImport;
         _hashTool   = hashTool;
-    } 
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetData([FromQuery] DateTime from, [FromQuery] DateTime to)
+        => Ok
+        (
+            await _context
+                .GlucoseMeasurements
+                .Where(m => m.TakenAt >= from && m.TakenAt < to&& m.Level > 0)
+                .OrderBy(m => m.TakenAt)
+                .ToListAsync()
+        );
+
     
     [HttpPost]
     public async Task<IActionResult> ImportData(IFormFile file)

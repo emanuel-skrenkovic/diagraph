@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Event } from 'types';
 import { RootState } from 'store';
-import { GlucoseGraph, EventForm, RecentEvents, setEvents } from 'modules/graph';
-import { useCreateEventMutation, useGetEventsQuery } from 'services';
+import { GlucoseGraph, EventForm, RecentEvents, setEvents, setData } from 'modules/graph';
+import { Loader, DateRangePicker } from 'modules/common';
+import { useCreateEventMutation, useGetEventsQuery, useGetDataQuery } from 'services';
 
 import 'App.css';
 
 function toLocalISOString(date: Date) {
-    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 }
 
 function graphDateLimits() {
@@ -24,33 +25,45 @@ function graphDateLimits() {
 }
 
 export function Dashboard() {
+    const { today, tomorrow } = graphDateLimits();
+
+    const [from, setFrom] = useState(toLocalISOString(today));
+    const [to, setTo] = useState(toLocalISOString(tomorrow));
+
     const events = useSelector((state: RootState) => state.graph.events);
+    const pointData = useSelector((state: RootState) => state.graph.data);
+
     const dispatch = useDispatch();
     const [createEvent, _] = useCreateEventMutation();
 
-    const { today, tomorrow } = graphDateLimits();
 
-    const { data, error, isLoading } = useGetEventsQuery({
-        from: toLocalISOString(today),
-        to: toLocalISOString(tomorrow)
-    });
+    const { data, error, isLoading }  = useGetDataQuery({from, to});
 
     if (error) {
         console.error(error); // TODO
     }
 
     if (isLoading) {
-        return <>I AM A PRETTY LOADER</>
+        return <Loader />
     }
 
     if (data) {
-        dispatch(setEvents(data));
+        // dispatch(setEvents(data));
+        dispatch(setData(data));
     }
 
     return (
         <div className="container horizontal">
             <h1>Diagraph</h1>
-            <GlucoseGraph points={[]} />
+            <DateRangePicker
+                from={new Date(from)}
+                to={new Date(to)}
+                onSubmit={(fromDate, toDate) => { setFrom(toLocalISOString(fromDate)); setTo(toLocalISOString(toDate)); }}
+                submitButtonText="Apply dates" />
+            <GlucoseGraph
+                from={new Date(from)}
+                to={new Date(to)}
+                points={pointData} />
             <br/>
             <div className="container">
                 <div className="item">

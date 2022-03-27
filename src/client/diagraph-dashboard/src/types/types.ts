@@ -10,6 +10,6 @@ export interface Event {
 }
 
 export interface GlucoseMeasurement {
-    value: number;
-    occurredAt: Date;
+    level: number;
+    takenAt: Date;
 }
