@@ -11,7 +11,7 @@ export interface GlucoseGraphProps {
 }
 
 export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points }) => {
-    const chartElemRef = useRef(null);
+    const chartElemRef = useRef<HTMLDivElement>(null);
 
     let pointData: [number, number][] = points.map(p => {
         const dateString = new Date(p.takenAt).toISOString();
@@ -20,6 +20,10 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points }) 
     });
 
     useEffect(() => {
+        if (chartElemRef?.current) {
+            chartElemRef.current.innerHTML = '';
+        }
+
         const svg = d3.select(chartElemRef.current)
             .append("svg")
             .attr("width", 720)

@@ -36,21 +36,27 @@ export function Dashboard() {
     const dispatch = useDispatch();
     const [createEvent, _] = useCreateEventMutation();
 
-
     const { data, error, isLoading }  = useGetDataQuery({from, to});
+    const {
+        data: eventData,
+        error: eventError,
+        isLoading: isEventLoading
+    } = useGetEventsQuery({from, to});
 
     if (error) {
         console.error(error); // TODO
     }
 
-    if (isLoading) {
+    if (eventError) {
+        console.error(eventError);
+    }
+
+    if (isLoading || isEventLoading) {
         return <Loader />
     }
 
-    if (data) {
-        // dispatch(setEvents(data));
-        dispatch(setData(data));
-    }
+    if (data)      dispatch(setData(data));
+    if (eventData) dispatch(setEvents(eventData));
 
     return (
         <div className="container horizontal">
