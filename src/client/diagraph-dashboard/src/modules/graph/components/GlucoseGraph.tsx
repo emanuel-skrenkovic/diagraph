@@ -1,8 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { GlucoseMeasurement } from 'types';
 
 import "App.css";
+
+interface Selected {
+    level: number;
+    date: Date;
+}
 
 export interface GlucoseGraphProps {
     from: Date,
@@ -17,6 +22,7 @@ const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
 
 export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points }) => {
     const chartElemRef = useRef<HTMLDivElement>(null);
+    const [selected, setSelected] = useState<Selected | undefined>(undefined);
 
     let pointData: [number, number][] = points.map(p => {
         const dateString = new Date(p.takenAt).toISOString();
@@ -68,24 +74,43 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points }) 
                 .y((d) => y(d[1]))
             );
 
-        svg.append("g")
-            .selectAll("dot")
+        const circleRSmall = 2.5;
+        const circleRBig = 10;
+
+        svg.append('g')
+            .selectAll('dot')
             .data(pointData)
-            .join("circle")
+            .join('circle')
             .attr('transform', `translate(${PADDING * 3 + MARGIN.left + MARGIN.right}, ${PADDING * 2 + MARGIN.bottom + MARGIN.top})`)
             .attr("cx", d => x(d[0]))
             .attr("cy", d => y(d[1]))
-            .attr("r", 2.5)
-            .on('mouseover', (d, i) => {
-                // TODO
+            .attr('r', circleRSmall)
+            .on('mouseover', function(d, i) {
+                d3.select(this).attr('r', circleRBig);
+            })
+            .on('mouseout', function(d, i) {
+                d3.select(this).attr('r', circleRSmall);
+            })
+            .on('click', (d, i) => {
+                setSelected({ date: new Date(i[0]), level: i[1] });
             });
 
     }, [from, to]);
+
+    if (selected) {
+        console.log(selected);
+    }
 
     return (
         <div className="item">
             <h2>Glucose graph</h2>
             <div ref={chartElemRef} />
+            {selected && (
+                <div>
+                    <p>{selected.date.toLocaleString()}</p>
+                    <p>{selected.level}</p>
+                </div>
+            )}
         </div>
     );
 }
