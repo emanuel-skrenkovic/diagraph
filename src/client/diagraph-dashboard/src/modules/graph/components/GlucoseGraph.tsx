@@ -97,18 +97,16 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points }) 
 
     }, [from, to]);
 
-    if (selected) {
-        console.log(selected);
-    }
-
     return (
         <div className="item">
             <h2>Glucose graph</h2>
             <div ref={chartElemRef} />
             {selected && (
-                <div>
-                    <p>{selected.date.toLocaleString()}</p>
-                    <p>{selected.level}</p>
+                <div className="container horizontal box">
+                    <label>Date: </label>
+                    <input disabled value={selected.date.toLocaleString()} />
+                    <label>Glucose mmol/L</label>
+                    <input disabled value={selected.level} />
                 </div>
             )}
         </div>
