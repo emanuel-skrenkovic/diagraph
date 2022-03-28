@@ -100,7 +100,8 @@ export function Dashboard() {
             <GlucoseGraph
                 from={dateRange.from}
                 to={dateRange.to}
-                points={pointData} />
+                points={pointData}
+                events={events} />
             <br/>
             <div className="container">
                 <div className="item">
