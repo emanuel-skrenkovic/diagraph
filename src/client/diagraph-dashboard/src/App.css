@@ -35,6 +35,10 @@ html * {
     border-radius: 3px;
 }
 
+.button:hover {
+    box-shadow: rgba(194,190,193,0.58) 1px 1px 1px 1px;
+}
+
 .button .submit {
     background-color: #e35454;
     padding: 2px;
