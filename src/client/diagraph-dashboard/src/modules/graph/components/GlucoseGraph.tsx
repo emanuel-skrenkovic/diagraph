@@ -103,6 +103,10 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points }) 
             <div ref={chartElemRef} />
             {selected && (
                 <div className="container horizontal box">
+                    <button className="button"
+                            onClick={() => setSelected(undefined)}>
+                        x
+                    </button>
                     <label>Date: </label>
                     <input disabled value={selected.date.toLocaleString()} />
                     <label>Glucose mmol/L</label>

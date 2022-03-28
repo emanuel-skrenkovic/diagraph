@@ -27,8 +27,9 @@ function graphDateLimits() {
 export function Dashboard() {
     const { today, tomorrow } = graphDateLimits();
 
-    const [from, setFrom] = useState(toLocalISOString(today));
-    const [to, setTo] = useState(toLocalISOString(tomorrow));
+    const [dateRange, setDateRange] = useState<{ from: Date, to: Date }>(
+        { from: today, to: tomorrow }
+    );
 
     const events = useSelector((state: RootState) => state.graph.events);
     const pointData = useSelector((state: RootState) => state.graph.data);
@@ -36,12 +37,30 @@ export function Dashboard() {
     const dispatch = useDispatch();
     const [createEvent, _] = useCreateEventMutation();
 
-    const { data, error, isLoading }  = useGetDataQuery({from, to});
+    const { data, error, isLoading }  = useGetDataQuery({
+        from: toLocalISOString(dateRange.from),
+        to: toLocalISOString(dateRange.to)
+    });
     const {
         data: eventData,
         error: eventError,
         isLoading: isEventLoading
-    } = useGetEventsQuery({from, to});
+    } = useGetEventsQuery({
+        from: toLocalISOString(dateRange.from),
+        to: toLocalISOString(dateRange.to)
+    });
+
+    function moveDateRange(n: number) {
+        const from = new Date(dateRange.from);
+        from.setHours(0, 0, 0, 0);
+        from.setDate(from.getDate() + n);
+
+        const to = new Date(from);
+        to.setDate(to.getDate() + 1);
+        to.setHours(0, 0, 0, 0);
+
+        return { from, to };
+    }
 
     if (error) {
         console.error(error); // TODO
@@ -61,14 +80,26 @@ export function Dashboard() {
     return (
         <div className="container horizontal">
             <h1>Diagraph</h1>
-            <DateRangePicker
-                from={new Date(from)}
-                to={new Date(to)}
-                onSubmit={(fromDate, toDate) => { setFrom(toLocalISOString(fromDate)); setTo(toLocalISOString(toDate)); }}
-                submitButtonText="Apply dates" />
+            <div className="container">
+                <button
+                    className="button"
+                    onClick={() => setDateRange(moveDateRange(-1))}>
+                    &lt;
+                </button>
+                <DateRangePicker
+                    from={dateRange.from}
+                    to={dateRange.to}
+                    onSubmit={(fromDate, toDate) => setDateRange({from: fromDate, to: toDate})}
+                    submitButtonText="Apply dates" />
+                <button
+                    className="button"
+                    onClick={() => setDateRange(moveDateRange(1))}>
+                    &gt;
+                </button>
+            </div>
             <GlucoseGraph
-                from={new Date(from)}
-                to={new Date(to)}
+                from={dateRange.from}
+                to={dateRange.to}
                 points={pointData} />
             <br/>
             <div className="container">
