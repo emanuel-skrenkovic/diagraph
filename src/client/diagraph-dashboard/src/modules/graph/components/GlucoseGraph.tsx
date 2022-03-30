@@ -60,7 +60,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
             chartElemRef.current.innerHTML = '';
         }
 
-        if (pointData.length <= 0) {
+        if (pointData.length <= 0 && eventData.length <= 0) {
             return;
         }
 
