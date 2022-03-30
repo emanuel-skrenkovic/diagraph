@@ -1,12 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
+import { toLocalISODateString } from 'modules/common';
 
 import 'App.css';
-
-function toLocalISODateString(date: Date) {
-    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
-        .toISOString()
-        .split('T')[0];
-}
 
 export interface DateRangePickerProps {
     from :Date;
@@ -18,15 +13,13 @@ export interface DateRangePickerProps {
 export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRangePickerProps) => {
     const [dateRange, setDateRange] = useState<{ from: string, to: string }>({
         from: toLocalISODateString(from),
-        to: toLocalISODateString(to)
+        to:   toLocalISODateString(to)
     });
 
-    useEffect(() => {
-        setDateRange({
+    useEffect(() => setDateRange({
             from: toLocalISODateString(from),
-            to: toLocalISODateString(to)
-        });
-    }, [from, to]);
+            to:   toLocalISODateString(to)
+        }), [from, to]);
 
     const onClickSubmit = (_: FormEvent<HTMLButtonElement>) => {
         onSubmit(new Date(dateRange.from), new Date(dateRange.to));

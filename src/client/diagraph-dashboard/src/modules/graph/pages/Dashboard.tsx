@@ -4,14 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Event } from 'types';
 import { RootState } from 'store';
 import { GlucoseGraph, EventForm, RecentEvents, setEvents, setData } from 'modules/graph';
-import { Loader, DateRangePicker } from 'modules/common';
+import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
 import { useCreateEventMutation, useGetEventsQuery, useGetDataQuery } from 'services';
 
 import 'App.css';
-
-function toLocalISOString(date: Date) {
-    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-}
 
 function graphDateLimits() {
     const today = new Date();
@@ -38,16 +34,16 @@ export function Dashboard() {
     const [createEvent, _] = useCreateEventMutation();
 
     const { data, error, isLoading }  = useGetDataQuery({
-        from: toLocalISOString(dateRange.from),
-        to: toLocalISOString(dateRange.to)
+        from: toLocalISODateString(dateRange.from),
+        to:   toLocalISODateString(dateRange.to)
     });
     const {
         data: eventData,
         error: eventError,
         isLoading: isEventLoading
     } = useGetEventsQuery({
-        from: toLocalISOString(dateRange.from),
-        to: toLocalISOString(dateRange.to)
+        from: toLocalISODateString(dateRange.from),
+        to:   toLocalISODateString(dateRange.to)
     });
 
     function moveDateRange(n: number) {
@@ -55,8 +51,8 @@ export function Dashboard() {
         from.setHours(0, 0, 0, 0);
         from.setDate(from.getDate() + n);
 
-        const to = new Date(from);
-        to.setDate(to.getDate() + 1);
+        const to = new Date(dateRange.to);
+        to.setDate(to.getDate() + n);
         to.setHours(0, 0, 0, 0);
 
         return { from, to };
@@ -89,7 +85,7 @@ export function Dashboard() {
                 <DateRangePicker
                     from={dateRange.from}
                     to={dateRange.to}
-                    onSubmit={(fromDate, toDate) => setDateRange({from: fromDate, to: toDate})}
+                    onSubmit={(from, to) => setDateRange({from, to})}
                     submitButtonText="Apply dates" />
                 <button
                     className="button"
