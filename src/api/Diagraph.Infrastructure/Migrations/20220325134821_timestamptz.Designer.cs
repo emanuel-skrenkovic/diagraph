@@ -3,6 +3,7 @@ using System;
 using Diagraph.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Infrastructure.Migrations
 {
     [DbContext(typeof(DiagraphDbContext))]
-    partial class DiagraphDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220325134821_timestamptz")]
+    partial class timestamptz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,65 +23,6 @@ namespace Diagraph.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Diagraph.Infrastructure.Models.Event", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CustomData")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("custom_data");
-
-                    b.Property<DateTime>("OccurredAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("occurred_at_utc");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("text")
-                        .HasColumnName("text");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("updated_at_utc");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("event", (string)null);
-                });
-
-            modelBuilder.Entity("Diagraph.Infrastructure.Models.EventTag", b =>
-                {
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer")
-                        .HasColumnName("event_id");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("integer")
-                        .HasColumnName("tag_id");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("updated_at_utc");
-
-                    b.HasKey("EventId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("event_tag", (string)null);
-                });
 
             modelBuilder.Entity("Diagraph.Infrastructure.Models.GlucoseMeasurement", b =>
                 {
@@ -147,7 +90,7 @@ namespace Diagraph.Infrastructure.Migrations
                     b.ToTable("import", (string)null);
                 });
 
-            modelBuilder.Entity("Diagraph.Infrastructure.Models.Tag", b =>
+            modelBuilder.Entity("Diagraph.Infrastructure.Models.InsulinApplication", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,9 +103,17 @@ namespace Diagraph.Infrastructure.Migrations
                         .HasColumnType("timestamptz")
                         .HasColumnName("created_at_utc");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
+                    b.Property<int>("MealId")
+                        .HasColumnType("integer")
+                        .HasColumnName("meal_id");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("occurred_at_utc");
+
+                    b.Property<int>("Units")
+                        .HasColumnType("integer")
+                        .HasColumnName("units");
 
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("timestamptz")
@@ -170,22 +121,73 @@ namespace Diagraph.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("tag", (string)null);
+                    b.HasIndex("MealId");
+
+                    b.ToTable("insulin_application", (string)null);
                 });
 
-            modelBuilder.Entity("Diagraph.Infrastructure.Models.EventTag", b =>
+            modelBuilder.Entity("Diagraph.Infrastructure.Models.Meal", b =>
                 {
-                    b.HasOne("Diagraph.Infrastructure.Models.Event", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    b.HasOne("Diagraph.Infrastructure.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("occurred_at_utc");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("text")
+                        .HasColumnName("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("meal", (string)null);
+                });
+
+            modelBuilder.Entity("Diagraph.Infrastructure.Models.MiscellanousEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text")
+                        .HasColumnName("note");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("occurred_at_utc");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("miscellaneous_event", (string)null);
                 });
 
             modelBuilder.Entity("Diagraph.Infrastructure.Models.GlucoseMeasurement", b =>
@@ -197,14 +199,23 @@ namespace Diagraph.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Diagraph.Infrastructure.Models.Event", b =>
+            modelBuilder.Entity("Diagraph.Infrastructure.Models.InsulinApplication", b =>
                 {
-                    b.Navigation("Tags");
+                    b.HasOne("Diagraph.Infrastructure.Models.Meal", null)
+                        .WithMany("InsulinApplications")
+                        .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Diagraph.Infrastructure.Models.Import", b =>
                 {
                     b.Navigation("Measurements");
+                });
+
+            modelBuilder.Entity("Diagraph.Infrastructure.Models.Meal", b =>
+                {
+                    b.Navigation("InsulinApplications");
                 });
 #pragma warning restore 612, 618
         }

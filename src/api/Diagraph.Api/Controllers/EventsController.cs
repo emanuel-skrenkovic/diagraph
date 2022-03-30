@@ -10,6 +10,7 @@ namespace Diagraph.Api.Controllers;
 [Route("[controller]")]
 public class EventsController : ControllerBase
 {
+    // TODO: have a single event entity with tags, add extra data as jsonb
     private readonly DiagraphDbContext _context;
     private readonly IMapper _mapper;
 
@@ -38,11 +39,11 @@ public class EventsController : ControllerBase
         Event createdEvent = _context.Events.Add(@event).Entity;
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetEvent", new { id = createdEvent.Id });
+        return CreatedAtRoute("GetEvent", new { id = createdEvent.Id }, null);
     }
 
     [HttpGet]
-    [Route("{id:int}")]
+    [Route("{id:int}", Name = "GetEvent")]
     public async Task<IActionResult> GetEvent([FromRoute] int id)
     {
         Event @event = await _context.FindAsync<Event>(id);

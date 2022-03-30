@@ -1,0 +1,45 @@
+html * {
+    font-size: 1em !important;
+    color: #000 !important;
+    font-family: Arial, serif !important;
+}
+
+* {
+    padding: 3px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.container .horizontal {
+    flex-direction: column;
+}
+
+.item {
+    flex-basis: auto;
+    margin: 10px;
+}
+
+.box {
+    background: #fafafa;
+    border: solid 1px rgba(63, 61, 65, 0.24);
+    border-radius: 4px;
+    margin-outside: 15px;
+    padding: 15px;
+}
+
+.button {
+    border: 1px;
+    border-radius: 3px;
+}
+
+.button:hover {
+    box-shadow: rgba(194,190,193,0.58) 1px 1px 1px 1px;
+}
+
+.button .submit {
+    background-color: #e35454;
+    padding: 2px;
+}

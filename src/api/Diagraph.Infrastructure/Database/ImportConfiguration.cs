@@ -13,8 +13,14 @@ public class ImportConfiguration : IEntityTypeConfiguration<Import>
         builder.HasKey(i => i.Id);
         builder.Property(i => i.Id).HasColumnName("id");
 
-        builder.Property(i => i.CreatedAtUtc).HasColumnName("created_at_utc");
-        builder.Property(i => i.UpdatedAtUtc).HasColumnName("updated_at_utc");
+        builder
+            .Property(i => i.CreatedAtUtc)
+            .HasColumnName("created_at_utc")
+            .HasColumnType("timestamptz");
+        builder
+            .Property(i => i.UpdatedAtUtc)
+            .HasColumnName("updated_at_utc")
+            .HasColumnType("timestamptz");
 
         builder.Property(i => i.Hash).HasColumnName("hash");
     }

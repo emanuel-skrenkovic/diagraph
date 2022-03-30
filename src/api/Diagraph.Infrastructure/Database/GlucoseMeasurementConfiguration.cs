@@ -13,10 +13,20 @@ public class GlucoseMeasurementConfiguration : IEntityTypeConfiguration<GlucoseM
         builder.HasKey(m => m.Id);
         builder.Property(m => m.Id).HasColumnName("id");
         
-        builder.Property(m => m.CreatedAtUtc).HasColumnName("created_at_utc");
-        builder.Property(m => m.UpdatedAtUtc).HasColumnName("updated_at_utc");
+        builder
+            .Property(m => m.CreatedAtUtc)
+            .HasColumnName("created_at_utc")
+            .HasColumnType("timestamptz");
+        
+        builder
+            .Property(m => m.UpdatedAtUtc)
+            .HasColumnName("updated_at_utc")
+            .HasColumnType("timestamptz");
         builder.Property(m => m.Level).HasColumnName("level");
-        builder.Property(m => m.TakenAt).HasColumnName("taken_at");
+        builder
+            .Property(m => m.TakenAt)
+            .HasColumnName("taken_at")
+            .HasColumnType("timestamptz");
         builder.Property(m => m.Unit).HasColumnName("unit");
 
         builder.Property(m => m.ImportId).HasColumnName("import_id");
