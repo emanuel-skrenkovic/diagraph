@@ -91,7 +91,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
                 {showOptions ? 'Close Options' : 'Show Options'}
             </button>
             {showOptions && (
-                <div className="container horizontal">
+                <div className="container">
                     <label>High limit line</label>
                     <input type="checkbox"
                            defaultChecked={showHighLimit}
