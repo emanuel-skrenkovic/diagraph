@@ -1,6 +1,7 @@
 using Diagraph.Core.Extensions;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Models;
 using Diagraph.Infrastructure.Parsing;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +62,6 @@ public class DataController : ControllerBase
         import.Hash = _hashTool.ComputeHash(data);
         
         _context.Imports.Add(import);
-        
         await _context.SaveChangesAsync();
 
         return StatusCode(201);
