@@ -27,6 +27,18 @@ function parseNumber(date: Date) {
     return Number(d3.timeParse('%Y-%m-%dT%H:%M:%S.%LZ')(dateString));
 }
 
+function getMinMax(pointData: [number, number][]) {
+    const maxMeasurement = pointData.length > 0
+        ? Math.max.apply(null, pointData.map(p => p[1]))
+        : 12;
+
+    const minMeasurement = pointData.length > 0
+        ? Math.min.apply(null, pointData.map(p => p[1]))
+        : 0;
+
+    return { min: minMeasurement, max: maxMeasurement };
+}
+
 export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, events }) => {
     const chartElemRef = useRef<HTMLDivElement>(null);
 
@@ -48,15 +60,9 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
 
         const chart = new TimeChart(chartElemRef, HEIGHT, WIDTH, MARGIN, PADDING);
 
-        const maxMeasurement = pointData.length > 0
-            ? Math.max.apply(null, pointData.map(p => p[1]))
-            : 12;
-        const maxValue = maxMeasurement + 3;
-
-        const minMeasurement = pointData.length > 0
-            ? Math.min.apply(null, pointData.map(p => p[1]))
-            : 0;
-        const minValue = minMeasurement > 2 ? minMeasurement - 2 : 0;
+        const { min, max } = getMinMax(pointData);
+        const maxValue = max + 3;
+        const minValue = min > 2 ? min - 2 : 0;
 
         chart.xAxis([from, to])
             .xLabel('Date')
@@ -82,7 +88,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
         }
 
         chart.draw();
-    }, [events, points, showLowLimit, showHighLimit, showAverage]);
+    }, [from, to, eventData, pointData, showLowLimit, showHighLimit, showAverage]);
 
     return (
         <div className="item">

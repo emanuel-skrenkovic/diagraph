@@ -46,8 +46,8 @@ export class TimeChart {
     }
 
     draw = () => {
-        if (!this.x) throw 'x axis is not initialized';
-        if (!this.y) throw 'y axis is not initialized';
+        if (!this.x) throw new Error('x axis is not initialized');
+        if (!this.y) throw new Error('y axis is not initialized');
 
         for (const step of this.drawSteps) {
             step();
