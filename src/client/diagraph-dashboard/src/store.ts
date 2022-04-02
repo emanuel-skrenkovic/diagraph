@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { graphReducer } from 'modules/graph';
+import { authReducer } from 'modules/auth';
 import { diagraphApi } from 'services';
 
 export const store = configureStore({
     reducer: {
         [diagraphApi.reducerPath]: diagraphApi.reducer,
-        graph: graphReducer
+        graph: graphReducer,
+        auth: authReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(diagraphApi.middleware)

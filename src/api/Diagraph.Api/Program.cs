@@ -37,8 +37,8 @@ builder.Services.AddAuthentication
 (
     opts =>
     {
-        opts.Cookie.HttpOnly = true;
-        opts.Cookie.SameSite = SameSiteMode.Strict;
+        opts.Cookie.HttpOnly = false;
+        opts.Cookie.SameSite = SameSiteMode.None;
         opts.LoginPath       = "/auth/login";
         opts.LogoutPath      = "/auth/logout";
     }

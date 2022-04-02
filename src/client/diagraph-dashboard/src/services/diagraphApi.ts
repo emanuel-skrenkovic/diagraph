@@ -28,6 +28,21 @@ export const diagraphApi = createApi({
 
         getData: builder.query<GlucoseMeasurement[], any>({
             query: ({from, to}) => ({ url: 'data', params: {from, to}})
+        }),
+
+        login: builder.mutation<any, any>({
+            query: request => ({
+                url: 'auth/login',
+                method: 'POST',
+                body: request
+            })
+        }),
+        register: builder.mutation<any, any>({
+            query: request => ({
+                url: 'auth/register',
+                method: 'POST',
+                body: request
+            })
         })
     })
 });
@@ -37,4 +52,6 @@ export const {
     useGetEventsQuery,
     useCreateEventMutation,
     useUpdateEventMutation,
-    useGetDataQuery } = diagraphApi;
+    useGetDataQuery,
+    useLoginMutation,
+    useRegisterMutation } = diagraphApi;
