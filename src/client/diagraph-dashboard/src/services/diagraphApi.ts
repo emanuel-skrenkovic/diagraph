@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
 import { Event, GlucoseMeasurement } from 'types';
+import { setAuthenticated } from 'modules/auth';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',
@@ -35,7 +37,15 @@ export const diagraphApi = createApi({
                 url: 'auth/login',
                 method: 'POST',
                 body: request
-            })
+            }),
+            async onQueryStarted({ id, ...post }, { dispatch, queryFulfilled }) {
+                try {
+                    const result = await queryFulfilled;
+                    await dispatch(setAuthenticated(true));
+               } catch {
+                    dispatch(setAuthenticated(false));
+                }
+            }
         }),
         register: builder.mutation<any, any>({
             query: request => ({

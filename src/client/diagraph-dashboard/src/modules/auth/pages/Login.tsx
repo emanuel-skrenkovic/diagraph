@@ -1,24 +1,22 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store';
+import { Navigate, Link } from 'react-router-dom';
 
-import { setAuthenticated } from 'modules/auth';
+import { Loader } from 'modules/common';
 import { useLoginMutation } from 'services';
 import { LoginForm } from 'modules/auth';
 
 import 'App.css';
 
 export const Login = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const authenticated = useSelector((state: RootState) => state.auth.authenticated);
+    const [login, { isLoading, isError }] = useLoginMutation();
 
-    const [login, _] = useLoginMutation();
+    const onClickLogin = (email: string, password: string) => login({email, password});
 
-    const onClickLogin = (email: string, password: string) => {
-        login({email, password});
-        dispatch(setAuthenticated(true));
-        navigate('/');
-    }
+    if (isLoading) return <Loader />;
+    if (authenticated) return <Navigate to="/" />
 
     return (
         <div className="container horizontal">
@@ -27,6 +25,7 @@ export const Login = () => {
                 <span>Don't have an account</span>
                 <Link to="/register">Register</Link>
             </div>
+            {isError && <span>Login failed</span>}
         </div>
     );
 };
