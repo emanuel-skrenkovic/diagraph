@@ -17,8 +17,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        if (!email)    setEmailError('Email filed must not be empty.');
-        if (!password) setPasswordError('Password filed must not be empty.');
+        if (!email)    setEmailError('Email must not be empty.');
+        if (!password) setPasswordError('Password must not be empty.');
 
         onSubmit(email, password);
     };
@@ -31,14 +31,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
     };
 
     const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!e.currentTarget.value) setEmailError('Email field must not be empty.');
+        if (!e.currentTarget.value) setEmailError('Email must not be empty.');
         else                        setEmailError('');
 
         setEmail(e.currentTarget.value);
     };
 
     const onChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!e.currentTarget.value) setPasswordError('Password field must not be empty.');
+        if (!e.currentTarget.value) setPasswordError('Password must not be empty.');
         else                        setPasswordError('');
 
         setPassword(e.currentTarget.value);
@@ -49,20 +49,22 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
             <form className="container horizontal box">
                 <label htmlFor="emailInput">Email:</label>
                 <div className="item">
-                    <input id="emailInput"
+                    <input className={emailError && 'input invalid'}
+                           id="emailInput"
                            type="text"
                            value={email}
                            onChange={onChangeEmail} />
-                    {emailError && <span>{emailError}</span>}
                 </div>
+                <span className="input label">{emailError ?? ' '}</span>
                 <label htmlFor="passwordInput">Password:</label>
                 <div className="item">
-                    <input id="passwordInput"
+                    <input className={passwordError && 'input invalid'}
+                           id="passwordInput"
                            type="password"
                            value={password}
                            onChange={onChangePassword} />
-                    {passwordError && <span>{passwordError}</span>}
                 </div>
+                <span className="input label">{passwordError}</span>
                 <label htmlFor="confirmPasswordInput">Confirm password:</label>
                 <div className="item">
                     <input id="confirmPasswordInput"
@@ -70,7 +72,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                            value={confirmPassword}
                            onChange={onChangeConfirmPassword} />
                 </div>
-                <button className="button"
+                <button className="button blue"
                         type="submit"
                         disabled={!!emailError || !!passwordError}
                         onClick={onClickSubmit}>Register</button>
