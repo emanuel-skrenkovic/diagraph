@@ -5,7 +5,10 @@ import { setAuthenticated } from 'modules/auth';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'https://localhost:7053' }), // TODO: url
+    baseQuery: fetchBaseQuery({
+        baseUrl: 'https://localhost:7053', // TODO: configuration
+        credentials: 'include'
+    }),
     endpoints: (builder) => ({
         getEvents: builder.query<any, any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} })
@@ -29,19 +32,38 @@ export const diagraphApi = createApi({
         }),
 
         getData: builder.query<GlucoseMeasurement[], any>({
-            query: ({from, to}) => ({ url: 'data', params: {from, to}})
+            query: ({from, to}) => ({ url: 'data', params: {from, to}}),
+            async onQueryStarted(api, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(setAuthenticated(true));
+                } catch { /* do nothing since it's already not authenticated */ }
+            }
+        }),
+
+        getSession: builder.query<any, any>({
+            query: () => ({ url: 'auth/session' }),
+            async onQueryStarted(api, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(setAuthenticated(true))
+                } catch {
+                    dispatch(setAuthenticated(false))
+                }
+            }
         }),
 
         login: builder.mutation<any, any>({
             query: request => ({
                 url: 'auth/login',
                 method: 'POST',
-                body: request
+                body: request,
+                credentials: 'include'
             }),
             async onQueryStarted({ id, ...post }, { dispatch, queryFulfilled }) {
                 try {
-                    const result = await queryFulfilled;
-                    await dispatch(setAuthenticated(true));
+                    await queryFulfilled;
+                    dispatch(setAuthenticated(true)); // TODO: need better way
                } catch {
                     dispatch(setAuthenticated(false));
                 }
@@ -63,5 +85,6 @@ export const {
     useCreateEventMutation,
     useUpdateEventMutation,
     useGetDataQuery,
+    useGetSessionQuery,
     useLoginMutation,
     useRegisterMutation } = diagraphApi;

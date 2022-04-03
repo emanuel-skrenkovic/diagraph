@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Security.Principal;
 using Diagraph.Api.Models;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database;
@@ -24,6 +25,25 @@ public class AuthController : ControllerBase
     {
         _context      = context;
         _passwordTool = passwordTool;
+    }
+
+    [HttpGet]
+    [Route("session")]
+    public IActionResult GetSession()
+    {
+        if (HttpContext.User.Identity?.IsAuthenticated != true)
+        {
+            return Forbid();
+        }
+
+        IIdentity identity = HttpContext.User.Identity;
+        
+        return Ok(new
+        {
+            UserName           = identity.Name,
+            IsAuthenticated    = identity.IsAuthenticated,
+            AuthenticationType = identity.AuthenticationType
+        });
     }
 
     [HttpPost]
@@ -59,11 +79,17 @@ public class AuthController : ControllerBase
             return Unauthorized(LoginFailReason);
         }
 
-        await HttpContext.SignInAsync
+        ClaimsIdentity identity = new ClaimsIdentity(AuthScheme);
+        identity.AddClaim
         (
-            AuthScheme,
-            new ClaimsPrincipal(UserIdentity.Create(user, AuthScheme))
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         );
+        identity.AddClaim
+        (
+            new Claim(ClaimTypes.Name, user.Email) // TODO: username
+        );
+        
+        await HttpContext.SignInAsync(AuthScheme, new(identity));
         
         return Ok();
     }

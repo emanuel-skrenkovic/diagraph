@@ -37,8 +37,10 @@ builder.Services.AddAuthentication
 (
     opts =>
     {
-        opts.Cookie.HttpOnly = false;
-        opts.Cookie.SameSite = SameSiteMode.None;
+        opts.Cookie.HttpOnly    = true;
+        opts.Cookie.IsEssential = true;
+        opts.Cookie.SameSite    = SameSiteMode.None;
+        
         opts.LoginPath       = "/auth/login";
         opts.LogoutPath      = "/auth/logout";
     }
@@ -61,14 +63,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors(opts =>
 {
-    opts.AllowAnyOrigin();
+    opts.WithOrigins("http://localhost:3000");
     opts.AllowAnyHeader();
     opts.AllowAnyMethod();
     opts.Build();
+    opts.AllowCredentials();
 });
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
