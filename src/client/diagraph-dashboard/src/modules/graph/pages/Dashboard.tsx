@@ -75,7 +75,6 @@ export function Dashboard() {
 
     return (
         <div className="container horizontal">
-            <h1>Diagraph</h1>
             <div className="container">
                 <button
                     className="button"

@@ -31,10 +31,7 @@ public class AuthController : ControllerBase
     [Route("session")]
     public IActionResult GetSession()
     {
-        if (HttpContext.User.Identity?.IsAuthenticated != true)
-        {
-            return Forbid();
-        }
+        if (HttpContext.User.Identity?.IsAuthenticated != true) return Forbid();
 
         IIdentity identity = HttpContext.User.Identity;
         

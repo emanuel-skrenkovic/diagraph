@@ -69,6 +69,22 @@ export const diagraphApi = createApi({
                 }
             }
         }),
+
+        logout: builder.mutation<any, any>({
+            query: request => ({
+                url: 'auth/logout',
+                method: 'POST',
+                body: request,
+                credentials: 'include'
+            }),
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(setAuthenticated(false));
+                } catch { /* TODO */ }
+            }
+        }),
+
         register: builder.mutation<any, any>({
             query: request => ({
                 url: 'auth/register',
@@ -87,4 +103,5 @@ export const {
     useGetDataQuery,
     useGetSessionQuery,
     useLoginMutation,
+    useLogoutMutation,
     useRegisterMutation } = diagraphApi;

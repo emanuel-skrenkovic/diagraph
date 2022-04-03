@@ -4,11 +4,13 @@ using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Models;
 using Diagraph.Infrastructure.Parsing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diagraph.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class DataController : ControllerBase
