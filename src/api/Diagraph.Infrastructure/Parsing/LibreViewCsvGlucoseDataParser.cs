@@ -5,12 +5,14 @@ using CsvHelper.Configuration;
 using CsvHelper.Configuration.Attributes;
 using CsvHelper.TypeConversion;
 using Diagraph.Infrastructure.Models;
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedAutoPropertyAccessor.Local
 
 namespace Diagraph.Infrastructure.Parsing;
 
 public class LibreViewCsvGlucoseDataParser : IGlucoseDataParser
 {
-    private static CsvConfiguration _configuration = new(CultureInfo.InvariantCulture)
+    private static readonly CsvConfiguration Configuration = new(CultureInfo.InvariantCulture)
     {
         Delimiter = ",",
         HasHeaderRecord = true
@@ -22,7 +24,7 @@ public class LibreViewCsvGlucoseDataParser : IGlucoseDataParser
 
         Stream dataStream         = new MemoryStream(Encoding.UTF8.GetBytes(data));
         using StreamReader reader = new StreamReader(dataStream);
-        using CsvReader csv       = new CsvReader(reader, _configuration);
+        using CsvReader csv       = new CsvReader(reader, Configuration);
 
         // Skip one line because of double header.
         // TODO: find a way to avoid through configuration.

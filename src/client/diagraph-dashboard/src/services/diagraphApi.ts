@@ -43,6 +43,24 @@ export const diagraphApi = createApi({
             }
         }),
 
+        importData: builder.mutation<any, any>({
+            async queryFn(file, queryApi, extraOptions, fetch) {
+                const formData = new FormData();
+                formData.append('file', file, file.name);
+
+                const response = await fetch({
+                    url: 'data',
+                    method: 'POST',
+                    body: formData
+                });
+
+                // TODO: this bit
+                if (response.error) throw response.error;
+                return response.data ? { data: response.data } : { error: response.error };
+            },
+            invalidatesTags: [{ type: 'Data', id: 'all' }] // TODO
+        }),
+
         getProfile: builder.query<Profile, undefined>({
             query: () => ({ url: 'my/profile' }),
             async onQueryStarted(api, { dispatch, queryFulfilled }) {
@@ -123,6 +141,7 @@ export const {
     useCreateEventMutation,
     useUpdateEventMutation,
     useGetDataQuery,
+    useImportDataMutation,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useGetSessionQuery,
