@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Event, GlucoseMeasurement } from 'types';
-import { setProfile, Profile } from 'modules/profile';
+import { setProfile, defaultProfile, Profile } from 'modules/profile';
 import { setAuthenticated } from 'modules/auth';
 
 export const diagraphApi = createApi({
@@ -10,6 +10,7 @@ export const diagraphApi = createApi({
         baseUrl: 'https://localhost:7053', // TODO: configuration
         credentials: 'include'
     }),
+    tagTypes: ['Profile', 'Events', 'Data'],
     endpoints: (builder) => ({
         getEvents: builder.query<any, any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} })
@@ -46,8 +47,9 @@ export const diagraphApi = createApi({
             query: () => ({ url: 'my/profile' }),
             async onQueryStarted(api, { dispatch, queryFulfilled }) {
                 const { data } = await queryFulfilled;
-                dispatch(setProfile(data))
-            }
+                dispatch(setProfile(data ?? defaultProfile))
+            },
+            providesTags: [{ type: 'Profile', id: 'logged-in' }]
         }),
 
         updateProfile: builder.mutation<any, any>({
@@ -55,7 +57,8 @@ export const diagraphApi = createApi({
             async onQueryStarted(request, { dispatch, queryFulfilled }) {
                 await queryFulfilled;
                 dispatch(setProfile(request))
-            }
+            },
+            invalidatesTags: [{ type: 'Profile', id: 'logged-in' }]
         }),
 
         getSession: builder.query<any, any>({
@@ -98,8 +101,10 @@ export const diagraphApi = createApi({
                 try {
                     await queryFulfilled;
                     dispatch(setAuthenticated(false));
+                    dispatch(setProfile(defaultProfile));
                 } catch { /* TODO */ }
-            }
+            },
+            invalidatesTags: [{ type: 'Profile', id: 'logged-in' }]
         }),
 
         register: builder.mutation<any, any>({

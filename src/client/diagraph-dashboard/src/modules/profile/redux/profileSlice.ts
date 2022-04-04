@@ -6,16 +6,18 @@ export interface Profile {
     showAverage: boolean;
 }
 
+export const defaultProfile: Profile = {
+    showLowLimit:  false,
+    showHighLimit: false,
+    showAverage:   false
+}
+
 export interface ProfileState {
     profile: Profile
 }
 
 const initialState: ProfileState = {
-    profile: {
-        showLowLimit:  false,
-        showHighLimit: false,
-        showAverage:   false
-    }
+    profile: defaultProfile
 };
 
 export const profileSlice = createSlice({
