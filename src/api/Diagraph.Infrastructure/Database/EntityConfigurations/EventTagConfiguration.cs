@@ -2,7 +2,7 @@ using Diagraph.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Diagraph.Infrastructure.Database;
+namespace Diagraph.Infrastructure.Database.EntityConfigurations;
 
 public class EventTagConfiguration : IEntityTypeConfiguration<EventTag>
 {

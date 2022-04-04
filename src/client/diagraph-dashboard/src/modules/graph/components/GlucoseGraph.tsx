@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+
+import { useProfile } from 'modules/profile';
+
 import { TimeChart } from 'services';
 import { Event, GlucoseMeasurement } from 'types';
 
@@ -45,13 +48,13 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
     const [selectedMeasurement, setSelectedMeasurement] = useState<Selected | undefined>(undefined);
     const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>(undefined);
 
-    const [showOptions, setShowOptions]     = useState(false);
-    const [showLowLimit, setShowLowLimit]   = useState(false);
-    const [showHighLimit, setShowHighLimit] = useState(false);
-    const [showAverage, setShowAverage]     = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
+    const [profile, setProfile]         = useProfile();
 
     const pointData: [number, number][] = points.map(p => [parseNumber(p.takenAt), p.level]);
     const eventData: [number, Event][]  = events.map(e => [parseNumber(e.occurredAtUtc), e]);
+
+    const { showLowLimit, showHighLimit, showAverage } = profile;
 
     useEffect(() => {
         if (chartElemRef?.current) {
@@ -76,7 +79,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
         if (showLowLimit)  chart.horizontalLine(3.9, 'red');
         if (showHighLimit) chart.horizontalLine(10, 'red');
 
-        if (showAverage) {
+        if (pointData.length > 0 && showAverage) {
             const sum = pointData.reduce((a, b) => a + b[1], 0);
             const average = (sum / pointData.length) || 0;
 
@@ -88,7 +91,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
         }
 
         chart.draw();
-    }, [from, to, eventData, pointData, showLowLimit, showHighLimit, showAverage]);
+    }, [from, to, showLowLimit, showHighLimit, showAverage, eventData, pointData, profile]);
 
     return (
         <div className="item">
@@ -100,16 +103,16 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
                 <div className="container">
                     <label>High limit line</label>
                     <input type="checkbox"
-                           defaultChecked={showHighLimit}
-                           onChange={() => setShowHighLimit(!showHighLimit)} />
+                           defaultChecked={profile.showHighLimit}
+                           onChange={() => setProfile({...profile, showHighLimit: !showHighLimit})} />
                     <label>Low limit line</label>
                     <input type="checkbox"
-                           defaultChecked={showLowLimit}
-                           onChange={() => setShowLowLimit(!showLowLimit)} />
+                           defaultChecked={profile.showLowLimit}
+                           onChange={() => setProfile({...profile, showLowLimit: !showLowLimit})} />
                     <label>Average</label>
                     <input type="checkbox"
-                           defaultChecked={showAverage}
-                           onChange={() => setShowAverage(!showAverage)} />
+                           defaultChecked={profile.showAverage}
+                           onChange={() => setProfile({...profile, showAverage: !showAverage})} />
                 </div>
             )}
             <div ref={chartElemRef} />

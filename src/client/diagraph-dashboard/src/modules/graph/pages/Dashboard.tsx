@@ -5,7 +5,7 @@ import { Event } from 'types';
 import { RootState } from 'store';
 import { GlucoseGraph, EventForm, RecentEvents, setEvents, setData } from 'modules/graph';
 import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
-import { useCreateEventMutation, useGetEventsQuery, useGetDataQuery } from 'services';
+import { useCreateEventMutation, useGetEventsQuery, useGetDataQuery, useGetProfileQuery } from 'services';
 
 import 'App.css';
 
@@ -30,8 +30,7 @@ export function Dashboard() {
     const events = useSelector((state: RootState) => state.graph.events);
     const pointData = useSelector((state: RootState) => state.graph.data);
 
-    const dispatch = useDispatch();
-    const [createEvent, _] = useCreateEventMutation();
+    const [createEvent] = useCreateEventMutation();
 
     const { data, error, isLoading }  = useGetDataQuery({
         from: toLocalISODateString(dateRange.from),
@@ -46,6 +45,8 @@ export function Dashboard() {
         to:   toLocalISODateString(dateRange.to)
     });
 
+    const { isLoading: isProfileLoading } = useGetProfileQuery(undefined);
+
     function moveDateRange(n: number) {
         const from = new Date(dateRange.from);
         from.setHours(0, 0, 0, 0);
@@ -58,6 +59,8 @@ export function Dashboard() {
         return { from, to };
     }
 
+    const dispatch = useDispatch();
+
     if (error) {
         console.error(error); // TODO
     }
@@ -66,7 +69,7 @@ export function Dashboard() {
         console.error(eventError);
     }
 
-    if (isLoading || isEventLoading) {
+    if (isLoading || isEventLoading || isProfileLoading) {
         return <Loader />
     }
 
@@ -75,7 +78,6 @@ export function Dashboard() {
 
     return (
         <div className="container horizontal">
-            <h1>Diagraph</h1>
             <div className="container">
                 <button
                     className="button"

@@ -1,11 +1,13 @@
 using AutoMapper;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diagraph.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class EventsController : ControllerBase

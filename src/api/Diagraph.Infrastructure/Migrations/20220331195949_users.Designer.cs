@@ -3,6 +3,7 @@ using System;
 using Diagraph.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Infrastructure.Migrations
 {
     [DbContext(typeof(DiagraphDbContext))]
-    partial class DiagraphDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220331195949_users")]
+    partial class users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,36 +211,6 @@ namespace Diagraph.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("user", (string)null);
-                });
-
-            modelBuilder.Entity("Diagraph.Infrastructure.Models.UserProfile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("Data")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("data");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("user_profile", (string)null);
                 });
 
             modelBuilder.Entity("Diagraph.Infrastructure.Models.EventTag", b =>
