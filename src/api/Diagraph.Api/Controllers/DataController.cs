@@ -44,7 +44,6 @@ public class DataController : ControllerBase
                 .OrderBy(m => m.TakenAt)
                 .ToListAsync()
         );
-
     
     [HttpPost]
     public async Task<IActionResult> ImportData(IFormFile file)

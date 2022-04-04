@@ -15,6 +15,8 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .Property(e => e.Id)
             .HasColumnName("id")
             .ValueGeneratedOnAdd();
+
+        builder.Property(e => e.UserId).HasColumnName("user_id");
         
         builder
             .Property(e => e.CreatedAtUtc)

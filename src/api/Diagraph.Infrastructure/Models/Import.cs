@@ -9,4 +9,6 @@ public class Import : DbEntity
     public string Hash { get; set; }
     
     public virtual ICollection<GlucoseMeasurement> Measurements { get; set; }
+    
+    public Guid UserId { get; set; }
 }

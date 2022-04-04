@@ -6,6 +6,8 @@ public class GlucoseMeasurement : DbEntity
 {
     public long Id { get; set; }
     
+    public Guid UserId { get; set; }
+    
     public float Level { get; set; }
     
     public DateTime TakenAt { get; set; }

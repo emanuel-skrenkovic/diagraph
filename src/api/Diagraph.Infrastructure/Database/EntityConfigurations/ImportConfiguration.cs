@@ -12,6 +12,8 @@ public class ImportConfiguration : IEntityTypeConfiguration<Import>
 
         builder.HasKey(i => i.Id);
         builder.Property(i => i.Id).HasColumnName("id");
+        
+        builder.Property(i => i.UserId).HasColumnName("user_id");
 
         builder
             .Property(i => i.CreatedAtUtc)
