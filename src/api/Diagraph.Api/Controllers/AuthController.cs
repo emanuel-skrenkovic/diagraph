@@ -35,12 +35,15 @@ public class AuthController : ControllerBase
 
         IIdentity identity = HttpContext.User.Identity;
         
-        return Ok(new
-        {
-            UserName           = identity.Name,
-            IsAuthenticated    = identity.IsAuthenticated,
-            AuthenticationType = identity.AuthenticationType
-        });
+        return Ok
+        (
+            new SessionInfo
+            {
+                UserName           = identity.Name,
+                IsAuthenticated    = identity.IsAuthenticated,
+                AuthenticationType = identity.AuthenticationType
+            }
+        );
     }
 
     [HttpPost]

@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Event, GlucoseMeasurement } from 'types';
+import { setProfile, Profile } from 'modules/profile';
 import { setAuthenticated } from 'modules/auth';
 
 export const diagraphApi = createApi({
@@ -38,6 +39,22 @@ export const diagraphApi = createApi({
                     await queryFulfilled;
                     dispatch(setAuthenticated(true));
                 } catch { /* do nothing since it's already not authenticated */ }
+            }
+        }),
+
+        getProfile: builder.query<Profile, undefined>({
+            query: () => ({ url: 'my/profile' }),
+            async onQueryStarted(api, { dispatch, queryFulfilled }) {
+                const { data } = await queryFulfilled;
+                dispatch(setProfile(data))
+            }
+        }),
+
+        updateProfile: builder.mutation<any, any>({
+            query: profile => ({ url: 'my/profile', method: 'PUT', body: profile }),
+            async onQueryStarted(request, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(setProfile(request))
             }
         }),
 
@@ -101,6 +118,8 @@ export const {
     useCreateEventMutation,
     useUpdateEventMutation,
     useGetDataQuery,
+    useGetProfileQuery,
+    useUpdateProfileMutation,
     useGetSessionQuery,
     useLoginMutation,
     useLogoutMutation,

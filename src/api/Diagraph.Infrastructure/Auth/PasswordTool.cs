@@ -16,9 +16,7 @@ public class PasswordTool
     
     public string Hash(string plainPassword)
     {
-        // Generate salt
         byte[] salt = new byte[SaltBytes];
-
         using RandomNumberGenerator rng = RandomNumberGenerator.Create();
         rng.GetBytes(salt);
 
