@@ -123,11 +123,7 @@ export const diagraphApi = createApi({
                     dispatch(logout());
                     // dispatch(setProfile(defaultProfile));
                 } catch { /* TODO */ }
-            },
-            invalidatesTags: [
-                { type: 'Profile', id: 'logged-in' },
-                { type: 'Authenticated', id: 'true' }
-            ]
+            }
         }),
 
         register: builder.mutation<any, any>({

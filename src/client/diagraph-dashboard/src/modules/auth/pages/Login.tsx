@@ -19,7 +19,7 @@ export const Login = () => {
 
     useEffect(() => {
         if (authenticated) navigate(-1);
-    }, [authenticated]);
+    }, [authenticated, navigate]);
 
     if (isLoading) return <Loader />;
 

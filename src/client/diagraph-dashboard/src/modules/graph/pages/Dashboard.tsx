@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Event } from 'types';
@@ -32,13 +32,9 @@ function moveDateRange(dateRange: { from: string, to: string}, n: number) {
 }
 
 export function Dashboard() {
-    const dateRange = useSelector((state: RootState) => state.graph.dateRange);
-
     const events    = useSelector((state: RootState) => state.graph.events);
     const pointData = useSelector((state: RootState) => state.graph.data);
-
-    useEffect(() => {
-    }, [dateRange]);
+    const dateRange = useSelector((state: RootState) => state.graph.dateRange);
 
     const [createEvent] = useCreateEventMutation();
 
