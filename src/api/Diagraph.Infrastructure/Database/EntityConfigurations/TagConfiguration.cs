@@ -16,6 +16,8 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
             .HasColumnName("id")
             .ValueGeneratedOnAdd();
         
+        builder.Property(t => t.UserId).HasColumnName("user_id");
+        
         builder
             .Property(t => t.CreatedAtUtc)
             .HasColumnName("created_at_utc")

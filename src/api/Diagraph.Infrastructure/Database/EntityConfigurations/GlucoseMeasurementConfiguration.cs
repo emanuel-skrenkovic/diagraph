@@ -13,6 +13,8 @@ public class GlucoseMeasurementConfiguration : IEntityTypeConfiguration<GlucoseM
         builder.HasKey(m => m.Id);
         builder.Property(m => m.Id).HasColumnName("id");
         
+        builder.Property(m => m.UserId).HasColumnName("user_id");
+        
         builder
             .Property(m => m.CreatedAtUtc)
             .HasColumnName("created_at_utc")

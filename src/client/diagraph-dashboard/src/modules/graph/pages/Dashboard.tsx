@@ -5,7 +5,11 @@ import { Event } from 'types';
 import { RootState } from 'store';
 import { GlucoseGraph, EventForm, RecentEvents, setEvents, setData } from 'modules/graph';
 import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
-import { useCreateEventMutation, useGetEventsQuery, useGetDataQuery, useGetProfileQuery } from 'services';
+import {
+    useCreateEventMutation,
+    useGetEventsQuery,
+    useGetDataQuery,
+    useGetProfileQuery } from 'services';
 
 import 'App.css';
 
@@ -69,9 +73,7 @@ export function Dashboard() {
         console.error(eventError);
     }
 
-    if (isLoading || isEventLoading || isProfileLoading) {
-        return <Loader />
-    }
+    if (isLoading || isEventLoading || isProfileLoading) return <Loader />;
 
     if (data)      dispatch(setData(data));
     if (eventData) dispatch(setEvents(eventData));
@@ -95,11 +97,13 @@ export function Dashboard() {
                     &gt;
                 </button>
             </div>
-            <GlucoseGraph
-                from={dateRange.from}
-                to={dateRange.to}
-                points={pointData}
-                events={events} />
+            <div className="container">
+                <GlucoseGraph
+                    from={dateRange.from}
+                    to={dateRange.to}
+                    points={pointData}
+                    events={events} />
+            </div>
             <br/>
             <div className="container">
                 <div className="item">

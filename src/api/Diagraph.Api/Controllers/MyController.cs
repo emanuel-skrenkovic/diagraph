@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using AutoMapper;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +11,14 @@ namespace Diagraph.Api.Controllers;
 [Route("my")]
 public class MyController : ControllerBase
 {
+    private readonly IUserContext _userContext;
     private readonly DiagraphDbContext _context;
 
-    public MyController(DiagraphDbContext context)
-        => _context = context;   
+    public MyController(IUserContext userContext, DiagraphDbContext context)
+    {
+        _userContext = userContext;
+        _context     = context;      
+    }
     
     [HttpGet]
     [Route("profile")]
@@ -41,10 +43,7 @@ public class MyController : ControllerBase
 
     private async Task<UserProfile> UserProfile()
     {
-        Guid userId = Guid.Parse
-        (
-            HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value
-        );
+        Guid userId = _userContext.UserId;
         
         UserProfile profile = await _context
             .UserProfiles

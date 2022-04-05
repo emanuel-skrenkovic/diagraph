@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { RootState } from 'store';
@@ -16,6 +16,10 @@ export const useProfile =
             updateProfile(newProfile);
             setProfile(newProfile);
         }
+
+        useEffect(() => {
+            setProfile(userProfile);
+        }, [userProfile]);
 
         return [profile, setUserProfile, { isLoading, isSuccess }];
 };

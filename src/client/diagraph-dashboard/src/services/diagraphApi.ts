@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Event, GlucoseMeasurement } from 'types';
-import { setProfile, Profile } from 'modules/profile';
+import { setProfile, defaultProfile, Profile } from 'modules/profile';
 import { setAuthenticated } from 'modules/auth';
 
 export const diagraphApi = createApi({
@@ -10,6 +10,7 @@ export const diagraphApi = createApi({
         baseUrl: 'https://localhost:7053', // TODO: configuration
         credentials: 'include'
     }),
+    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data'],
     endpoints: (builder) => ({
         getEvents: builder.query<any, any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} })
@@ -34,20 +35,39 @@ export const diagraphApi = createApi({
 
         getData: builder.query<GlucoseMeasurement[], any>({
             query: ({from, to}) => ({ url: 'data', params: {from, to}}),
-            async onQueryStarted(api, { dispatch, queryFulfilled }) {
+            async onQueryStarted(api, { queryFulfilled }) {
                 try {
                     await queryFulfilled;
-                    dispatch(setAuthenticated(true));
                 } catch { /* do nothing since it's already not authenticated */ }
-            }
+            },
+            providesTags: [{ type: 'Data', id: 'all' }]
+        }),
+
+        importData: builder.mutation<any, any>({
+            async queryFn(file, queryApi, extraOptions, fetch) {
+                const formData = new FormData();
+                formData.append('file', file, file.name);
+
+                const response = await fetch({
+                    url: 'data',
+                    method: 'POST',
+                    body: formData
+                });
+
+                // TODO: this bit
+                if (response.error) throw response.error;
+                return response.data ? { data: response.data } : { error: response.error };
+            },
+            invalidatesTags: [{ type: 'Data', id: 'all' }] // TODO
         }),
 
         getProfile: builder.query<Profile, undefined>({
             query: () => ({ url: 'my/profile' }),
             async onQueryStarted(api, { dispatch, queryFulfilled }) {
                 const { data } = await queryFulfilled;
-                dispatch(setProfile(data))
-            }
+                dispatch(setProfile(data ?? defaultProfile))
+            },
+            providesTags: [{ type: 'Profile', id: 'logged-in' }]
         }),
 
         updateProfile: builder.mutation<any, any>({
@@ -55,7 +75,8 @@ export const diagraphApi = createApi({
             async onQueryStarted(request, { dispatch, queryFulfilled }) {
                 await queryFulfilled;
                 dispatch(setProfile(request))
-            }
+            },
+            invalidatesTags: [{ type: 'Profile', id: 'logged-in' }]
         }),
 
         getSession: builder.query<any, any>({
@@ -67,7 +88,8 @@ export const diagraphApi = createApi({
                 } catch {
                     dispatch(setAuthenticated(false))
                 }
-            }
+            },
+            providesTags: [{ type: 'Authenticated', id: 'true' }],
         }),
 
         login: builder.mutation<any, any>({
@@ -84,7 +106,8 @@ export const diagraphApi = createApi({
                } catch {
                     dispatch(setAuthenticated(false));
                 }
-            }
+            },
+            invalidatesTags: [{ type: 'Authenticated', id: 'true' }]
         }),
 
         logout: builder.mutation<any, any>({
@@ -98,8 +121,13 @@ export const diagraphApi = createApi({
                 try {
                     await queryFulfilled;
                     dispatch(setAuthenticated(false));
+                    dispatch(setProfile(defaultProfile));
                 } catch { /* TODO */ }
-            }
+            },
+            invalidatesTags: [
+                { type: 'Profile', id: 'logged-in' },
+                { type: 'Authenticated', id: 'true' }
+            ]
         }),
 
         register: builder.mutation<any, any>({
@@ -118,6 +146,7 @@ export const {
     useCreateEventMutation,
     useUpdateEventMutation,
     useGetDataQuery,
+    useImportDataMutation,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useGetSessionQuery,

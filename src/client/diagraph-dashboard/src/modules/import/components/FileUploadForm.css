@@ -1,0 +1,11 @@
+
+
+input::-webkit-file-upload-button {
+    border: 1px;
+    border-radius: 3px;
+    padding: 5px;
+}
+
+input::-webkit-file-upload-button:hover {
+    box-shadow: rgba(194,190,193,0.58) 1px 1px 1px 1px;
+}

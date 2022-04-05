@@ -18,5 +18,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.PasswordHash).HasColumnName("password_hash");
         builder.Property(u => u.Locked).HasColumnName("locked");
         builder.Property(u => u.UnsuccsessfulLoginAttempts).HasColumnName("unsuccessful_login_attempts");
+
+        builder.HasMany<Event>().WithOne().HasForeignKey(e => e.UserId);
+        builder.HasMany<Tag>().WithOne().HasForeignKey(e => e.UserId);
+        builder.HasMany<GlucoseMeasurement>().WithOne().HasForeignKey(e => e.UserId);
+        builder.HasMany<Import>().WithOne().HasForeignKey(e => e.UserId);
     }
 }

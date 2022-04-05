@@ -12,14 +12,16 @@ namespace Diagraph.Api.Controllers;
 [Route("[controller]")]
 public class EventsController : ControllerBase
 {
+    private readonly IUserContext _userContext;
     // TODO: have a single event entity with tags, add extra data as jsonb
     private readonly DiagraphDbContext _context;
     private readonly IMapper _mapper;
 
-    public EventsController(DiagraphDbContext context, IMapper mapper)
+    public EventsController(IUserContext userContext, DiagraphDbContext context, IMapper mapper)
     {
-        _context = context;   
-        _mapper = mapper;
+        _userContext = userContext;
+        _context     = context;   
+        _mapper      = mapper;
     }
 
     [HttpGet]
@@ -31,13 +33,17 @@ public class EventsController : ControllerBase
     (
         await _context
             .Events
-            .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
+            .Where(m => m.UserId == _userContext.UserId 
+                        && m.OccurredAtUtc >= from 
+                        && m.OccurredAtUtc < to)
             .ToListAsync()
     );
     
     [HttpPost]
     public async Task<IActionResult> CreateEvent([FromBody] Event @event)
     {
+        @event.UserId = _userContext.UserId;
+        
         Event createdEvent = _context.Events.Add(@event).Entity;
         await _context.SaveChangesAsync();
 
@@ -48,7 +54,10 @@ public class EventsController : ControllerBase
     [Route("{id:int}", Name = "GetEvent")]
     public async Task<IActionResult> GetEvent([FromRoute] int id)
     {
-        Event @event = await _context.FindAsync<Event>(id);
+        Event @event = await _context
+            .Events
+            .FirstOrDefaultAsync(e => e.UserId == _userContext.UserId && e.Id == id);
+        
         return @event is null ? NotFound() : Ok(@event);
     }
 
@@ -60,7 +69,9 @@ public class EventsController : ControllerBase
         [FromBody] Event newEventData
     )
     {
-        Event @event = await _context.FindAsync<Event>(id);
+        Event @event = await _context
+            .Events
+            .FirstOrDefaultAsync(e => e.UserId == _userContext.UserId && e.Id == id);
         if (@event is null) return NotFound();
 
         _mapper.Map(newEventData, @event);
