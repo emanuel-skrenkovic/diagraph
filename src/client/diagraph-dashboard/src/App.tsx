@@ -28,8 +28,8 @@ function App() {
                     {authenticated &&
                         <NavigationBar>
                             <div className="container horizontal wide">
-                                <h1 className="item">Diagraph</h1>
                                 <div className="item">
+                                    <span><b>Diagraph</b></span>
                                     <button className="button red"
                                             style={{
                                                 width: "fit-content",

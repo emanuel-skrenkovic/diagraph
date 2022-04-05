@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Event } from 'types';
 import { RootState } from 'store';
-import { GlucoseGraph, EventForm, RecentEvents, setEvents, setData } from 'modules/graph';
 import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
+import { GlucoseGraph, EventForm, RecentEvents, setEvents, setData, setDateRange } from 'modules/graph';
 import {
     useCreateEventMutation,
     useGetEventsQuery,
@@ -13,65 +13,54 @@ import {
 
 import 'App.css';
 
-function graphDateLimits() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+function toLocalDate(dateString: string): Date {
+    const date = new Date(dateString);
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
 
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+function moveDateRange(dateRange: { from: string, to: string}, n: number) {
+    const from = new Date(dateRange.from);
+    from.setHours(0, 0, 0, 0);
+    from.setDate(from.getDate() + n);
 
-    return { today, tomorrow };
+    const to = new Date(dateRange.to);
+    to.setDate(to.getDate() + n);
+    to.setHours(0, 0, 0, 0);
+
+    return { from: toLocalISODateString(from), to: toLocalISODateString(to) };
 }
 
 export function Dashboard() {
-    const { today, tomorrow } = graphDateLimits();
+    const dateRange = useSelector((state: RootState) => state.graph.dateRange);
 
-    const [dateRange, setDateRange] = useState<{ from: Date, to: Date }>(
-        { from: today, to: tomorrow }
-    );
-
-    const events = useSelector((state: RootState) => state.graph.events);
+    const events    = useSelector((state: RootState) => state.graph.events);
     const pointData = useSelector((state: RootState) => state.graph.data);
+
+    useEffect(() => {
+    }, [dateRange]);
 
     const [createEvent] = useCreateEventMutation();
 
     const { data, error, isLoading }  = useGetDataQuery({
-        from: toLocalISODateString(dateRange.from),
-        to:   toLocalISODateString(dateRange.to)
+        from: dateRange.from,
+        to:   dateRange.to
     });
     const {
         data: eventData,
         error: eventError,
         isLoading: isEventLoading
     } = useGetEventsQuery({
-        from: toLocalISODateString(dateRange.from),
-        to:   toLocalISODateString(dateRange.to)
+        from: dateRange.from,
+        to:   dateRange.to
     });
 
     const { isLoading: isProfileLoading } = useGetProfileQuery(undefined);
 
-    function moveDateRange(n: number) {
-        const from = new Date(dateRange.from);
-        from.setHours(0, 0, 0, 0);
-        from.setDate(from.getDate() + n);
-
-        const to = new Date(dateRange.to);
-        to.setDate(to.getDate() + n);
-        to.setHours(0, 0, 0, 0);
-
-        return { from, to };
-    }
-
     const dispatch = useDispatch();
 
-    if (error) {
-        console.error(error); // TODO
-    }
-
-    if (eventError) {
-        console.error(eventError);
-    }
+    if (error)      console.error(error); // TODO
+    if (eventError) console.error(eventError);
 
     if (isLoading || isEventLoading || isProfileLoading) return <Loader />;
 
@@ -83,24 +72,26 @@ export function Dashboard() {
             <div className="container">
                 <button
                     className="button"
-                    onClick={() => setDateRange(moveDateRange(-1))}>
+                    onClick={() => dispatch(setDateRange(moveDateRange(dateRange, -1)))}>
                     &lt;
                 </button>
                 <DateRangePicker
-                    from={dateRange.from}
-                    to={dateRange.to}
-                    onSubmit={(from, to) => setDateRange({from, to})}
+                    from={toLocalDate(dateRange.from)}
+                    to={toLocalDate(dateRange.to)}
+                    onSubmit={(from, to) => dispatch(setDateRange({
+                        from: toLocalISODateString(from), to: toLocalISODateString(to)
+                    }))}
                     submitButtonText="Apply dates" />
                 <button
                     className="button"
-                    onClick={() => setDateRange(moveDateRange(1))}>
+                    onClick={() => dispatch(setDateRange(moveDateRange(dateRange, 1)))}>
                     &gt;
                 </button>
             </div>
             <div className="container">
                 <GlucoseGraph
-                    from={dateRange.from}
-                    to={dateRange.to}
+                    from={toLocalDate(dateRange.from)}
+                    to={toLocalDate(dateRange.to)}
                     points={pointData}
                     events={events} />
             </div>

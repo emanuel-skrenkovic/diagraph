@@ -25,7 +25,9 @@ export const Login = () => {
 
     return (
         <div className="container horizontal">
-            <LoginForm onSubmit={onClickLogin} />
+            <div className="container">
+                <LoginForm onSubmit={onClickLogin} />
+            </div>
             <div className="container item">
                 <span>Don't have an account</span>
                 <Link to="/register">Register</Link>

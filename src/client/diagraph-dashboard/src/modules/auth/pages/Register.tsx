@@ -12,7 +12,9 @@ export const Register = () => {
 
     return (
         <div className="container horizontal">
-            <RegisterForm onSubmit={(email, password) => register({ email, password })} />
+            <div className="container">
+                <RegisterForm onSubmit={(email, password) => register({ email, password })} />
+            </div>
             {isSuccess &&
                 <div className="item">
                     <span>{isSuccess && 'Account successfully created. Please'}</span>

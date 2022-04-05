@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Event, GlucoseMeasurement } from 'types';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
-import { setAuthenticated } from 'modules/auth';
+import { login, logout } from 'modules/auth';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',
@@ -10,7 +10,7 @@ export const diagraphApi = createApi({
         baseUrl: 'https://localhost:7053', // TODO: configuration
         credentials: 'include'
     }),
-    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data'],
+    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data', 'Graph'],
     endpoints: (builder) => ({
         getEvents: builder.query<any, any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} })
@@ -84,9 +84,11 @@ export const diagraphApi = createApi({
             async onQueryStarted(api, { dispatch, queryFulfilled }) {
                 try {
                     await queryFulfilled;
-                    dispatch(setAuthenticated(true))
+                    dispatch(login())
                 } catch {
-                    dispatch(setAuthenticated(false))
+                    // TODO: What if the account gets deleted/blocked?
+                    // Need to think about this.
+                    // dispatch(logout())
                 }
             },
             providesTags: [{ type: 'Authenticated', id: 'true' }],
@@ -102,10 +104,8 @@ export const diagraphApi = createApi({
             async onQueryStarted({ id, ...post }, { dispatch, queryFulfilled }) {
                 try {
                     await queryFulfilled;
-                    dispatch(setAuthenticated(true)); // TODO: need better way
-               } catch {
-                    dispatch(setAuthenticated(false));
-                }
+                    dispatch(login()); // TODO: need better way
+               } catch { /* Already logged out. */ }
             },
             invalidatesTags: [{ type: 'Authenticated', id: 'true' }]
         }),
@@ -120,8 +120,8 @@ export const diagraphApi = createApi({
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
                 try {
                     await queryFulfilled;
-                    dispatch(setAuthenticated(false));
-                    dispatch(setProfile(defaultProfile));
+                    dispatch(logout());
+                    // dispatch(setProfile(defaultProfile));
                 } catch { /* TODO */ }
             },
             invalidatesTags: [
