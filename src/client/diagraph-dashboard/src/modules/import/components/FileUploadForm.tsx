@@ -1,12 +1,12 @@
 import React, { useState, useRef, DragEvent, ChangeEvent, FormEvent } from 'react';
 
-import './FileUpload.css';
+import './FileUploadForm.css';
 
 export interface FileUploadProps {
     onSubmit: (file: File) => void;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({ onSubmit }) => {
+export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit }) => {
     // TODO: convert this to a form,
     // create a FileUpload page, and add pages to the
     // navigation bar - e.g. | Dashboard | | Upload |

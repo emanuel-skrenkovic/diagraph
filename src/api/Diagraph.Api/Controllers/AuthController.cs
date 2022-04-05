@@ -29,11 +29,12 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("session")]
-    public IActionResult GetSession()
+    public async Task<IActionResult> GetSession()
     {
-        if (HttpContext.User.Identity?.IsAuthenticated != true) return Forbid();
-
         IIdentity identity = HttpContext.User.Identity;
+        
+        if (identity?.IsAuthenticated != true)                             return StatusCode(403);
+        if (!await _context.Users.AnyAsync(u => u.Email == identity.Name)) return StatusCode(403);
         
         return Ok
         (
@@ -80,14 +81,8 @@ public class AuthController : ControllerBase
         }
 
         ClaimsIdentity identity = new ClaimsIdentity(AuthScheme);
-        identity.AddClaim
-        (
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-        );
-        identity.AddClaim
-        (
-            new Claim(ClaimTypes.Name, user.Email) // TODO: username
-        );
+        identity.AddClaim(new(ClaimTypes.Name, user.Email)); // TODO
+        identity.AddClaim(new(ClaimTypes.NameIdentifier, user.Id.ToString()));
         
         await HttpContext.SignInAsync(AuthScheme, new(identity));
         

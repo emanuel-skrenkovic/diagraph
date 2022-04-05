@@ -15,6 +15,7 @@ namespace Diagraph.Api.Controllers;
 [Route("[controller]")]
 public class DataController : ControllerBase
 {
+    private readonly IUserContext _userContext;
     private readonly DiagraphDbContext _context;
     private readonly IGlucoseDataParser _dataParser;
     private readonly GlucoseDataImport _dataImport;
@@ -22,16 +23,18 @@ public class DataController : ControllerBase
 
     public DataController
     (
+        IUserContext userContext,
         DiagraphDbContext context, 
         IGlucoseDataParser dataParser,
         GlucoseDataImport dataImport,
         IHashTool hashTool
     )
     {
-        _context    = context;
-        _dataParser = dataParser;
-        _dataImport = dataImport;
-        _hashTool   = hashTool;
+        _userContext = userContext;
+        _context     = context;
+        _dataParser  = dataParser;
+        _dataImport  = dataImport;
+        _hashTool    = hashTool;
     }
 
     [HttpGet]
@@ -40,7 +43,7 @@ public class DataController : ControllerBase
         (
             await _context
                 .GlucoseMeasurements
-                .Where(m => m.TakenAt >= from && m.TakenAt < to&& m.Level > 0)
+                .Where(m => m.UserId == _userContext.UserId && m.TakenAt >= from && m.TakenAt < to&& m.Level > 0)
                 .OrderBy(m => m.TakenAt)
                 .ToListAsync()
         );
@@ -60,7 +63,14 @@ public class DataController : ControllerBase
         Import import = await _dataImport.CreateAsync(measurementData);
         if (import == null) return Ok(); // No data to import
         
-        import.Hash = _hashTool.ComputeHash(data);
+        import.UserId = _userContext.UserId;
+        import.Hash   = _hashTool.ComputeHash(data);
+        // TODO: very ugly
+        import.Measurements = measurementData.Select(m =>
+        {
+            m.UserId = _userContext.UserId;
+            return m;
+        }).ToList();
         
         _context.Imports.Add(import);
         await _context.SaveChangesAsync();

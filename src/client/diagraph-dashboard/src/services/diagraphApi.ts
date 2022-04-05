@@ -10,7 +10,7 @@ export const diagraphApi = createApi({
         baseUrl: 'https://localhost:7053', // TODO: configuration
         credentials: 'include'
     }),
-    tagTypes: ['Profile', 'Events', 'Data'],
+    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data'],
     endpoints: (builder) => ({
         getEvents: builder.query<any, any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} })
@@ -35,12 +35,12 @@ export const diagraphApi = createApi({
 
         getData: builder.query<GlucoseMeasurement[], any>({
             query: ({from, to}) => ({ url: 'data', params: {from, to}}),
-            async onQueryStarted(api, { dispatch, queryFulfilled }) {
+            async onQueryStarted(api, { queryFulfilled }) {
                 try {
                     await queryFulfilled;
-                    dispatch(setAuthenticated(true));
                 } catch { /* do nothing since it's already not authenticated */ }
-            }
+            },
+            providesTags: [{ type: 'Data', id: 'all' }]
         }),
 
         importData: builder.mutation<any, any>({
@@ -88,7 +88,8 @@ export const diagraphApi = createApi({
                 } catch {
                     dispatch(setAuthenticated(false))
                 }
-            }
+            },
+            providesTags: [{ type: 'Authenticated', id: 'true' }],
         }),
 
         login: builder.mutation<any, any>({
@@ -105,7 +106,8 @@ export const diagraphApi = createApi({
                } catch {
                     dispatch(setAuthenticated(false));
                 }
-            }
+            },
+            invalidatesTags: [{ type: 'Authenticated', id: 'true' }]
         }),
 
         logout: builder.mutation<any, any>({
@@ -122,7 +124,10 @@ export const diagraphApi = createApi({
                     dispatch(setProfile(defaultProfile));
                 } catch { /* TODO */ }
             },
-            invalidatesTags: [{ type: 'Profile', id: 'logged-in' }]
+            invalidatesTags: [
+                { type: 'Profile', id: 'logged-in' },
+                { type: 'Authenticated', id: 'true' }
+            ]
         }),
 
         register: builder.mutation<any, any>({

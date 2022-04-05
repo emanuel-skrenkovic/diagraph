@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Diagraph.Api;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database;
@@ -12,6 +14,7 @@ builder.Services.AddScoped<IGlucoseDataParser, LibreViewCsvGlucoseDataParser>();
 builder.Services.AddScoped<IHashTool, Sha1HashTool>();
 builder.Services.AddScoped<GlucoseDataImport>();
 builder.Services.AddScoped<PasswordTool>();
+builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddAutoMapper(typeof(DiagraphDbContext).Assembly);
 
 // Add services to the container.
@@ -74,6 +77,25 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Needs to be after UserAuthentication.
+app.Use((context, next) =>
+{
+    if (context.User.Identity?.IsAuthenticated == true)
+    {
+        // lol
+        UserContext userContext = (UserContext) context
+            .RequestServices
+            .GetRequiredService<IUserContext>();
+        
+        userContext.UserId = Guid.Parse
+        (
+            context.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value
+        );
+    }
+    
+    return next();
+});
 
 app.MapControllers();
 
