@@ -6,5 +6,11 @@ import { useImportDataMutation } from 'services';
 
 export const Import = () => {
     const [importData, { isLoading }] = useImportDataMutation(undefined);
-    return isLoading ? <Loader /> : <FileUploadForm onSubmit={importData} />
+    return isLoading
+        ? <Loader />
+        : (
+            <div className="container">
+                <FileUploadForm onSubmit={importData} />
+            </div>
+        )
 };

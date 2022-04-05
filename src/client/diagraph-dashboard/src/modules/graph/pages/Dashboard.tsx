@@ -97,11 +97,13 @@ export function Dashboard() {
                     &gt;
                 </button>
             </div>
-            <GlucoseGraph
-                from={dateRange.from}
-                to={dateRange.to}
-                points={pointData}
-                events={events} />
+            <div className="container">
+                <GlucoseGraph
+                    from={dateRange.from}
+                    to={dateRange.to}
+                    points={pointData}
+                    events={events} />
+            </div>
             <br/>
             <div className="container">
                 <div className="item">

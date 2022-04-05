@@ -22,17 +22,13 @@ function App() {
     if (isSessionLoading || isLogoutLoading) return <Loader />;
 
     return (
-        <div className="container">
+        <div className="container wide">
             <BrowserRouter>
-                <div className="container horizontal">
+                <div className="container horizontal wide">
                     {authenticated &&
                         <NavigationBar>
-                            <div className="container horizontal" style={{width: "100%"}}>
+                            <div className="container horizontal wide">
                                 <h1 className="item">Diagraph</h1>
-                                <div className="container item">
-                                    <Link className="item" to="/">Dashboard</Link>
-                                    <Link className="item" to="/import">Import</Link>
-                                </div>
                                 <div className="item">
                                     <button className="button red"
                                             style={{
@@ -45,6 +41,10 @@ function App() {
                                         Log out
                                     </button>
                                     <span>Hello, {data?.userName}</span>
+                                </div>
+                                <div className="container wide item">
+                                    <Link className="item" to="/">Dashboard</Link>
+                                    <Link className="item" to="/import">Import</Link>
                                 </div>
                             </div>
                         </NavigationBar>
