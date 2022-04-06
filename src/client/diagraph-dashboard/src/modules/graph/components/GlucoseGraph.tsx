@@ -5,6 +5,7 @@ import { useProfile } from 'modules/profile';
 
 import { TimeChart } from 'services';
 import { Event, GlucoseMeasurement } from 'types';
+import { useWindowDimensions } from 'modules/common';
 
 import "App.css";
 
@@ -22,7 +23,7 @@ export interface GlucoseGraphProps {
 
 const MARGIN = { top: 20, bottom: 20, left: 20, right: 20 };
 const PADDING = 5;
-const WIDTH = 750 - MARGIN.left - MARGIN.right;
+// const WIDTH = 750 - MARGIN.left - MARGIN.right;
 const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
 
 function parseNumber(date: Date) {
@@ -45,6 +46,8 @@ function getMinMax(pointData: [number, number][]) {
 export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, events }) => {
     const chartElemRef = useRef<HTMLDivElement>(null);
 
+    const { width } = useWindowDimensions();
+
     const [selectedMeasurement, setSelectedMeasurement] = useState<Selected | undefined>(undefined);
     const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>(undefined);
 
@@ -61,7 +64,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
             chartElemRef.current.innerHTML = '';
         }
 
-        const chart = new TimeChart(chartElemRef, HEIGHT, WIDTH, MARGIN, PADDING);
+        const chart = new TimeChart(chartElemRef, HEIGHT, width * 0.7, MARGIN, PADDING);
 
         const { min, max } = getMinMax(pointData);
         const maxValue = max + 3;
