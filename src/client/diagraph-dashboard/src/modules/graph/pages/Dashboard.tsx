@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Event, GlucoseMeasurement } from 'types';
 import { RootState } from 'store';
+import { Event, GlucoseMeasurement } from 'types';
 import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
-import { GlucoseGraph, EventForm, RecentEvents, setDateRange } from 'modules/graph';
+import { GlucoseGraph, EventForm, RecentEvents, setDateRange, setData, setEvents } from 'modules/graph';
 import {
     useCreateEventMutation,
     useGetEventsQuery,
@@ -19,40 +19,24 @@ function toLocalDate(dateString: string): Date {
     return date;
 }
 
-function moveDateRange(dateRange: { from: string, to: string}, n: number) {
-    const from = new Date(dateRange.from);
-    from.setHours(0, 0, 0, 0);
-    from.setDate(from.getDate() + n);
-
-    const to = new Date(dateRange.to);
-    to.setDate(to.getDate() + n);
-    to.setHours(0, 0, 0, 0);
-
-    return { from: toLocalISODateString(from), to: toLocalISODateString(to) };
-}
-
 export function Dashboard() {
-    const events    = useSelector((state: RootState) => state.graph.events);
-    const pointData = useSelector((state: RootState) => state.graph.data);
-    const dateRange = useSelector((state: RootState) => state.graph.dateRange);
+    const events       = useSelector((state: RootState) => state.graph.events);
+    const measurements = useSelector((state: RootState) => state.graph.data);
+    const dateRange    = useSelector((state: RootState) => state.graph.dateRange);
 
-    const [selectedMeasurement, setSelectedMeasurement] = useState<GlucoseMeasurement | undefined>(undefined);
-    const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>(undefined);
+    const [selectedMeasurement, setSelectedMeasurement] = useState<GlucoseMeasurement | undefined>();
+    const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>();
 
     const [createEvent] = useCreateEventMutation();
-
-    const { isLoading: isDataLoading, isError: isDataError, error: dataError } = useGetDataQuery({
-        from: dateRange.from,
-        to:   dateRange.to
-    });
-    const { isLoading: isEventsLoading, isError: isEventsError, error: eventsError } = useGetEventsQuery({
-        from: dateRange.from,
-        to: dateRange.to
-    });
-
+    const { data: measurementData,
+            isLoading: isDataLoading,
+            isError: isDataError,
+            error: dataError } = useGetDataQuery({ from: dateRange.from, to: dateRange.to });
+    const { data: eventData,
+            isLoading: isEventsLoading,
+            isError: isEventsError,
+            error: eventsError } = useGetEventsQuery({ from: dateRange.from, to: dateRange.to });
     const { isLoading: isProfileLoading } = useGetProfileQuery(undefined);
-
-    useEffect(() => {}, [events, pointData]);
 
     const dispatch = useDispatch();
 
@@ -61,14 +45,12 @@ export function Dashboard() {
 
     if (isDataLoading || isEventsLoading || isProfileLoading) return <Loader />;
 
+    if (measurementData) dispatch(setData(measurementData));
+    if (eventData)       dispatch(setEvents(eventData));
+
     return (
         <div className="container horizontal">
             <div className="container">
-                <button
-                    className="button"
-                    onClick={() => dispatch(setDateRange(moveDateRange(dateRange, -1)))}>
-                    &lt;
-                </button>
                 <DateRangePicker
                     from={toLocalDate(dateRange.from)}
                     to={toLocalDate(dateRange.to)}
@@ -76,11 +58,6 @@ export function Dashboard() {
                         from: toLocalISODateString(from), to: toLocalISODateString(to)
                     }))}
                     submitButtonText="Apply dates" />
-                <button
-                    className="button"
-                    onClick={() => dispatch(setDateRange(moveDateRange(dateRange, 1)))}>
-                    &gt;
-                </button>
             </div>
             <div className="container">
                 <div>
@@ -88,7 +65,7 @@ export function Dashboard() {
                     <GlucoseGraph
                         from={toLocalDate(dateRange.from)}
                         to={toLocalDate(dateRange.to)}
-                        points={pointData}
+                        points={measurements}
                         events={events}
                         onClickEvent={setSelectedEvent}
                         onClickMeasurement={setSelectedMeasurement} />

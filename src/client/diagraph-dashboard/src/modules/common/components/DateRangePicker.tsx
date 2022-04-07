@@ -16,32 +16,57 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
         to:   toLocalISODateString(to)
     });
 
+    const moveDateRange = (n: number) => {
+        const newFrom = new Date(dateRange.from);
+        newFrom.setHours(0, 0, 0, 0);
+        newFrom.setDate(newFrom.getDate() + n);
+
+        const newTo = new Date(dateRange.to);
+        newTo.setDate(newTo.getDate() + n);
+        newTo.setHours(0, 0, 0, 0);
+
+        onSubmit(new Date(newFrom), new Date(newTo));
+    }
+
     useEffect(() => setDateRange({
             from: toLocalISODateString(from),
             to:   toLocalISODateString(to)
         }), [from, to]);
 
-    const onClickSubmit = (_: FormEvent<HTMLButtonElement>) => {
+    const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
         onSubmit(new Date(dateRange.from), new Date(dateRange.to));
     }
 
     return (
         <div className="container horizontal">
             <div className="container">
-                <div className="container horizontal">
-                    <label htmlFor="from">From</label>
-                    <input id="from"
-                           type="date"
-                           value={dateRange.from}
-                           onChange={e => setDateRange({...dateRange, from: e.currentTarget.value})}/>
+                <button
+                    className="button"
+                    onClick={() => moveDateRange(-1)}>
+                    &lt;
+                </button>
+                <div className="container">
+                    <div className="container horizontal">
+                        <label htmlFor="from">From</label>
+                        <input id="from"
+                               type="date"
+                               value={dateRange.from}
+                               onChange={e => setDateRange({...dateRange, from: e.currentTarget.value})}/>
+                    </div>
+                    <div className="container horizontal">
+                        <label htmlFor="to">To</label>
+                        <input id="to"
+                               type="date"
+                               value={dateRange.to}
+                               onChange={e => setDateRange({...dateRange, to: e.currentTarget.value})} />
+                    </div>
                 </div>
-                <div className="container horizontal">
-                    <label htmlFor="to">To</label>
-                    <input id="to"
-                           type="date"
-                           value={dateRange.to}
-                           onChange={e => setDateRange({...dateRange, to: e.currentTarget.value})} />
-                </div>
+                <button
+                    className="button"
+                    onClick={() => moveDateRange(1)}>
+                    &gt;
+                </button>
             </div>
             <button className="button item" onClick={onClickSubmit}>{submitButtonText ?? 'Submit'}</button>
         </div>

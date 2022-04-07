@@ -92,7 +92,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
         }
 
         chart.draw();
-    }, [from, to, showLowLimit, showHighLimit, showAverage, eventData, pointData, profile]);
+    }, [from, to, showLowLimit, showHighLimit, showAverage, events, points, profile]);
 
     return (
         <>
