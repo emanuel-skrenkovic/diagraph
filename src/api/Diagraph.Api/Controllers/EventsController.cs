@@ -74,7 +74,7 @@ public class EventsController : ControllerBase
             .FirstOrDefaultAsync(e => e.UserId == _userContext.UserId && e.Id == id);
         if (@event is null) return NotFound();
 
-        _mapper.Map(newEventData, @event);
+        @event = _mapper.Map(newEventData, @event);
 
         _context.Update(@event);
         await _context.SaveChangesAsync();

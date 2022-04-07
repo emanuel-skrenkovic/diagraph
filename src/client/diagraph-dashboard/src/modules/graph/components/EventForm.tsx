@@ -4,19 +4,20 @@ import { Event } from 'types';
 import 'App.css';
 
 export interface EventFormProps {
-    initialValue: Event;
+    value: Event;
     onSubmit: (e: Event) => void;
     submitButtonText?: string | undefined;
+    disabled?: boolean
 }
 
 function hoursFormat(date: Date) {
-    const hours   = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const hours   = new Date(date).getHours().toString().padStart(2, '0');
+    const minutes = new Date(date).getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
 }
 
 export function EventForm(props: EventFormProps) {
-    const [event, setEvent] = useState(props.initialValue);
+    const [event, setEvent] = useState(props.value);
     // TODO: add tags - check the store repo for an example
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
@@ -35,10 +36,13 @@ export function EventForm(props: EventFormProps) {
         setEvent({ ...event, occurredAtUtc: newOccurredAtUtc });
     };
 
+    const { disabled } = props;
+
     return (
         <form className="container horizontal box">
             <div className="item">
                 <textarea
+                    disabled={disabled}
                     id="eventText"
                     value={event.text}
                     onChange={e => setEvent({ ...event, text: e.currentTarget.value })}/>
@@ -48,12 +52,15 @@ export function EventForm(props: EventFormProps) {
                 <input
                     id="eventOccurredAt"
                     type="time"
+                    disabled={disabled}
                     value={hoursFormat(event.occurredAtUtc)}
                     onChange={onChangeTime} />
             </div>
-            <button className="submit button" onClick={onClickSubmit} type="submit">
+            {!disabled &&
+                <button className="submit button blue" onClick={onClickSubmit} type="submit">
                 {props.submitButtonText ?? 'Submit'}
             </button>
+            }
         </form>
     )
 }
