@@ -7,6 +7,7 @@ import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
 import { GlucoseGraph, EventForm, RecentEvents, setDateRange, setData, setEvents } from 'modules/graph';
 import {
     useCreateEventMutation,
+    useUpdateEventMutation,
     useGetEventsQuery,
     useGetDataQuery,
     useGetProfileQuery } from 'services';
@@ -24,18 +25,20 @@ export function Dashboard() {
     const measurements = useSelector((state: RootState) => state.graph.data);
     const dateRange    = useSelector((state: RootState) => state.graph.dateRange);
 
+    const [editing, setEditing] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<GlucoseMeasurement | undefined>();
     const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>();
 
     const [createEvent] = useCreateEventMutation();
-    const { data: measurementData,
+    const [updateEvent] = useUpdateEventMutation();
+    const { data:      measurementData,
             isLoading: isDataLoading,
-            isError: isDataError,
-            error: dataError } = useGetDataQuery({ from: dateRange.from, to: dateRange.to });
-    const { data: eventData,
+            isError:   isDataError,
+            error:     dataError } = useGetDataQuery({ from: dateRange.from, to: dateRange.to });
+    const { data:      eventData,
             isLoading: isEventsLoading,
-            isError: isEventsError,
-            error: eventsError } = useGetEventsQuery({ from: dateRange.from, to: dateRange.to });
+            isError:   isEventsError,
+            error:     eventsError } = useGetEventsQuery({ from: dateRange.from, to: dateRange.to });
     const { isLoading: isProfileLoading } = useGetProfileQuery(undefined);
 
     const dispatch = useDispatch();
@@ -85,15 +88,27 @@ export function Dashboard() {
                     </div>
                 )}
                 {selectedEvent && (
-                    <div className="container horizontal box item">
-                        <button className="button"
-                                onClick={() => setSelectedEvent(undefined)}>
-                            x
-                        </button>
-                        <label>Date: </label>
-                        <input disabled value={selectedEvent!.occurredAtUtc.toLocaleString()} />
-                        <textarea disabled value={selectedEvent!.text} />
-                    </div>
+                    <>
+                        <div className="container horizontal box">
+                            <button className="button" onClick={() => {
+                                setSelectedEvent(undefined);
+                                if (editing) setEditing(false);
+                            }}>
+                                Close
+                            </button>
+                            <button className="button" onClick={() => setEditing(!editing)}>
+                                Edit
+                            </button>
+                        </div>
+                        <EventForm
+                            value={selectedEvent}
+                            onSubmit={e => {
+                                updateEvent(e);
+                                setEditing(false);
+                            }}
+                            submitButtonText="Save"
+                            disabled={!editing} />
+                    </>
                 )}
             </div>
             <div className="container">
@@ -102,7 +117,7 @@ export function Dashboard() {
                 </div>
                 <div className="item">
                     <EventForm
-                        initialValue={{
+                        value={{
                             occurredAtUtc: new Date(),
                             text: ''
                         } as Event}

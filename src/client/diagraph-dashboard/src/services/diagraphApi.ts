@@ -12,8 +12,11 @@ export const diagraphApi = createApi({
     }),
     tagTypes: ['Authenticated', 'Profile', 'Events', 'Data', 'Graph'],
     endpoints: (builder) => ({
-        getEvents: builder.query<any, any>({
+        getEvents: builder.query<Event[], any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} }),
+            providesTags: (result) => result
+                ? [...result.map(r => ({ type: 'Events' as const, id: r.id }))]
+                : [{ type: 'Events' as const, id: 'NONE' }]
         }),
         getEvent: builder.query<any, any>({
             query: id => ({ url: `events/${id}` })
@@ -25,12 +28,13 @@ export const diagraphApi = createApi({
                 body: request
             })
         }),
-        updateEvent: builder.mutation<any, any>({
+        updateEvent: builder.mutation<any, Event>({
             query: ({ id, ...request }) => ({
                 url: `events/${id}`,
                 method: 'PUT',
                 body: request
-            })
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: 'Events' as const, id }]
         }),
 
         getData: builder.query<GlucoseMeasurement[], { from: string, to: string }>({
