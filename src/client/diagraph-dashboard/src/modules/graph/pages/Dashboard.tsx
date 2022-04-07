@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Event } from 'types';
+import { Event, GlucoseMeasurement } from 'types';
 import { RootState } from 'store';
 import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
-import { GlucoseGraph, EventForm, RecentEvents, setEvents, setData, setDateRange } from 'modules/graph';
+import { GlucoseGraph, EventForm, RecentEvents, setDateRange } from 'modules/graph';
 import {
     useCreateEventMutation,
     useGetEventsQuery,
@@ -36,32 +36,30 @@ export function Dashboard() {
     const pointData = useSelector((state: RootState) => state.graph.data);
     const dateRange = useSelector((state: RootState) => state.graph.dateRange);
 
+    const [selectedMeasurement, setSelectedMeasurement] = useState<GlucoseMeasurement | undefined>(undefined);
+    const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>(undefined);
+
     const [createEvent] = useCreateEventMutation();
 
-    const { data, error, isLoading }  = useGetDataQuery({
+    const { isLoading: isDataLoading, isError: isDataError, error: dataError } = useGetDataQuery({
         from: dateRange.from,
         to:   dateRange.to
     });
-    const {
-        data: eventData,
-        error: eventError,
-        isLoading: isEventLoading
-    } = useGetEventsQuery({
+    const { isLoading: isEventsLoading, isError: isEventsError, error: eventsError } = useGetEventsQuery({
         from: dateRange.from,
-        to:   dateRange.to
+        to: dateRange.to
     });
 
     const { isLoading: isProfileLoading } = useGetProfileQuery(undefined);
 
+    useEffect(() => {}, [events, pointData]);
+
     const dispatch = useDispatch();
 
-    if (error)      console.error(error); // TODO
-    if (eventError) console.error(eventError);
+    if (isDataError)   console.error(dataError); // TODO
+    if (isEventsError) console.error(eventsError);
 
-    if (isLoading || isEventLoading || isProfileLoading) return <Loader />;
-
-    if (data)      dispatch(setData(data));
-    if (eventData) dispatch(setEvents(eventData));
+    if (isDataLoading || isEventsLoading || isProfileLoading) return <Loader />;
 
     return (
         <div className="container horizontal">
@@ -85,13 +83,42 @@ export function Dashboard() {
                 </button>
             </div>
             <div className="container">
-                <GlucoseGraph
-                    from={toLocalDate(dateRange.from)}
-                    to={toLocalDate(dateRange.to)}
-                    points={pointData}
-                    events={events} />
+                <div>
+                    <h2>Glucose graph</h2>
+                    <GlucoseGraph
+                        from={toLocalDate(dateRange.from)}
+                        to={toLocalDate(dateRange.to)}
+                        points={pointData}
+                        events={events}
+                        onClickEvent={setSelectedEvent}
+                        onClickMeasurement={setSelectedMeasurement} />
+                </div>
             </div>
-            <br/>
+            <div className="container">
+                {selectedMeasurement && (
+                    <div className="container horizontal box item">
+                        <button className="button"
+                                onClick={() => setSelectedMeasurement(undefined)}>
+                            x
+                        </button>
+                        <label>Date: </label>
+                        <input disabled value={selectedMeasurement!.takenAt.toLocaleString()} />
+                        <label>Glucose mmol/L</label>
+                        <input disabled value={selectedMeasurement!.level} />
+                    </div>
+                )}
+                {selectedEvent && (
+                    <div className="container horizontal box item">
+                        <button className="button"
+                                onClick={() => setSelectedEvent(undefined)}>
+                            x
+                        </button>
+                        <label>Date: </label>
+                        <input disabled value={selectedEvent!.occurredAtUtc.toLocaleString()} />
+                        <textarea disabled value={selectedEvent!.text} />
+                    </div>
+                )}
+            </div>
             <div className="container">
                 <div className="item">
                     <RecentEvents events={events} pageSize={10} />

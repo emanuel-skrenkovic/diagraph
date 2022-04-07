@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Event, GlucoseMeasurement } from 'types';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
+import { setEvents, setData } from 'modules/graph';
 import { login, logout } from 'modules/auth';
 
 export const diagraphApi = createApi({
@@ -13,7 +14,11 @@ export const diagraphApi = createApi({
     tagTypes: ['Authenticated', 'Profile', 'Events', 'Data', 'Graph'],
     endpoints: (builder) => ({
         getEvents: builder.query<any, any>({
-            query: ({from, to}) => ({ url: 'events', params: {from, to} })
+            query: ({from, to}) => ({ url: 'events', params: {from, to} }),
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                const { data } = await queryFulfilled;
+                dispatch(setEvents(data))
+            }
         }),
         getEvent: builder.query<any, any>({
             query: id => ({ url: `events/${id}` })
@@ -35,9 +40,10 @@ export const diagraphApi = createApi({
 
         getData: builder.query<GlucoseMeasurement[], any>({
             query: ({from, to}) => ({ url: 'data', params: {from, to}}),
-            async onQueryStarted(api, { queryFulfilled }) {
+            async onQueryStarted(api, { queryFulfilled, dispatch }) {
                 try {
-                    await queryFulfilled;
+                    const { data } = await queryFulfilled;
+                    dispatch(setData(data));
                 } catch { /* do nothing since it's already not authenticated */ }
             },
             providesTags: [{ type: 'Data', id: 'all' }]

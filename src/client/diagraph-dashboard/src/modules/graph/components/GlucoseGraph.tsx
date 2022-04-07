@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { useProfile } from 'modules/profile';
 
@@ -9,21 +9,17 @@ import { useWindowDimensions } from 'modules/common';
 
 import "App.css";
 
-interface Selected {
-    level: number;
-    date: Date;
-}
-
 export interface GlucoseGraphProps {
     from: Date,
     to: Date,
     points: GlucoseMeasurement[];
     events: Event[];
+    onClickEvent: (event: Event) => void;
+    onClickMeasurement: (measurement: GlucoseMeasurement) => void;
 }
 
 const MARGIN = { top: 20, bottom: 20, left: 20, right: 20 };
 const PADDING = 5;
-// const WIDTH = 750 - MARGIN.left - MARGIN.right;
 const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
 
 function parseNumber(date: Date) {
@@ -43,13 +39,15 @@ function getMinMax(pointData: [number, number][]) {
     return { min: minMeasurement, max: maxMeasurement };
 }
 
-export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, events }) => {
+export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
+                                                            to,
+                                                            points,
+                                                            events,
+                                                            onClickEvent,
+                                                            onClickMeasurement }) => {
     const chartElemRef = useRef<HTMLDivElement>(null);
 
     const { width } = useWindowDimensions();
-
-    const [selectedMeasurement, setSelectedMeasurement] = useState<Selected | undefined>(undefined);
-    const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>(undefined);
 
     const [showOptions, setShowOptions] = useState(false);
     const [profile, setProfile]         = useProfile();
@@ -75,9 +73,9 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
             .yAxis([minValue, maxValue]) // TODO: think about the min value change
             .yLabel(maxValue)
             .data(pointData, (data) =>
-                setSelectedMeasurement({
-                    date: new Date(data[0] as Date),
-                    level: data[1] as number}));
+                onClickMeasurement({
+                    takenAt: new Date(data[0] as Date),
+                    level: data[1] as number } as GlucoseMeasurement));
 
         if (showLowLimit)  chart.horizontalLine(3.9, 'red');
         if (showHighLimit) chart.horizontalLine(10, 'red');
@@ -90,15 +88,14 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
         }
 
         for (const event of eventData) {
-            chart.verticalLine(event[0], 'green', () => setSelectedEvent(event[1]));
+            chart.verticalLine(event[0], 'green', () => onClickEvent(event[1]));
         }
 
         chart.draw();
     }, [from, to, showLowLimit, showHighLimit, showAverage, eventData, pointData, profile]);
 
     return (
-        <div className="item">
-            <h2>Glucose graph</h2>
+        <>
             <button className="button" onClick={() => setShowOptions(!showOptions)}>
                 {showOptions ? 'Close Options' : 'Show Options'}
             </button>
@@ -119,31 +116,6 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from, to, points, ev
                 </div>
             )}
             <div ref={chartElemRef} />
-            <div className="container">
-                {selectedMeasurement && (
-                    <div className="container horizontal box item">
-                        <button className="button"
-                                onClick={() => setSelectedMeasurement(undefined)}>
-                            x
-                        </button>
-                        <label>Date: </label>
-                        <input disabled value={selectedMeasurement!.date.toLocaleString()} />
-                        <label>Glucose mmol/L</label>
-                        <input disabled value={selectedMeasurement!.level} />
-                    </div>
-                )}
-                {selectedEvent && (
-                    <div className="container horizontal box item">
-                        <button className="button"
-                                onClick={() => setSelectedEvent(undefined)}>
-                            x
-                        </button>
-                        <label>Date: </label>
-                        <input disabled value={selectedEvent!.occurredAtUtc.toLocaleString()} />
-                        <textarea disabled value={selectedEvent!.text} />
-                    </div>
-                )}
-            </div>
-        </div>
+        </>
     );
 }
