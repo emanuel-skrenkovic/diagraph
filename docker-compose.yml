@@ -13,6 +13,16 @@ services:
     networks:
       - dg-network
 
+  dg-mailhog:
+    container_name: dg.mailhog
+    image: mailhog/mailhog
+    command: ["mailhog"]
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - dg-network
+
 networks:
   dg-network:
     name: dg-network

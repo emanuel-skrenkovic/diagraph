@@ -5,18 +5,22 @@ namespace Diagraph.Infrastructure.Email;
 
 public class EmailClient
 {
+    private readonly EmailServerConfiguration _configuration;
+
+    public EmailClient(EmailServerConfiguration configuration)
+        => _configuration = Ensure.NotNull(configuration);
+    
     public async Task SendAsync(Email email)
     {
-        using SmtpClient smtp = new SmtpClient();
+        using SmtpClient smtp = new();
         
-        await smtp.ConnectAsync("", 587, false); // TODO: configuration
+        await smtp.ConnectAsync(_configuration.Host, _configuration.Port, false); // TODO: configuration
         // await smtp.AuthenticateAsync() // TODO
 
         await smtp.SendAsync(FromEmail(email));
         await smtp.DisconnectAsync(true);
     }
 
-    // TODO: this is business logic related.
     private MimeMessage FromEmail(Email email)
     {
         MimeMessage message = new MimeMessage();

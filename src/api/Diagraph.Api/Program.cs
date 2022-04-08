@@ -3,6 +3,7 @@ using Diagraph.Api;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Email;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Parsing;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -16,6 +17,14 @@ builder.Services.AddScoped<GlucoseDataImport>();
 builder.Services.AddScoped<PasswordTool>();
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddAutoMapper(typeof(DiagraphDbContext).Assembly);
+
+builder.Services.AddSingleton(new EmailServerConfiguration
+{
+    From = builder.Configuration.GetValue<string[]>("Mailhog:From"),
+    Host = builder.Configuration["Mailhog:Host"],
+    Port = builder.Configuration.GetValue<int>("Mailhog:Port")
+});
+builder.Services.AddScoped<EmailClient>();
 
 // Add services to the container.
 builder.Services.AddDbContext<DiagraphDbContext>
