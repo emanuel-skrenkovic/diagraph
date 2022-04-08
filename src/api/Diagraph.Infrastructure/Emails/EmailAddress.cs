@@ -4,6 +4,8 @@ public class EmailAddress : ValueObject<EmailAddress>
 {
     public string Address { get; }
 
+    private EmailAddress(string emailAddress) => Address = emailAddress;
+
     public static EmailAddress Create(string emailAddress)
     {
         Ensure.NotNullOrEmpty(emailAddress);
@@ -11,8 +13,6 @@ public class EmailAddress : ValueObject<EmailAddress>
 
         return new EmailAddress(emailAddress);
     }
-
-    private EmailAddress(string emailAddress) => Address = emailAddress;
     
     protected override IEnumerable<object> GetEqualityComponents()
     {

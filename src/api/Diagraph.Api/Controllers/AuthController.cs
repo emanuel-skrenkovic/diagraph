@@ -20,11 +20,11 @@ public class AuthController : ControllerBase
 {
     private const string AuthScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     
-    private readonly DiagraphDbContext       _context;
-    private readonly PasswordTool            _passwordTool;
-    private readonly UserConfirmationService _userConfirmation;
+    private readonly DiagraphDbContext _context;
+    private readonly PasswordTool      _passwordTool;
+    private readonly UserConfirmation  _userConfirmation;
 
-    public AuthController(DiagraphDbContext context, PasswordTool passwordTool, UserConfirmationService userConfirmation)
+    public AuthController(DiagraphDbContext context, PasswordTool passwordTool, UserConfirmation userConfirmation)
     {
         _context          = context;
         _passwordTool     = passwordTool;
@@ -86,10 +86,11 @@ public class AuthController : ControllerBase
     {
         Result confirmationResult = await _userConfirmation.ValidateUserConfirmationAsync(token);
 
-        // TODO: check if correct.
-        return confirmationResult.IsOk 
-            ? Redirect("/login") 
-            : BadRequest("Failed to validate confirmation token.");
+        return confirmationResult.Match<IActionResult>
+        (
+            Ok, 
+            _ => BadRequest("Failed to validate confirmation token.")
+        );
     }
 
     [HttpPost]
@@ -114,8 +115,8 @@ public class AuthController : ControllerBase
         }
 
         ClaimsIdentity identity = new ClaimsIdentity(AuthScheme);
-        identity.AddClaim(new(ClaimTypes.Name, user.Email)); // TODO
-        identity.AddClaim(new(ClaimTypes.Email, user.Email)); // TODO
+        identity.AddClaim(new(ClaimTypes.Name, user.Email));
+        identity.AddClaim(new(ClaimTypes.Email, user.Email));
         identity.AddClaim(new(ClaimTypes.NameIdentifier, user.Id.ToString()));
         
         await HttpContext.SignInAsync(AuthScheme, new(identity));

@@ -8,22 +8,33 @@ public class EmailClient
     private readonly EmailServerConfiguration _configuration;
 
     public EmailClient(EmailServerConfiguration configuration)
-        => _configuration = Ensure.NotNull(configuration);
+        => _configuration = configuration;
     
-    public async Task SendAsync(Emails.Email email)
+    public async Task SendAsync(Email email)
     {
         using SmtpClient smtp = new();
         
-        await smtp.ConnectAsync(_configuration.Host, _configuration.Port, false); // TODO: configuration
-        // await smtp.AuthenticateAsync() // TODO
+        await smtp.ConnectAsync
+        (
+            _configuration.Host, 
+            _configuration.Port, 
+            false
+        ); // TODO: configuration
 
         await smtp.SendAsync(CreateMessage(email));
         await smtp.DisconnectAsync(true);
     }
 
-    private MimeMessage CreateMessage(Emails.Email email)
+    private MimeMessage CreateMessage(Email email)
     {
-        MimeMessage message = new MimeMessage();
+        MimeMessage message = new()
+        {
+            Subject = email.Subject,
+            Body    = new TextPart(email.IsHtml ? "html" : "plain")
+            {
+                Text = email.Body
+            }
+        };
 
         foreach (EmailAddress emailAddress in email.From)
         {
@@ -35,12 +46,6 @@ public class EmailClient
             message.To.Add(new MailboxAddress("", emailAddress.Address));
         }
 
-        message.Subject = email.Subject;
-        message.Body    = new TextPart(email.IsHtml ? "html" : "plain")
-        {
-            Text = email.Body
-        };
-        
         return message;
     }
 }

@@ -14,7 +14,7 @@ public class LibreViewCsvGlucoseDataParser : IGlucoseDataParser
 {
     private static readonly CsvConfiguration Configuration = new(CultureInfo.InvariantCulture)
     {
-        Delimiter = ",",
+        Delimiter       = ",",
         HasHeaderRecord = true
     };
     

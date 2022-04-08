@@ -15,19 +15,19 @@ namespace Diagraph.Api.Controllers;
 [Route("[controller]")]
 public class DataController : ControllerBase
 {
-    private readonly IUserContext _userContext;
-    private readonly DiagraphDbContext _context;
+    private readonly IUserContext       _userContext;
+    private readonly DiagraphDbContext  _context;
     private readonly IGlucoseDataParser _dataParser;
-    private readonly GlucoseDataImport _dataImport;
-    private readonly IHashTool _hashTool;
+    private readonly GlucoseDataImport  _dataImport;
+    private readonly IHashTool          _hashTool;
 
     public DataController
     (
-        IUserContext userContext,
-        DiagraphDbContext context, 
+        IUserContext       userContext,
+        DiagraphDbContext  context, 
         IGlucoseDataParser dataParser,
-        GlucoseDataImport dataImport,
-        IHashTool hashTool
+        GlucoseDataImport  dataImport,
+        IHashTool          hashTool
     )
     {
         _userContext = userContext;
@@ -58,19 +58,11 @@ public class DataController : ControllerBase
 
         if (await _context.Imports.AnyAsync(i => i.Hash == hash)) return Ok();
 
-        IEnumerable<GlucoseMeasurement> measurementData = _dataParser.Parse(data);
-        
-        Import import = await _dataImport.CreateAsync(measurementData);
+        Import import = await _dataImport.CreateAsync(_dataParser.Parse(data));
         if (import == null) return Ok(); // No data to import
         
-        import.UserId = _userContext.UserId;
-        import.Hash   = _hashTool.ComputeHash(data);
-        // TODO: very ugly
-        import.Measurements = measurementData.Select(m =>
-        {
-            m.UserId = _userContext.UserId;
-            return m;
-        }).ToList();
+        import.Hash = _hashTool.ComputeHash(data);
+        import.WithUser(_userContext.UserId);
         
         _context.Imports.Add(import);
         await _context.SaveChangesAsync();

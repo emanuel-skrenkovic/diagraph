@@ -7,18 +7,18 @@ using Diagraph.Infrastructure.Models;
 
 namespace Diagraph.Infrastructure.Auth;
 
-public class UserConfirmationService
+public class UserConfirmation
 {
-    private readonly EmailClient _emailClient;
+    private readonly EmailClient              _emailClient;
     private readonly EmailServerConfiguration _configuration;
 
     private readonly DiagraphDbContext _context;
 
-    public UserConfirmationService
+    public UserConfirmation
     (
-        EmailClient emailClient,
+        EmailClient              emailClient,
         EmailServerConfiguration configuration,
-        DiagraphDbContext context
+        DiagraphDbContext        context
     )
     {
         _emailClient   = emailClient;

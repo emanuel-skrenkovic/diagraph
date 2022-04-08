@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IGlucoseDataParser, LibreViewCsvGlucoseDataParser>();
 builder.Services.AddScoped<IHashTool, Sha1HashTool>();
 builder.Services.AddScoped<GlucoseDataImport>();
-builder.Services.AddScoped<UserConfirmationService>();
+builder.Services.AddScoped<UserConfirmation>();
 builder.Services.AddScoped<PasswordTool>();
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddAutoMapper(typeof(DiagraphDbContext).Assembly);

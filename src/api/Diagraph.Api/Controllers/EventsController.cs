@@ -12,10 +12,10 @@ namespace Diagraph.Api.Controllers;
 [Route("[controller]")]
 public class EventsController : ControllerBase
 {
-    private readonly IUserContext _userContext;
+    private readonly IUserContext      _userContext;
     // TODO: have a single event entity with tags, add extra data as jsonb
     private readonly DiagraphDbContext _context;
-    private readonly IMapper _mapper;
+    private readonly IMapper           _mapper;
 
     public EventsController(IUserContext userContext, DiagraphDbContext context, IMapper mapper)
     {
