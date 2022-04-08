@@ -1,7 +1,7 @@
 using System.Net.Mail;
 using Diagraph.Infrastructure.ErrorHandling;
 
-namespace Diagraph.Infrastructure.Email;
+namespace Diagraph.Infrastructure.Emails;
 
 public static class EmailValidation
 {

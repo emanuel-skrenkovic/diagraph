@@ -1,8 +1,8 @@
-namespace Diagraph.Infrastructure.Email;
+namespace Diagraph.Infrastructure.Emails;
 
 public class EmailServerConfiguration
 {
-    public IEnumerable<string> From { get; set; }
+    public string From { get; set; }
     
     public string Host { get; set; }
     

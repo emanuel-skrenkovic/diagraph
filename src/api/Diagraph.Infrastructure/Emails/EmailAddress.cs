@@ -1,4 +1,4 @@
-namespace Diagraph.Infrastructure.Email;
+namespace Diagraph.Infrastructure.Emails;
 
 public class EmailAddress : ValueObject<EmailAddress>
 {

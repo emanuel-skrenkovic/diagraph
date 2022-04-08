@@ -3,7 +3,10 @@ using System.Security.Principal;
 using Diagraph.Api.Models;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Emails;
+using Diagraph.Infrastructure.ErrorHandling;
 using Diagraph.Infrastructure.Models;
+using Diagraph.Infrastructure.Models.ValueObjects;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +19,16 @@ namespace Diagraph.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private const string AuthScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    private const string LoginFailReason = "Invalid user or password.";
     
-    private readonly DiagraphDbContext _context;
-    private readonly PasswordTool _passwordTool;
+    private readonly DiagraphDbContext       _context;
+    private readonly PasswordTool            _passwordTool;
+    private readonly UserConfirmationService _userConfirmation;
 
-    public AuthController(DiagraphDbContext context, PasswordTool passwordTool)
+    public AuthController(DiagraphDbContext context, PasswordTool passwordTool, UserConfirmationService userConfirmation)
     {
-        _context      = context;
-        _passwordTool = passwordTool;
+        _context          = context;
+        _passwordTool     = passwordTool;
+        _userConfirmation = userConfirmation;
     }
 
     [HttpGet]
@@ -53,19 +57,39 @@ public class AuthController : ControllerBase
     {
         if (await _context.Users.AnyAsync(u => u.Email == request.Email))
         {
-            return BadRequest();
+            return BadRequest(); // TODO: think about this
         }
 
-        _context.Users.Add(new()
-        {
-            Id           = Guid.NewGuid(),
-            UserName     = request.UserName,
-            Email        = request.Email,
-            PasswordHash = _passwordTool.Hash(request.Password)
-        });
+        User user = Diagraph.Infrastructure.Models.User.Create
+        (
+            EmailAddress.Create(request.Email),
+            Password.Create(request.Password),
+            _passwordTool
+        );
+        
+        _context.Users.Add(user);
         await _context.SaveChangesAsync();
-
+        
+        // TODO: read from database and send on timer, akin to outbox?
+        await _userConfirmation.SendConfirmationEmailAsync
+        (
+            user, 
+            new Uri($"{Request.Scheme}://{Request.Host}")
+        );
+        
         return Ok();
+    }
+
+    [HttpGet]
+    [Route("register/confirm")]
+    public async Task<IActionResult> ConfirmRegistration([FromQuery] string token)
+    {
+        Result confirmationResult = await _userConfirmation.ValidateUserConfirmationAsync(token);
+
+        // TODO: check if correct.
+        return confirmationResult.IsOk 
+            ? Redirect("/login") 
+            : BadRequest("Failed to validate confirmation token.");
     }
 
     [HttpPost]
@@ -73,15 +97,25 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-        if (user == null) return Unauthorized(LoginFailReason);
+        
+        if (user == null)         return Unauthorized("Invalid user or password.");
+        if (user.Locked)          return Unauthorized("User is locked.");
+        if (!user.EmailConfirmed) return Unauthorized("User email is not confirmed.");
 
         if (!_passwordTool.Compare(user.PasswordHash, request.Password))
         {
-            return Unauthorized(LoginFailReason);
+            user.Locked = ++user.UnsuccessfulLoginAttempts >= 3;
+            if (user.Locked) user.SecurityStamp = Guid.NewGuid();
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+            
+            return Unauthorized(user.Locked ? "Account has been locked." : "Invalid user or password.");
         }
 
         ClaimsIdentity identity = new ClaimsIdentity(AuthScheme);
         identity.AddClaim(new(ClaimTypes.Name, user.Email)); // TODO
+        identity.AddClaim(new(ClaimTypes.Email, user.Email)); // TODO
         identity.AddClaim(new(ClaimTypes.NameIdentifier, user.Id.ToString()));
         
         await HttpContext.SignInAsync(AuthScheme, new(identity));

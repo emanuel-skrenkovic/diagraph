@@ -1,7 +1,7 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 
-namespace Diagraph.Infrastructure.Email;
+namespace Diagraph.Infrastructure.Emails;
 
 public class EmailClient
 {
@@ -10,18 +10,18 @@ public class EmailClient
     public EmailClient(EmailServerConfiguration configuration)
         => _configuration = Ensure.NotNull(configuration);
     
-    public async Task SendAsync(Email email)
+    public async Task SendAsync(Emails.Email email)
     {
         using SmtpClient smtp = new();
         
         await smtp.ConnectAsync(_configuration.Host, _configuration.Port, false); // TODO: configuration
         // await smtp.AuthenticateAsync() // TODO
 
-        await smtp.SendAsync(FromEmail(email));
+        await smtp.SendAsync(CreateMessage(email));
         await smtp.DisconnectAsync(true);
     }
 
-    private MimeMessage FromEmail(Email email)
+    private MimeMessage CreateMessage(Emails.Email email)
     {
         MimeMessage message = new MimeMessage();
 

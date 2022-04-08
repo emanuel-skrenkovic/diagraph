@@ -89,6 +89,12 @@ public sealed class Result<T> : Result
     public T UnwrapOrDefault() => UnwrapOrDefault(default);
 
     public T UnwrapOrDefault(T defaultValue) => !TryGetValue(out T value) ? defaultValue : value;
+    
+    public T UnwrapOrElse(Func<Error, T> @else)
+    {
+        if (IsOk) return _value;
+        return @else(_error);
+    } 
 
     public T Unwrap() => Expect("Cannot unwrap Option<T> without value.");
 

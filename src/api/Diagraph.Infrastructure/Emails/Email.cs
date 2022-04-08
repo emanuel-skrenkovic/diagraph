@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace Diagraph.Infrastructure.Email;
+namespace Diagraph.Infrastructure.Emails;
 
 public class Email
 {
