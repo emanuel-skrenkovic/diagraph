@@ -17,8 +17,9 @@ export const Register = () => {
             </div>
             {isSuccess &&
                 <div className="item">
-                    <span>{isSuccess && 'Account successfully created. Please'}</span>
-                    <Link to="/login">log in.</Link>
+                    <span>{isSuccess && 'Thank you for registering, an email has been sent to your account for confirmation.'}</span>
+                    <br/>
+                    <Link to="/login">Log in.</Link>
                 </div>
             }
         </div>

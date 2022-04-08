@@ -13,11 +13,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
         
         builder.Property(u => u.Id).HasColumnName("id");
-        builder.Property(u => u.UserName).HasColumnName("username");
         builder.Property(u => u.Email).HasColumnName("email");
         builder.Property(u => u.PasswordHash).HasColumnName("password_hash");
         builder.Property(u => u.Locked).HasColumnName("locked");
-        builder.Property(u => u.UnsuccsessfulLoginAttempts).HasColumnName("unsuccessful_login_attempts");
+        builder.Property(u => u.UnsuccessfulLoginAttempts).HasColumnName("unsuccessful_login_attempts");
+        builder.Property(u => u.EmailConfirmed).HasColumnName("email_confirmed");
+        builder.Property(u => u.SecurityStamp).HasColumnName("security_stamp");
 
         builder.HasMany<Event>().WithOne().HasForeignKey(e => e.UserId);
         builder.HasMany<Tag>().WithOne().HasForeignKey(e => e.UserId);

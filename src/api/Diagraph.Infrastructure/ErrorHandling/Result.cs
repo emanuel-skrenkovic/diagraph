@@ -38,6 +38,12 @@ public class Result
     public Task<TResult> Match<TResult>(Func<Task<TResult>> ok, Func<Error, Task<TResult>> error)
         => IsOk ? ok() : error(_error);
 
+    public void UnwrapOrElse(Action<Error> @else)
+    {
+        if (IsOk) return;
+        @else(_error);
+    } 
+
     public static Result<T> Ok<T>(T value)
     {
         Ensure.NotNull(value);
@@ -83,6 +89,12 @@ public sealed class Result<T> : Result
     public T UnwrapOrDefault() => UnwrapOrDefault(default);
 
     public T UnwrapOrDefault(T defaultValue) => !TryGetValue(out T value) ? defaultValue : value;
+    
+    public T UnwrapOrElse(Func<Error, T> @else)
+    {
+        if (IsOk) return _value;
+        return @else(_error);
+    } 
 
     public T Unwrap() => Expect("Cannot unwrap Option<T> without value.");
 

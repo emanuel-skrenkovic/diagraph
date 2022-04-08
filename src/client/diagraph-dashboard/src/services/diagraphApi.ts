@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Event, GlucoseMeasurement } from 'types';
-import { setProfile, defaultProfile, Profile } from 'modules/profile';
+
 import { login, logout } from 'modules/auth';
+import { setProfile, defaultProfile, Profile } from 'modules/profile';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',

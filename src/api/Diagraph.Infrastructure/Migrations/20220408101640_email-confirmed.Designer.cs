@@ -3,6 +3,7 @@ using System;
 using Diagraph.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Infrastructure.Migrations
 {
     [DbContext(typeof(DiagraphDbContext))]
-    partial class DiagraphDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220408101640_email-confirmed")]
+    partial class emailconfirmed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,16 +225,16 @@ namespace Diagraph.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
 
-                    b.Property<Guid>("SecurityStamp")
-                        .HasColumnType("uuid")
-                        .HasColumnName("security_stamp");
-
                     b.Property<int>("UnsuccessfulLoginAttempts")
                         .HasColumnType("integer")
                         .HasColumnName("unsuccessful_login_attempts");
 
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text")
+                        .HasColumnName("username");
 
                     b.HasKey("Id");
 
