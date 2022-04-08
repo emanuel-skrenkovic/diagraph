@@ -37,6 +37,17 @@ public class Result
 
     public Task<TResult> Match<TResult>(Func<Task<TResult>> ok, Func<Error, Task<TResult>> error)
         => IsOk ? ok() : error(_error);
+    
+    public void Expect(string message)
+    {
+        if (IsError) throw new InvalidOperationException(message);
+    }
+
+    public void UnwrapOrElse(Action<Error> @else)
+    {
+        if (IsOk) return;
+        @else(_error);
+    } 
 
     public static Result<T> Ok<T>(T value)
     {
