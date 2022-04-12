@@ -10,7 +10,7 @@ public class EventTagConfiguration : IEntityTypeConfiguration<EventTag>
     {
         builder.ToTable("event_tag");
 
-        builder.HasKey(et => new { et.EventId, et.TagId });
+        builder.HasKey(et => new { et.EventId, et.Name });
         
         builder
             .Property(et => et.CreatedAtUtc)
@@ -23,16 +23,11 @@ public class EventTagConfiguration : IEntityTypeConfiguration<EventTag>
             .HasColumnType("timestamptz");
         
         builder.Property(et => et.EventId).HasColumnName("event_id");
-        builder.Property(et => et.TagId).HasColumnName("tag_id");
+        builder.Property(et => et.Name).HasColumnName("name");
 
         builder
             .HasOne<Event>()
             .WithMany(e => e.Tags)
             .HasForeignKey(et => et.EventId);
-
-        builder
-            .HasOne<Tag>()
-            .WithMany()
-            .HasForeignKey(et => et.TagId);
     }
 }
