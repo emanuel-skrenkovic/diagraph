@@ -1,4 +1,4 @@
-namespace Diagraph.Api;
+namespace Diagraph.Infrastructure;
 
 public interface IUserContext
 {

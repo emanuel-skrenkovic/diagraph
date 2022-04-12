@@ -1,3 +1,5 @@
+using Diagraph.Infrastructure;
+
 namespace Diagraph.Api;
 
 public class UserContext : IUserContext

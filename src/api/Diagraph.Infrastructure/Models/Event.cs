@@ -2,7 +2,7 @@ using Diagraph.Core.Database;
 
 namespace Diagraph.Infrastructure.Models;
 
-public class Event : DbEntity
+public class Event : DbEntity, IUserRelated
 {
     public int Id { get; set; }
     

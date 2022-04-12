@@ -1,6 +1,7 @@
 using Diagraph.Core.Extensions;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Models;
 using Diagraph.Infrastructure.Parsing;
@@ -43,7 +44,8 @@ public class DataController : ControllerBase
         (
             await _context
                 .GlucoseMeasurements
-                .Where(m => m.UserId == _userContext.UserId && m.TakenAt >= from && m.TakenAt < to&& m.Level > 0)
+                .WithUser(_userContext.UserId)
+                .Where(m => m.TakenAt >= from && m.TakenAt < to&& m.Level > 0)
                 .OrderBy(m => m.TakenAt)
                 .ToListAsync()
         );
@@ -53,6 +55,7 @@ public class DataController : ControllerBase
     {
         if (file == null) return BadRequest("TODO file null reason");
 
+        // TODO: think about moving this to separate class
         string data = await file.ReadAsync();
         string hash = _hashTool.ComputeHash(data);
 

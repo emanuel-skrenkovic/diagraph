@@ -2,7 +2,7 @@ using Diagraph.Core.Database;
 
 namespace Diagraph.Infrastructure.Models;
 
-public class Tag : DbEntity
+public class Tag : DbEntity, IUserRelated
 {
     public int Id { get; set; }
     

@@ -2,7 +2,7 @@ using Diagraph.Core.Database;
 
 namespace Diagraph.Infrastructure.Models;
 
-public class GlucoseMeasurement : DbEntity
+public class GlucoseMeasurement : DbEntity, IUserRelated
 {
     public long Id { get; set; }
     

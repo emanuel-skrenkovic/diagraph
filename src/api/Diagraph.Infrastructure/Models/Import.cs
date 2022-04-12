@@ -2,7 +2,7 @@ using Diagraph.Core.Database;
 
 namespace Diagraph.Infrastructure.Models;
 
-public class Import : DbEntity
+public class Import : DbEntity, IUserRelated
 {
     public int Id { get; set; }
     
