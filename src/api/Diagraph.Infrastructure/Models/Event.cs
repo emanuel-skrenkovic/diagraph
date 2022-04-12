@@ -19,9 +19,27 @@ public class Event : DbEntity, IUserRelated
     
     public ICollection<EventTag> Tags { get; set; }
 
-    public static Event Create(IHashTool hashTool)
+    public static Event Create
+    (
+        IHashTool             hashTool,
+        Guid                  userId,
+        string                text,
+        DateTime              occurredAtUtc,
+        IEnumerable<EventTag> tags,
+        string                customData = null
+    )
     {
-        throw new NotImplementedException();
+        Event @event = new()
+        {
+            UserId        = userId,
+            Text          = text,
+            OccurredAtUtc = occurredAtUtc,
+            CustomData    = customData,
+            Tags          = tags.ToList()
+        };
+        @event.Discriminator = @event.ComputeDiscriminator(hashTool);
+        
+        return @event;
     }
 
     public string ComputeDiscriminator(IHashTool hashTool)
