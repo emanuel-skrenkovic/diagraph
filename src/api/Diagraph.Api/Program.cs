@@ -6,11 +6,13 @@ using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Parsing;
+using Diagraph.Infrastructure.Parsing.Templates;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<IEventTemplateDataParser<CsvTemplate>, EventCsvTemplateDataParser>();
 builder.Services.AddScoped<IGlucoseDataParser, LibreViewCsvGlucoseDataParser>();
 builder.Services.AddScoped<IHashTool, Sha1HashTool>();
 builder.Services.AddScoped<GlucoseDataImport>();

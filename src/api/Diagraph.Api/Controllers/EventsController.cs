@@ -1,9 +1,13 @@
 using AutoMapper;
+using Diagraph.Api.Models;
+using Diagraph.Core.Extensions;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Models;
+using Diagraph.Infrastructure.Parsing;
+using Diagraph.Infrastructure.Parsing.Templates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,18 +25,22 @@ public class EventsController : ControllerBase
     private readonly IMapper           _mapper;
     private readonly IHashTool         _hashTool;
 
+    private readonly IEventTemplateDataParser<CsvTemplate> _dataParser;
+
     public EventsController
     (
-        IUserContext userContext, 
-        DiagraphDbContext context, 
-        IMapper mapper,
-        IHashTool hashTool
+        IUserContext                        userContext, 
+        DiagraphDbContext                   context, 
+        IMapper                             mapper,
+        IHashTool                           hashTool,
+        IEventTemplateDataParser<CsvTemplate> dataParser
     )
     {
         _userContext = userContext;
         _context     = context;   
         _mapper      = mapper;
         _hashTool    = hashTool;
+        _dataParser  = dataParser;
     }
 
     [HttpGet]
@@ -92,6 +100,59 @@ public class EventsController : ControllerBase
 
         _context.Update(@event);
         await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Route("imports/csv")]
+    public async Task<IActionResult> ImportEvents(ImportEventsRequest request)
+    {
+        if (request.File is null) return BadRequest();
+
+        ImportTemplate template = await _context
+            .Templates
+            .WithUser(_userContext.UserId)
+            .FirstOrDefaultAsync(t => t.Name == request.TemplateName);
+
+        if (template is null) return BadRequest();
+
+        List<Event> events = _dataParser
+            .Parse
+            (
+                await request.File.ReadAsync(), 
+                template.Get<CsvTemplate>()
+            )
+            .Select(e =>
+            {
+                e.UserId        = _userContext.UserId;
+                e.Discriminator = e.ComputeDiscriminator(_hashTool);
+                
+                return e;
+            }).ToList();
+
+        if (!events.Any()) return Ok();
+
+        List<DateTime> dates = events.Select(e => e.OccurredAtUtc).ToList();
+        DateTime from        = dates.Min();
+        DateTime to          = dates.Max();
+
+        List<string> discriminators = await _context
+            .Events
+            .WithUser(_userContext.UserId)
+            .Where(e => e.OccurredAtUtc >= from && e.OccurredAtUtc <= to) // TODO: think about limits
+            .Select(e => e.Discriminator)
+            .ToListAsync();
+
+        IEnumerable<Event> newEvents = events
+            .Where(e => !discriminators.Contains(e.Discriminator))
+            .ToList();
+
+        if (newEvents.Any())
+        {
+            _context.AddRange(newEvents);
+            await _context.SaveChangesAsync(); 
+        }
 
         return Ok();
     }

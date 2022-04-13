@@ -20,17 +20,17 @@ public class LibreViewCsvGlucoseDataParser : IGlucoseDataParser
     
     public IEnumerable<GlucoseMeasurement> Parse(string data)
     {
-        ArgumentNullException.ThrowIfNull(data);
+        Ensure.NotNullOrEmpty(data);
 
-        Stream dataStream         = new MemoryStream(Encoding.UTF8.GetBytes(data));
-        using StreamReader reader = new StreamReader(dataStream);
-        using CsvReader csv       = new CsvReader(reader, Configuration);
+        MemoryStream dataStream   = new(Encoding.UTF8.GetBytes(data));
+        using StreamReader reader = new(dataStream);
+        using CsvReader csv       = new(reader, Configuration);
 
         // Skip one line because of double header.
         // TODO: find a way to avoid through configuration.
         csv.Read();
         
-       return csv.GetRecords<LibreViewRow>()
+        return csv.GetRecords<LibreViewRow>()
             .Select
             (
                 record => new GlucoseMeasurement
