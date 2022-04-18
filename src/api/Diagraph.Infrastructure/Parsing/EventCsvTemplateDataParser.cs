@@ -1,8 +1,10 @@
 using System.Globalization;
 using System.Text;
+using AutoMapper;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Diagraph.Infrastructure.Models;
+using Diagraph.Infrastructure.Parsing.Language;
 using Diagraph.Infrastructure.Parsing.Templates;
 
 namespace Diagraph.Infrastructure.Parsing;
@@ -14,6 +16,11 @@ public class EventCsvTemplateDataParser : IEventTemplateDataParser<CsvTemplate>
         Delimiter       = ",",
         HasHeaderRecord = true
     };
+
+    private readonly IMapper _mapper;
+    
+    public EventCsvTemplateDataParser(IMapper mapper)
+        => _mapper = mapper;
     
     public IEnumerable<Event> Parse(string data, CsvTemplate template)
     {
@@ -28,25 +35,37 @@ public class EventCsvTemplateDataParser : IEventTemplateDataParser<CsvTemplate>
         List<Event> events = new();
         dynamic row        = csv.GetRecord<dynamic>();
         
-        // TODO: Convert to GetRecords<dynamic>().Select(...).
+        // TODO: Maybe convert to GetRecords<dynamic>().Select(...).
         while (row is not null)
         {
             var expando = (IDictionary<string, object>)row;
+            
+            foreach (HeaderMappings map in template.HeaderMappings)
+            {
+                Dictionary<string, object> eventData = new()
+                {
+                    [nameof(Event.Text)] = expando[map.Header],
+                    [nameof(Event.Tags)] = map
+                        .Tags
+                        .Select(tag => new EventTag { Name = tag })
+                        .ToList()
+                };
 
-            events = events.Concat
-            (
-                template.HeaderMappings.Select
-                (
-                    m => new Event
+                if (map.Rules?.Any() == true)
+                {
+                    TemplateLanguageParser parser = new(eventData, expando);
+                    foreach (Rule rule in map.Rules)
                     {
-                        Text = (string)expando[m.Header],
-                        Tags = m
-                            .Tags
-                            .Select(t => new EventTag { Name = t })
-                            .ToList()
+                        parser.ApplyRule
+                        (
+                            rule.Expression, 
+                            new [] { "occurredAtUtc" } // TODO: configuration?
+                        );
                     }
-                )
-            ).ToList();
+                }
+
+                events.Add(_mapper.Map<Event>(eventData));
+            }
 
             row = csv.GetRecord<dynamic>(); 
         }
