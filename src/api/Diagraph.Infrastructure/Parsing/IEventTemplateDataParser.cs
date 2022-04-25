@@ -2,7 +2,7 @@ using Diagraph.Infrastructure.Models;
 
 namespace Diagraph.Infrastructure.Parsing;
 
-public interface IEventTemplateDataParser<T>
+public interface IEventTemplateDataParser
 {
-    IEnumerable<Event> Parse(string data, T template);
+    IEnumerable<Event> Parse<T>(string data, T template);
 }

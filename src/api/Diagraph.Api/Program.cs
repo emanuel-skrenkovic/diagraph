@@ -12,7 +12,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<IEventTemplateDataParser<CsvTemplate>, EventCsvTemplateDataParser>();
+builder.Services.AddScoped<TemplateRunnerFactory>();
+builder.Services.AddScoped<IEventTemplateDataParser, EventCsvTemplateDataParser>();
 builder.Services.AddScoped<IGlucoseDataParser, LibreViewCsvGlucoseDataParser>();
 builder.Services.AddScoped<IHashTool, Sha1HashTool>();
 builder.Services.AddScoped<GlucoseDataImport>();

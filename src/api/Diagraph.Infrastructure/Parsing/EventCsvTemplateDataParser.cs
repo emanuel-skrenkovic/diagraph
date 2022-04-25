@@ -1,15 +1,13 @@
 using System.Globalization;
 using System.Text;
-using AutoMapper;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Diagraph.Infrastructure.Models;
-using Diagraph.Infrastructure.Parsing.Language;
 using Diagraph.Infrastructure.Parsing.Templates;
 
 namespace Diagraph.Infrastructure.Parsing;
 
-public class EventCsvTemplateDataParser : IEventTemplateDataParser<CsvTemplate>
+public class EventCsvTemplateDataParser : IEventTemplateDataParser
 {
     private static readonly CsvConfiguration Configuration = new(CultureInfo.InvariantCulture)
     {
@@ -17,12 +15,12 @@ public class EventCsvTemplateDataParser : IEventTemplateDataParser<CsvTemplate>
         HasHeaderRecord = true
     };
 
-    private readonly IMapper _mapper;
+    private readonly TemplateRunnerFactory _runnerFactory;
+
+    public EventCsvTemplateDataParser(TemplateRunnerFactory runnerFactory)
+        => _runnerFactory = runnerFactory;
     
-    public EventCsvTemplateDataParser(IMapper mapper)
-        => _mapper = mapper;
-    
-    public IEnumerable<Event> Parse(string data, CsvTemplate template)
+    public IEnumerable<Event> Parse<T>(string data, T template)
     {
         Ensure.NotNullOrEmpty(data);
         
@@ -34,10 +32,16 @@ public class EventCsvTemplateDataParser : IEventTemplateDataParser<CsvTemplate>
         
         List<Event> events = new();
         dynamic row        = csv.GetRecord<dynamic>();
-        
-        // TODO: Maybe convert to GetRecords<dynamic>().Select(...).
+
+        ITemplateRunner runner = _runnerFactory.FromTemplate(template);
         while (row is not null)
-        {
+        { 
+            foreach (Event @event in runner.MapRow(row))
+            {
+                events.Add(@event);
+            }
+            
+            /*
             var expando = (IDictionary<string, object>)row;
             
             foreach (HeaderMappings map in template.HeaderMappings)
@@ -66,6 +70,7 @@ public class EventCsvTemplateDataParser : IEventTemplateDataParser<CsvTemplate>
 
                 events.Add(_mapper.Map<Event>(eventData));
             }
+            */
 
             row = csv.GetRecord<dynamic>(); 
         }

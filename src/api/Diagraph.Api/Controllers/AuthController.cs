@@ -121,6 +121,11 @@ public class AuthController : ControllerBase
         
         await HttpContext.SignInAsync(AuthScheme, new(identity));
         
+        user.UnsuccessfulLoginAttempts = 0;
+        
+        _context.Update(user);
+        await _context.SaveChangesAsync();
+        
         return Ok();
     }
 

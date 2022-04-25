@@ -206,11 +206,13 @@ public class TemplateLanguageParser
                         int start = current;
                         while (Char.IsDigit(c) || Char.IsLetter(c))
                         {
-                            current++;
+                            if (++current >= expression.Length) break;
                             c = expression[current];
                         } 
                         
                         value = expression.Substring(start, current - start);
+                        
+                        current--; // oh no
                     }
                     
                     _tokens.Add(new(Symbol.Selector, value));
@@ -251,14 +253,13 @@ public class TemplateLanguageParser
                         c = expression[current];
                     }
 
-
                     _tokens.Add
                     (
                         new(Symbol.Identifier, expression.Substring(start, current - start))
                     );
                     
                     // TODO: stupid
-                    current--;
+                    if (start != current) current--;
                     break;
                 }
             }
@@ -298,8 +299,8 @@ public class TemplateLanguageParser
     }
 
     private Token PeekNext()
-        => _position + 1 > _tokens.Count 
-            ? _tokens[_tokens.Count] 
+        => _position + 1 >= _tokens.Count
+            ? _tokens[^1] 
             :_tokens[_position + 1]; 
     
     // "occurredAtUtc = @Datum.regex() + "

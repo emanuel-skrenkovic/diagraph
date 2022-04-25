@@ -14,7 +14,11 @@ public class ImportTemplate : DbEntity, IUserRelated
     
     public string Data { get; set; }
 
-    public T Get<T>() => JsonSerializer.Deserialize<T>(Data);
+    public T Get<T>() => JsonSerializer.Deserialize<T>
+    (
+        Data, 
+        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+    );
 
     public void Set<T>(T template) => Data = JsonSerializer.Serialize(template);
 }

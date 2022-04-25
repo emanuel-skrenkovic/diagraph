@@ -25,22 +25,22 @@ public class EventsController : ControllerBase
     private readonly IMapper           _mapper;
     private readonly IHashTool         _hashTool;
 
-    private readonly IEventTemplateDataParser<CsvTemplate> _dataParser;
+    private readonly IEventTemplateDataParser _dataParser;
 
     public EventsController
     (
-        IUserContext                        userContext, 
-        DiagraphDbContext                   context, 
-        IMapper                             mapper,
-        IHashTool                           hashTool,
-        IEventTemplateDataParser<CsvTemplate> dataParser
+        IUserContext             userContext, 
+        DiagraphDbContext        context, 
+        IMapper                  mapper,
+        IHashTool                hashTool,
+        IEventTemplateDataParser dataParser
     )
     {
-        _userContext = userContext;
-        _context     = context;   
-        _mapper      = mapper;
-        _hashTool    = hashTool;
-        _dataParser  = dataParser;
+        _userContext   = userContext;
+        _context       = context;   
+        _mapper        = mapper;
+        _hashTool      = hashTool;
+        _dataParser    = dataParser;
     }
 
     [HttpGet]
@@ -105,7 +105,7 @@ public class EventsController : ControllerBase
     }
 
     [HttpPost]
-    [Route("imports/csv")]
+    [Route("imports")]
     public async Task<IActionResult> ImportEvents(ImportEventsRequest request)
     {
         if (request.File is null) return BadRequest();
@@ -155,5 +155,28 @@ public class EventsController : ControllerBase
         }
 
         return Ok();
+    }
+
+    [HttpPost]
+    [Route("imports/dry-run")]
+    public async Task<IActionResult> ImportEventsDryRun(IFormFile file, [FromQuery] string templateName)
+    {
+        if (file is null) return BadRequest();
+
+        ImportTemplate template = await _context
+            .Templates
+            .WithUser(_userContext.UserId)
+            .FirstOrDefaultAsync(t => t.Name == templateName);
+
+        if (template is null) return BadRequest();
+        
+        return Ok
+        (
+            _dataParser.Parse
+            (
+                await file.ReadAsync(), 
+                template.Get<CsvTemplate>()
+            )
+        );
     }
 }

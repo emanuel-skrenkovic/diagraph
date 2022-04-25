@@ -28,7 +28,7 @@ public class ImportTemplatesController : ControllerBase
         => Ok
         (
             await _context
-                .Imports
+                .Templates
                 .WithUser(_userContext.UserId)
                 .ToListAsync()
         );
@@ -40,7 +40,7 @@ public class ImportTemplatesController : ControllerBase
         {
             UserId = _userContext.UserId,
             Name   = request.Name,
-            Data   = request.Template
+            Data   = request.Template.ToString()
         };
 
         _context.Add(template);
