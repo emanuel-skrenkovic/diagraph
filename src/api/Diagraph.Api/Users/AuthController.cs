@@ -1,10 +1,10 @@
-using System.Security.Claims;
 using System.Security.Principal;
-using Diagraph.Api.Models;
+using Diagraph.Api.Users.Models;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.ErrorHandling;
+using Diagraph.Infrastructure.Extensions;
 using Diagraph.Infrastructure.Models;
 using Diagraph.Infrastructure.Models.ValueObjects;
 using Microsoft.AspNetCore.Authentication;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Diagraph.Api.Controllers;
+namespace Diagraph.Api.Users;
 
 [ApiController]
 [Route("[controller]")]
@@ -103,29 +103,14 @@ public class AuthController : ControllerBase
         if (user.Locked)          return Unauthorized("User is locked.");
         if (!user.EmailConfirmed) return Unauthorized("User email is not confirmed.");
 
-        if (!_passwordTool.Compare(user.PasswordHash, request.Password))
-        {
-            user.Locked = ++user.UnsuccessfulLoginAttempts >= 3;
-            if (user.Locked) user.SecurityStamp = Guid.NewGuid();
+        AuthResult authResult = user.Authenticate(request.Password, _passwordTool);
 
-            _context.Update(user);
-            await _context.SaveChangesAsync();
-            
-            return Unauthorized(user.Locked ? "Account has been locked." : "Invalid user or password.");
-        }
-
-        ClaimsIdentity identity = new ClaimsIdentity(AuthScheme);
-        identity.AddClaim(new(ClaimTypes.Name, user.Email));
-        identity.AddClaim(new(ClaimTypes.Email, user.Email));
-        identity.AddClaim(new(ClaimTypes.NameIdentifier, user.Id.ToString()));
-        
-        await HttpContext.SignInAsync(AuthScheme, new(identity));
-        
-        user.UnsuccessfulLoginAttempts = 0;
-        
         _context.Update(user);
         await _context.SaveChangesAsync();
-        
+
+        if (!authResult.Authenticated) return Unauthorized(authResult.Reason);
+
+        await HttpContext.SignInUserAsync(user, AuthScheme);
         return Ok();
     }
 

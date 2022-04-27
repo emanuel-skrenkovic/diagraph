@@ -1,4 +1,4 @@
-namespace Diagraph.Api.Models;
+namespace Diagraph.Api.Templates.Models;
 
 public class ImportTemplateRequest
 {

@@ -1,5 +1,5 @@
 using AutoMapper;
-using Diagraph.Api.Models;
+using Diagraph.Api.Events.Models;
 using Diagraph.Core.Extensions;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Diagraph.Api.Controllers;
+namespace Diagraph.Api.Events;
 
 [Authorize]
 [ApiController]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Diagraph.Infrastructure.Parsing.Language;
 using Xunit;
 
-namespace Diagraph.Infrastructure.Tests;
+namespace Diagraph.Infrastructure.Tests.Templates.Unit;
 
 public class TemplateLanguageParserTests
 {

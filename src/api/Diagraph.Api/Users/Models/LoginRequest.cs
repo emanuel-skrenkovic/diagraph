@@ -1,4 +1,4 @@
-namespace Diagraph.Api.Models;
+namespace Diagraph.Api.Users.Models;
 
 public class LoginRequest
 {

@@ -5,6 +5,8 @@ using Diagraph.Infrastructure.Models.ValueObjects;
 
 namespace Diagraph.Infrastructure.Models;
 
+public record AuthResult(bool Authenticated, string Reason = null);
+
 public class User : DbEntity
 {
     public Guid Id { get; set; }
@@ -20,6 +22,31 @@ public class User : DbEntity
     public int UnsuccessfulLoginAttempts { get; set; }
     
     public bool EmailConfirmed { get; set; }
+
+    public AuthResult Authenticate(string providedPassword, PasswordTool passwordTool)
+    {
+        if (!passwordTool.Compare(PasswordHash, providedPassword))
+        {
+            Locked = ++UnsuccessfulLoginAttempts >= 3;
+
+            string reason;
+            if (Locked)
+            {
+                SecurityStamp = Guid.NewGuid();
+                reason = "Account has been locked.";
+            }
+            else
+            {
+                reason = "Invalid user or password";
+            }
+
+            return new(false, reason);
+        }
+
+        UnsuccessfulLoginAttempts = 0;
+
+        return new(true);
+    }
 
     public static User Create
     (

@@ -1,4 +1,4 @@
-using Diagraph.Api.Models;
+using Diagraph.Api.Templates.Models;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Database.Extensions;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Diagraph.Api.Controllers;
+namespace Diagraph.Api.Templates;
 
 [Authorize]
 [ApiController]
