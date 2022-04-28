@@ -4,9 +4,10 @@ import './FileUploadForm.css';
 
 export interface FileUploadProps {
     onSubmit: (file: File) => void;
+    onSelect?: (file: File) => void;
 }
 
-export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit }) => {
+export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }) => {
     // TODO: convert this to a form,
     // create a FileUpload page, and add pages to the
     // navigation bar - e.g. | Dashboard | | Upload |
@@ -25,6 +26,8 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit }) => {
 
         setSelectedFile(file);
         if (error) setError('');
+
+        if (onSelect) onSelect(file);
     };
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {

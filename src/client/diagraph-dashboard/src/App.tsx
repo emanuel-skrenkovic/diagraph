@@ -10,6 +10,7 @@ import { Dashboard } from 'modules/graph';
 import { Login, Register } from 'modules/auth';
 import { NavigationBar } from 'modules/navigation';
 import { Loader, ProtectedRoute } from 'modules/common';
+import { ImportEvents, Templates } from 'modules/import-events';
 
 import 'App.css';
 
@@ -45,6 +46,7 @@ function App() {
                                 <div className="container wide item">
                                     <Link className="item" to="/">Dashboard</Link>
                                     <Link className="item" to="/import">Import</Link>
+                                    <Link className="item" to="/import-events">Import Events</Link>
                                 </div>
                             </div>
                         </NavigationBar>
@@ -61,6 +63,16 @@ function App() {
                             <ProtectedRoute condition={authenticated} fallback="/login">
                                 <Import />
                             </ProtectedRoute>} />
+                        <Route path="import-events" element={
+                            <ProtectedRoute condition={authenticated} fallback="/login">
+                                <ImportEvents />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="templates" element={
+                            <ProtectedRoute condition={authenticated} fallback="/login">
+                                <Templates />
+                            </ProtectedRoute>
+                        } />
                     </Routes>
                 </div>
             </BrowserRouter>

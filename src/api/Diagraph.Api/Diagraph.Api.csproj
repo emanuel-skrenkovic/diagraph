@@ -13,12 +13,18 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Diagraph.Infrastructure\Diagraph.Infrastructure.csproj" />
+      <ProjectReference Include="..\Modules\Events\Modules.Events.Api\Modules.Events.Api.csproj" />
+      <ProjectReference Include="..\Modules\GlucoseData\Modules.GlucoseData.Api\Modules.GlucoseData.Api.csproj" />
+      <ProjectReference Include="..\Modules\Identity\Modules.Identity.Api\Modules.Identity.Api.csproj" />
+      <ProjectReference Include="..\Shared\Diagraph.Infrastructure\Diagraph.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="..\Shared\Diagraph.Infrastructure.Tests" />
     </ItemGroup>
 
 </Project>

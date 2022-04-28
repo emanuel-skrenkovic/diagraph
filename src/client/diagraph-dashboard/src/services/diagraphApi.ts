@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Event, GlucoseMeasurement } from 'types';
 
 import { login, logout } from 'modules/auth';
+import { ImportTemplate } from 'modules/import-events';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
 
 export const diagraphApi = createApi({
@@ -38,17 +39,34 @@ export const diagraphApi = createApi({
             invalidatesTags: (_result, _error, { id }) => [{ type: 'Events' as const, id }]
         }),
 
+        importEventsDryRun: builder.mutation<any, any>({
+            async queryFn(request, queryApi, extraOptions, fetch) {
+                const formData = new FormData();
+                formData.append('file', request.file, request.file.name);
+                formData.append('templateName', request.templateName);
+
+                const response = await fetch({
+                    url: `events/imports/dry-run?templateName=${request.templateName}`,
+                    method: 'POST',
+                    body: formData
+                });
+
+                // TODO: this bit
+                if (response.error) throw response.error;
+                return response.data ? { data: response.data } : { error: response.error };
+            }
+        }),
+
         getData: builder.query<GlucoseMeasurement[], { from: string, to: string }>({
             query: ({from, to}) => ({ url: 'data', params: {from, to}}),
         }),
-
         importData: builder.mutation<any, any>({
             async queryFn(file, queryApi, extraOptions, fetch) {
                 const formData = new FormData();
                 formData.append('file', file, file.name);
 
                 const response = await fetch({
-                    url: 'data',
+                    url: 'data/imports',
                     method: 'POST',
                     body: formData
                 });
@@ -68,7 +86,6 @@ export const diagraphApi = createApi({
             },
             providesTags: [{ type: 'Profile', id: 'logged-in' }]
         }),
-
         updateProfile: builder.mutation<any, any>({
             query: profile => ({ url: 'my/profile', method: 'PUT', body: profile }),
             async onQueryStarted(request, { dispatch, queryFulfilled }) {
@@ -76,6 +93,16 @@ export const diagraphApi = createApi({
                 dispatch(setProfile(request))
             },
             invalidatesTags: [{ type: 'Profile', id: 'logged-in' }]
+        }),
+
+        getImportTemplates: builder.query<ImportTemplate[], any>({
+            query: () => ({ url: 'import-templates', method: 'GET' })
+        }),
+        createImportTemplate: builder.mutation<any, any>({
+            query: template => ({ url: 'import-templates', method: 'POST', body: template }),
+        }),
+        updateImportTemplate: builder.mutation<any, any>({
+            query: template => ({ url: 'import-templates', method: 'PUT', body: template} )
         }),
 
         getSession: builder.query<any, any>({
@@ -108,7 +135,6 @@ export const diagraphApi = createApi({
             },
             invalidatesTags: [{ type: 'Authenticated', id: 'true' }]
         }),
-
         logout: builder.mutation<any, any>({
             query: request => ({
                 url: 'auth/logout',
@@ -124,7 +150,6 @@ export const diagraphApi = createApi({
                 } catch { /* TODO */ }
             }
         }),
-
         register: builder.mutation<any, any>({
             query: request => ({
                 url: 'auth/register',
@@ -140,10 +165,14 @@ export const {
     useGetEventsQuery,
     useCreateEventMutation,
     useUpdateEventMutation,
+    useImportEventsDryRunMutation,
     useGetDataQuery,
     useImportDataMutation,
     useGetProfileQuery,
     useUpdateProfileMutation,
+    useGetImportTemplatesQuery,
+    useCreateImportTemplateMutation,
+    useUpdateImportTemplateMutation,
     useGetSessionQuery,
     useLoginMutation,
     useLogoutMutation,

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <AssemblyName>Diagraph.Modules.Identity</AssemblyName>
+        <RootNamespace>Diagraph.Modules.Identity</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Diagraph.Infrastructure\Diagraph.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
