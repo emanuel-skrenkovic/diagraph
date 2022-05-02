@@ -3,8 +3,8 @@ using MimeKit;
 
 namespace Diagraph.Infrastructure.Emails;
 
-public class EmailClient
-{
+public class EmailClient : IEmailClient
+{ 
     private readonly EmailServerConfiguration _configuration;
 
     public EmailClient(EmailServerConfiguration configuration)

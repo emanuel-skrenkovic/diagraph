@@ -1,0 +1,17 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "DatabaseConfiguration": {
+    "ConnectionString": "User ID=postgres;Password=postgres;Server=localhost;Port=54323;Database=diagraph;Integrated Security=true;Pooling=true;",
+    "MigrationsAssembly": "Diagraph.Modules.Identity"
+  },
+  "Mailhog": {
+    "From": "noreply@diagraph.com",
+    "Host": "localhost",
+    "Port": 1025
+  }
+}

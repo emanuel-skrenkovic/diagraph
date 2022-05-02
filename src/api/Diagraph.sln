@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Events.Tests", "Mod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.GlucoseData.Tests", "Modules\GlucoseData\Modules.GlucoseData.Tests\Modules.GlucoseData.Tests.csproj", "{1A38B2D9-6708-4BF6-8850-E80B2636C0B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Identity.Tests", "Modules\Identity\Modules.Identity.Tests\Modules.Identity.Tests.csproj", "{305E412C-6C5F-4B06-96D3-C6F15E07D4E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,10 @@ Global
 		{1A38B2D9-6708-4BF6-8850-E80B2636C0B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A38B2D9-6708-4BF6-8850-E80B2636C0B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A38B2D9-6708-4BF6-8850-E80B2636C0B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{305E412C-6C5F-4B06-96D3-C6F15E07D4E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{305E412C-6C5F-4B06-96D3-C6F15E07D4E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{305E412C-6C5F-4B06-96D3-C6F15E07D4E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{305E412C-6C5F-4B06-96D3-C6F15E07D4E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{31878518-11DB-4324-8942-3796FD4C67ED} = {B5B1936C-9D6A-4681-8CE2-4454968C6116}
@@ -97,5 +103,6 @@ Global
 		{DBCDA446-2EF1-4A51-8A66-EFFBE3CE60F9} = {B38E44F9-4C6C-4253-9ED7-567BC5B6233D}
 		{DD977F66-C955-4C30-B656-2ACCB027EB76} = {339D4904-1D45-4EFD-9C32-DAF1272E1E0D}
 		{1A38B2D9-6708-4BF6-8850-E80B2636C0B0} = {BFC0F272-9D63-4006-9450-2D8CDB4C363B}
+		{305E412C-6C5F-4B06-96D3-C6F15E07D4E9} = {B38E44F9-4C6C-4253-9ED7-567BC5B6233D}
 	EndGlobalSection
 EndGlobal

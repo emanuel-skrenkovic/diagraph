@@ -6,7 +6,7 @@
     }
   },
   "DatabaseConfiguration": {
-    "ConnectionString": "User ID=postgres;Password=postgres;Server=localhost;Port=54322;Database=diagraph;Integrated Security=true;Pooling=true;",
+    "ConnectionString": "User ID=postgres;Password=postgres;Server=localhost;Port=54321;Database=diagraph;Integrated Security=true;Pooling=true;",
     "MigrationsAssembly": "Diagraph.Modules.Events"
   }
 }

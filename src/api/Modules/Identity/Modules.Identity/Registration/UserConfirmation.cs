@@ -9,14 +9,14 @@ namespace Diagraph.Modules.Identity.Registration;
 
 public class UserConfirmation
 {
-    private readonly EmailClient              _emailClient;
+    private readonly IEmailClient             _emailClient;
     private readonly EmailServerConfiguration _configuration;
 
     private readonly IdentityDbContext _context;
 
     public UserConfirmation
     (
-        EmailClient              emailClient,
+        IEmailClient             emailClient,
         EmailServerConfiguration configuration,
         IdentityDbContext        context
     )

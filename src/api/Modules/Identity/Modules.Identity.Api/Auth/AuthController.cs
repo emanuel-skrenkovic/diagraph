@@ -61,7 +61,9 @@ public class AuthController : ControllerBase
     {
         if (await _context.Users.AnyAsync(u => u.Email == command.Email))
         {
-            return BadRequest(); // TODO: think about this
+            // Just return ok if the user already exists. If it's a valid request,
+            // the user will check their email.
+            return Ok();
         }
 
         User user = Diagraph.Modules.Identity.User.Create

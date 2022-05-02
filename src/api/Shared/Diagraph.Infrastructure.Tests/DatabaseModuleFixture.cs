@@ -20,7 +20,7 @@ public class DatabaseModuleFixture<TContext> : IAsyncLifetime where TContext : D
  
      public HttpClient Client => _webApplicationFactory.CreateClient();
  
-     public DatabaseModuleFixture(string moduleName)
+     public DatabaseModuleFixture(string moduleName, Action<IServiceCollection> configureServices = null)
      {
          IConfiguration configuration = new ConfigurationManager()
              .AddJsonFile($"module.{moduleName}.integration-test.json")
@@ -42,6 +42,8 @@ public class DatabaseModuleFixture<TContext> : IAsyncLifetime where TContext : D
                          options.DefaultAuthenticateScheme = TestAuthenticationHandler.AuthScheme;
                          options.DefaultChallengeScheme    = TestAuthenticationHandler.AuthScheme;
                      }).AddTestAuth(_ => { });
+
+                     configureServices?.Invoke(services);
                  });
              });
          

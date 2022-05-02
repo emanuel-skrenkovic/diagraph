@@ -36,7 +36,7 @@ public class IdentityModule : Module
             Host = configuration["Mailhog:Host"],
             Port = configuration.GetValue<int>("Mailhog:Port")
         });
-        services.AddScoped<EmailClient>();
+        services.AddScoped<IEmailClient, EmailClient>();
 
         services.AddScoped<PasswordTool>();
         services.AddScoped<IHashTool, Sha256HashTool>();
