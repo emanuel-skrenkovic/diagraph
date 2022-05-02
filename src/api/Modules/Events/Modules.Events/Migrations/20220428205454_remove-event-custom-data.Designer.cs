@@ -3,6 +3,7 @@ using System;
 using Diagraph.Modules.Events.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Modules.Events.Migrations
 {
     [DbContext(typeof(EventsDbContext))]
-    partial class EventsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220428205454_remove-event-custom-data")]
+    partial class removeeventcustomdata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,7 +34,7 @@ namespace Diagraph.Modules.Events.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamptz")
+                        .HasColumnType("timestamp")
                         .HasColumnName("created_at_utc");
 
                     b.Property<string>("Data")
@@ -44,7 +46,7 @@ namespace Diagraph.Modules.Events.Migrations
                         .HasColumnName("name");
 
                     b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("timestamptz")
+                        .HasColumnType("timestamp")
                         .HasColumnName("updated_at_utc");
 
                     b.Property<Guid>("UserId")

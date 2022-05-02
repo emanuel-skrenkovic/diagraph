@@ -29,20 +29,16 @@ public class EventCsvTemplateDataParser : IEventTemplateDataParser
         using StreamReader reader = new(dataStream);
         using CsvReader csv       = new(reader, Configuration);
 
-        csv.Read();
-        
         List<Event> events = new();
-        dynamic row        = csv.GetRecord<dynamic>();
 
         ITemplateRunner runner = _runnerFactory.FromTemplate(template);
-        while (row is not null)
-        { 
+        while (csv.Read())
+        {
+            dynamic row = csv.GetRecord<dynamic>();
             foreach (Event @event in runner.MapRow(row))
             {
                 events.Add(@event);
             }
-
-            row = csv.GetRecord<dynamic>(); 
         }
 
         return events;

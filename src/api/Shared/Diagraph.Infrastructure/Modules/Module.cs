@@ -11,6 +11,11 @@ public abstract class Module
     {
         RegisterServices(LoadConfiguration(environment), services);
     }
+
+    public void Load(IServiceCollection services, IConfiguration configuration)
+    {
+        RegisterServices(configuration, services);
+    }
     
     protected IConfiguration LoadConfiguration(string environment = null)
     {
@@ -20,7 +25,9 @@ public abstract class Module
 
         string path = AppDomain.CurrentDomain.BaseDirectory;
         
-        return new ConfigurationManager().AddJsonFile($"{path}/{configurationFile}").Build();
+        return new ConfigurationManager()
+            .AddJsonFile($"{path}/{configurationFile}", optional: true)
+            .Build();
     }
     
     protected abstract void RegisterServices(IConfiguration configuration, IServiceCollection services);

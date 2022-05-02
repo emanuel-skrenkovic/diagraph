@@ -3,7 +3,6 @@ using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Events.Api;
 using Diagraph.Modules.GlucoseData.Api;
 using Diagraph.Modules.Identity.Api;
-using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +14,7 @@ builder.Services.LoadModule<EventsModule>(env);
 builder.Services.AddScoped<IUserContext, UserContext>();
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

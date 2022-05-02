@@ -1,5 +1,7 @@
+using AutoMapper;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database.Extensions;
+using Diagraph.Modules.Events.Api.DataImports.Commands;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +15,13 @@ namespace Diagraph.Modules.Events.Api.DataImports;
 [Route("events/import-templates")]
 public class ImportTemplatesController : ControllerBase
 {
+    private readonly IMapper         _mapper;
     private readonly EventsDbContext _context;
-    private readonly IUserContext      _userContext;
+    private readonly IUserContext    _userContext;
  
-    public ImportTemplatesController(EventsDbContext context, IUserContext userContext)
+    public ImportTemplatesController(IMapper mapper, EventsDbContext context, IUserContext userContext)
     {
+        _mapper      = mapper;
         _context     = context;
         _userContext = userContext;
     }
@@ -33,18 +37,24 @@ public class ImportTemplatesController : ControllerBase
         );
 
     [HttpPost]
-    public async Task<IActionResult> CreateImportTemplate(ImportTemplate command)
+    public async Task<IActionResult> CreateImportTemplate(CreateImportTemplateCommand command)
     {
-        command.UserId = _userContext.UserId;
+        ImportTemplate template = _mapper.Map<ImportTemplate>(command);
+        template.UserId = _userContext.UserId;
         
-        ImportTemplate newTemplate = _context.Add(command).Entity;
+        ImportTemplate newTemplate = _context.Add(template).Entity;
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetImportTemplate", new { id = newTemplate.Id }, null);
+        return CreatedAtAction
+        (
+            "GetImportTemplate",
+            new { id = newTemplate.Id }, 
+            null
+        );
     }
 
     [HttpGet]
-    [Route("{id}")]
+    [Route("{id}", Name="GetImportTemplate")]
     public async Task<IActionResult> GetImportTemplate([FromRoute] int id)
     {
         ImportTemplate template = await _context
@@ -59,14 +69,18 @@ public class ImportTemplatesController : ControllerBase
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<IActionResult> UpdateImportTemplate([FromRoute] int id, ImportTemplate command)
+    public async Task<IActionResult> UpdateImportTemplate
+    (
+        [FromRoute] int id, 
+        [FromBody] UpdateImportTemplateCommand command
+    )
     {
-        if (!await _context.Templates.AnyAsync(t => t.Id == id))
-        {
-            return NotFound();
-        }
-        
-        _context.Update(command);
+        ImportTemplate template = await _context.FindAsync<ImportTemplate>(id);
+        if (template is null) return NotFound();
+
+        _mapper.Map(command, template);
+            
+        _context.Update(template);
         await _context.SaveChangesAsync();
 
         return Ok();

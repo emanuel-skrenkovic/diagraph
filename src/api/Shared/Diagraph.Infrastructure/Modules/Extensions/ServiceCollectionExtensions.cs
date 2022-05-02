@@ -1,4 +1,6 @@
+using Diagraph.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Diagraph.Infrastructure.Modules.Extensions;
@@ -16,6 +18,18 @@ public static class ServiceCollectionExtensions
         module.Load(services, environment); // TODO: fix
         return services;
     }
+    
+    public static IServiceCollection LoadModule<T>
+    (
+        this IServiceCollection services, 
+        IConfiguration configuration
+    )
+        where T: Module, new()
+    {
+        T module = new();
+        module.Load(services, configuration);
+        return services;
+    }
 
     public static IServiceCollection Clone(this IServiceCollection services)
     {
@@ -30,18 +44,17 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPostgres<TContext>
     (
         this IServiceCollection services,
-        string connectionString,
-        string migrationsAssembly = null
+        DatabaseConfiguration configuration
     ) where TContext : DbContext
     {
          services.AddDbContext<TContext>
          (
              options => options.UseNpgsql
              (
-                 connectionString,
-                 migrationsAssembly is null 
+                 configuration.ConnectionString,
+                 configuration.MigrationsAssembly is null 
                      ? _ => {} 
-                     : b => b.MigrationsAssembly(migrationsAssembly)
+                     : b => b.MigrationsAssembly(configuration.MigrationsAssembly)
              )
          );
 

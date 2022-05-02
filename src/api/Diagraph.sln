@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Identity", "Modules
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Identity.Api", "Modules\Identity\Modules.Identity.Api\Modules.Identity.Api.csproj", "{DBCDA446-2EF1-4A51-8A66-EFFBE3CE60F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Events.Tests", "Modules\Events\Modules.Events.Tests\Modules.Events.Tests.csproj", "{DD977F66-C955-4C30-B656-2ACCB027EB76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{DBCDA446-2EF1-4A51-8A66-EFFBE3CE60F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBCDA446-2EF1-4A51-8A66-EFFBE3CE60F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBCDA446-2EF1-4A51-8A66-EFFBE3CE60F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD977F66-C955-4C30-B656-2ACCB027EB76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD977F66-C955-4C30-B656-2ACCB027EB76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD977F66-C955-4C30-B656-2ACCB027EB76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD977F66-C955-4C30-B656-2ACCB027EB76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{31878518-11DB-4324-8942-3796FD4C67ED} = {B5B1936C-9D6A-4681-8CE2-4454968C6116}
@@ -83,5 +89,6 @@ Global
 		{B38E44F9-4C6C-4253-9ED7-567BC5B6233D} = {3D09EA05-2C5D-49D4-BECC-4671771A642B}
 		{DCDD2578-3B21-4159-872C-C4B4637FD1D7} = {B38E44F9-4C6C-4253-9ED7-567BC5B6233D}
 		{DBCDA446-2EF1-4A51-8A66-EFFBE3CE60F9} = {B38E44F9-4C6C-4253-9ED7-567BC5B6233D}
+		{DD977F66-C955-4C30-B656-2ACCB027EB76} = {339D4904-1D45-4EFD-9C32-DAF1272E1E0D}
 	EndGlobalSection
 EndGlobal

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Diagraph.Infrastructure.Parsing.Language;
+using Diagraph.Modules.Events.DataImports.Csv;
 using Xunit;
 
-namespace Diagraph.Infrastructure.Tests.Templates.Unit;
+namespace Diagraph.Modules.Events.Tests.Unit;
 
 public class TemplateLanguageParserTests
 {
@@ -127,7 +127,7 @@ public class TemplateLanguageParserTests
     }
 
     [Fact]
-    public void Throws_Exception_When_Mapping_Unallowed_Field()
+    public void Throws_Exception_When_Mapping_UnAllowed_Field()
     {
         const string eventField = "not-allowed";
          

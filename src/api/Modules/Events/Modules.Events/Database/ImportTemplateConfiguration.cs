@@ -19,12 +19,12 @@ public class ImportTemplateConfiguration : IEntityTypeConfiguration<ImportTempla
         builder
             .Property(t => t.CreatedAtUtc)
             .HasColumnName("created_at_utc")
-            .HasColumnType("timestamp");
+            .HasColumnType("timestamptz");
         
         builder
             .Property(t => t.UpdatedAtUtc)
             .HasColumnName("updated_at_utc")
-            .HasColumnType("timestamp");
+            .HasColumnType("timestamptz");
 
         builder.Property(t => t.Name).HasColumnName("name");
         builder

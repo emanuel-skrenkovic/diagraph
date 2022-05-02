@@ -1,3 +1,4 @@
+using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
@@ -16,8 +17,9 @@ public class GlucoseDataModule : Module
     {
         services.AddPostgres<GlucoseDataDbContext>
         (
-            configuration["Postgres:ConnectionString"],
-            "Diagraph.Modules.GlucoseData"
+            configuration
+                .GetSection(DatabaseConfiguration.SectionName)
+                .Get<DatabaseConfiguration>()
         );
         
         services.AddScoped<IGlucoseDataParser, LibreViewCsvGlucoseDataParser>();

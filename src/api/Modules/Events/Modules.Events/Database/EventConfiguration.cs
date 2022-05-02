@@ -33,10 +33,5 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .Property(e => e.OccurredAtUtc)
             .HasColumnName("occurred_at_utc")
             .HasColumnType("timestamptz");
-
-        builder
-            .Property(e => e.CustomData)
-            .HasColumnName("custom_data")
-            .HasColumnType("jsonb");
     }
 }

@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="..\Shared\Diagraph.Infrastructure.Tests" />
+        <InternalsVisibleTo Include="Diagraph.Modules.Events.Tests" />
     </ItemGroup>
 
 </Project>

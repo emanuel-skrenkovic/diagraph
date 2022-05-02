@@ -1,3 +1,4 @@
+using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Modules;
@@ -24,8 +25,9 @@ public class IdentityModule : Module
         
         services.AddPostgres<IdentityDbContext>
         (
-            configuration["Postgres:ConnectionString"],
-            "Diagraph.Modules.Identity"
+            configuration
+                .GetSection(DatabaseConfiguration.SectionName)
+                .Get<DatabaseConfiguration>()
         );
         
         services.AddSingleton(new EmailServerConfiguration

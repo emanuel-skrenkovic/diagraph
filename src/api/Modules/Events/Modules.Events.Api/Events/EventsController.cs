@@ -2,6 +2,7 @@ using AutoMapper;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Hashing;
+using Diagraph.Modules.Events.Api.Events.Commands;
 using Diagraph.Modules.Events.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,19 +49,25 @@ public class EventsController : ControllerBase
     );
     
     [HttpPost]
-    public async Task<IActionResult> CreateEvent([FromBody] Event @event)
+    public async Task<IActionResult> CreateEvent([FromBody] CreateEventCommand command)
     {
+        Event @event         = _mapper.Map<Event>(command);
         @event.UserId        = _userContext.UserId;
         @event.Discriminator = @event.ComputeDiscriminator(_hashTool);
         
         Event createdEvent = _context.Events.Add(@event).Entity;
         await _context.SaveChangesAsync();
 
-        return CreatedAtRoute("GetEvent", new { id = createdEvent.Id }, null);
+        return CreatedAtRoute
+        (
+            "GetEvent", 
+            new { id = createdEvent.Id }, 
+            null
+        );
     }
 
     [HttpGet]
-    [Route("{id:int}", Name = "GetEvent")]
+    [Route("{id:int}", Name="GetEvent")]
     public async Task<IActionResult> GetEvent([FromRoute] int id)
     {
         Event @event = await _context
@@ -76,16 +83,17 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> UpdateEvent
     (
         [FromRoute] int id, 
-        [FromBody] Event newEventData
+        [FromBody] UpdateEventCommand request 
     )
     {
         Event @event = await _context
             .Events
+            .Include(nameof(Event.Tags))
             .WithUser(_userContext.UserId)
             .FirstOrDefaultAsync(e => e.Id == id);
         if (@event is null) return NotFound();
 
-        @event               = _mapper.Map(newEventData, @event);
+        _mapper.Map(request, @event);
         @event.Discriminator = @event.ComputeDiscriminator(_hashTool);
 
         _context.Update(@event);

@@ -8,7 +8,6 @@ using Diagraph.Modules.Events.DataImports;
 using Diagraph.Modules.Events.DataImports.Contracts;
 using Diagraph.Modules.Events.DataImports.Csv;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,7 +38,7 @@ public class EventsDataImportController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> ImportEvents(ImportEventsCommand command)
+    public async Task<IActionResult> ImportEvents([FromForm] ImportEventsCommand command)
     {
         if (command.File is null) return BadRequest();
 
@@ -92,14 +91,14 @@ public class EventsDataImportController : ControllerBase
 
     [HttpPost]
     [Route("dry-run")]
-    public async Task<IActionResult> ImportEventsDryRun(IFormFile file, [FromQuery] string templateName) // TODO: consolidate with actual request.
+    public async Task<IActionResult> ImportEventsDryRun([FromForm] ImportEventsCommand command)
     {
-        if (file is null) return BadRequest();
+        if (command.File is null) return BadRequest();
 
         ImportTemplate template = await _context
             .Templates
             .WithUser(_userContext.UserId)
-            .FirstOrDefaultAsync(t => t.Name == templateName);
+            .FirstOrDefaultAsync(t => t.Name == command.TemplateName);
 
         if (template is null) return BadRequest();
         
@@ -107,7 +106,7 @@ public class EventsDataImportController : ControllerBase
         (
             _dataParser.Parse
             (
-                await file.ReadAsync(), 
+                await command.File.ReadAsync(), 
                 template.Get<CsvTemplate>()
             )
         );

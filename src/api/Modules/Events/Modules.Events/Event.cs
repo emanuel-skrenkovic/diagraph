@@ -16,8 +16,6 @@ public class Event : DbEntity, IUserRelated
     
     public DateTime OccurredAtUtc { get; set; }
     
-    public string CustomData { get; set; }
-    
     public ICollection<EventTag> Tags { get; set; }
 
     public static Event Create
@@ -26,8 +24,7 @@ public class Event : DbEntity, IUserRelated
         Guid                  userId,
         string                text,
         DateTime              occurredAtUtc,
-        IEnumerable<EventTag> tags,
-        string                customData = null
+        IEnumerable<EventTag> tags
     )
     {
         Event @event = new()
@@ -35,7 +32,6 @@ public class Event : DbEntity, IUserRelated
             UserId        = userId,
             Text          = text,
             OccurredAtUtc = occurredAtUtc,
-            CustomData    = customData,
             Tags          = tags.ToList()
         };
         @event.Discriminator = @event.ComputeDiscriminator(hashTool);

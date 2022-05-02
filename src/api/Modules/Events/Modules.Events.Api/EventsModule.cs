@@ -1,5 +1,7 @@
+using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
+using Diagraph.Modules.Events.Api.AutoMapper;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports.Contracts;
 using Diagraph.Modules.Events.DataImports.Csv;
@@ -15,12 +17,13 @@ public class EventsModule : Module
     
     protected override void RegisterServices(IConfiguration configuration, IServiceCollection services)
     {
-        services.AddAutoMapper(typeof(EventsDbContext).Assembly);
+        services.AddAutoMapper(typeof(EventsAutoMapperProfile));
         
         services.AddPostgres<EventsDbContext>
         (
-            configuration["Postgres:ConnectionString"],
-            "Diagraph.Modules.Events"
+            configuration
+                .GetSection(DatabaseConfiguration.SectionName)
+                .Get<DatabaseConfiguration>()
         );
 
         services.AddScoped<TemplateRunnerFactory>();
