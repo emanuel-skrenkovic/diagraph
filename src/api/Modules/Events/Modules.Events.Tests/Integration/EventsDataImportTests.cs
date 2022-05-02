@@ -52,9 +52,9 @@ public class EventsDataImportTests
     [Fact]
     public async Task Dry_Run_Does_Not_Create_Events()
     {
+        // Arrange
         await _fixture.Postgres.CleanAsync();
         
-        // Arrange
         const string templateName = "Integration-Test-Template";
         await InsertTemplate(templateName);
         HttpContent content = EventDataImportContent(templateName);
