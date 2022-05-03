@@ -46,7 +46,7 @@ export const diagraphApi = createApi({
                 formData.append('templateName', request.templateName);
 
                 const response = await fetch({
-                    url: `events/imports/dry-run?templateName=${request.templateName}`,
+                    url: `events/data-import/dry-run`,
                     method: 'POST',
                     body: formData
                 });
@@ -96,13 +96,13 @@ export const diagraphApi = createApi({
         }),
 
         getImportTemplates: builder.query<ImportTemplate[], any>({
-            query: () => ({ url: 'import-templates', method: 'GET' })
+            query: () => ({ url: 'events/import-templates', method: 'GET' })
         }),
         createImportTemplate: builder.mutation<any, any>({
-            query: template => ({ url: 'import-templates', method: 'POST', body: template }),
+            query: template => ({ url: 'events/import-templates', method: 'POST', body: template }),
         }),
         updateImportTemplate: builder.mutation<any, any>({
-            query: template => ({ url: 'import-templates', method: 'PUT', body: template} )
+            query: template => ({ url: 'events/import-templates', method: 'PUT', body: template} )
         }),
 
         getSession: builder.query<any, any>({
@@ -161,7 +161,7 @@ export const diagraphApi = createApi({
 });
 
 export const {
-    useGetEventQuery,
+    // useGetEventQuery,
     useGetEventsQuery,
     useCreateEventMutation,
     useUpdateEventMutation,
@@ -172,7 +172,7 @@ export const {
     useUpdateProfileMutation,
     useGetImportTemplatesQuery,
     useCreateImportTemplateMutation,
-    useUpdateImportTemplateMutation,
+    // useUpdateImportTemplateMutation,
     useGetSessionQuery,
     useLoginMutation,
     useLogoutMutation,
