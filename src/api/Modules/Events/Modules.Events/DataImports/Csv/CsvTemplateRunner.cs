@@ -1,6 +1,5 @@
 using AutoMapper;
 using Diagraph.Modules.Events.DataImports.Contracts;
-using Diagraph.Modules.Events.DataImports.Templates;
 
 namespace Diagraph.Modules.Events.DataImports.Csv;
 
@@ -14,13 +13,11 @@ public class CsvTemplateRunner : ITemplateRunner
         _mapper   = mapper;
         _template = template;
     }
-    
+
     public IEnumerable<Event> MapRow(dynamic row)
     {
-        List<Event> events = new();
-
         var expando = (IDictionary<string, object>)row;
-        
+
         foreach (HeaderMappings map in _template.HeaderMappings)
         {
             Dictionary<string, object> eventData = new()
@@ -44,10 +41,8 @@ public class CsvTemplateRunner : ITemplateRunner
                     );
                 }
             }
-            
-            events.Add(_mapper.Map<Event>(eventData));
-        }
 
-        return events;
-    } 
+            yield return _mapper.Map<Event>(eventData);
+        }
+    }
 }

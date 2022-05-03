@@ -8,5 +8,5 @@ public class CreateImportTemplateCommand
      public string Name { get; set; }
      
      [Required]
-     public string Data { get; set; }
+     public dynamic Data { get; set; }
 }
