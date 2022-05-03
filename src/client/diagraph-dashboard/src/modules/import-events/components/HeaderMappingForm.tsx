@@ -15,6 +15,7 @@ const DEFAULT_TEMPLATE = {
 };
 
 export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ initial, onSubmit }) => {
+    const [tags, setTags] = useState<string[]>([]);
     const [editingRuleId, setEditingRuleId] = useState<string | undefined>(undefined);
     const [template, setTemplate] = useState<TemplateHeaderMapping>(initial ?? DEFAULT_TEMPLATE);
 
@@ -57,18 +58,20 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ initial, o
 
     return (
         <form className="container horizontal box">
-            <label htmlFor="headerName">Header</label>
-            <input id="headerName"
-                   type="text"
-                   value={template.header}
-                   onChange={e => setTemplate({ ...template, header: e.currentTarget.value })}/>
             <div className="container horizontal">
+                <div className="item">
+                    <label htmlFor="headerName">Header</label>
+                    <input id="headerName"
+                           type="text"
+                           value={template.header}
+                           onChange={e => setTemplate({ ...template, header: e.currentTarget.value })}/>
+                </div>
                 <div className="item">
                     <label>Rules</label>
                     <table>
                         <thead>
                         <tr>
-                            <th>Expression</th>
+                            <th></th>
                             <th></th>
                         </tr>
                         </thead>
@@ -82,6 +85,15 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ initial, o
                             rules: [...template.rules, r]
                         })} />
                     }
+                </div>
+                <div className="item container horizontal">
+                    <label htmlFor="selectTags">Tags</label>
+                    <select id="selectTags"
+                            style={{width: "20%"}}
+                            multiple
+                            onChange={e => console.log(e.currentTarget.value)}>
+                        <For each={tags} onEach={t => <option key={t}>{t}</option>} />
+                    </select>
                 </div>
             </div>
             <button className="button blue" onClick={onClickSubmit}>Save Mapping</button>

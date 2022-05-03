@@ -9,8 +9,6 @@ import { useGetImportTemplatesQuery, useImportEventsDryRunMutation } from 'servi
 import 'App.css';
 
 export const ImportEvents = () => {
-    const tags = ['asdf', 'fdsa', 'jhkasdjhfajk'];
-
     const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
     const [
         importEventsDryRun,
@@ -51,12 +49,6 @@ export const ImportEvents = () => {
                     <form className="container horizontal">
                         <label htmlFor="newTemplateName">Name</label>
                         <input id="newTemplateName" type="text" />
-
-                        <label htmlFor="selectTags">Tags</label>
-                        <select id="selectTags" multiple onChange={e => console.log(e.currentTarget.value)}>
-                            <For each={tags} onEach={t => <option key={t}>{t}</option>} />
-                        </select>
-
                         <label htmlFor="selectTemplate">Templates</label>
                         <select id="selectTemplate" onChange={e => setSelectedTemplate(e.currentTarget.value)}>
                             <option key={undefined}></option>
