@@ -5,6 +5,7 @@ using Diagraph.Modules.Events.Api.AutoMapper;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports.Contracts;
 using Diagraph.Modules.Events.DataImports.Csv;
+using Diagraph.Modules.Events.DataImports.Csv.AutoMapper;
 using Diagraph.Modules.Events.DataImports.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ public class EventsModule : Module
     protected override void RegisterServices(IConfiguration configuration, IServiceCollection services)
     {
         services.AddAutoMapper(typeof(EventsAutoMapperProfile));
+        services.AddAutoMapper(typeof(EventsCsvImportAutoMapperProfile));
         
         services.AddPostgres<EventsDbContext>
         (
