@@ -84,7 +84,7 @@ public class TemplateLanguageParser
 
         return result;
     }
-
+    
     private string SelectorExpr(string result)
     {
         result = LiteralExpr(result);
@@ -94,7 +94,7 @@ public class TemplateLanguageParser
             if (PeekNext().Type == Symbol.Dot)
             {
                 Advance();
-                result += CallExpr(result);
+                result = CallExpr(result);
             }
             else
             {
@@ -107,7 +107,7 @@ public class TemplateLanguageParser
         
         return result;
     }
-    
+
     private string CallExpr(string result)
     {
         _data.TryGetValue(_previous.Value, out object inputObj);
