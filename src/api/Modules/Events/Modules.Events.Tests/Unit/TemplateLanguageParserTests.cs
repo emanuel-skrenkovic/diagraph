@@ -125,6 +125,24 @@ public class TemplateLanguageParserTests
         
         Assert.Equal(time, eventData[eventField]);
     }
+    
+    [Fact]
+    public void Appends_Data_Matching_Selector_Regex_To_Selector()
+    {
+        const string date = "text 23:00h";
+        const string dataField = "Field";
+        const string eventField = "occurredAtUtc";
+        
+        Dictionary<string, object> eventData = new();
+        Dictionary<string, object> data      = new() { [dataField] = date };
+        var parser = new TemplateLanguageParser(eventData, data);
+
+        const string literal = "2020-01-01 ";
+        
+        parser.ApplyRule($"{eventField} = @{dataField} + \"{literal}\" + @{dataField}.regex(\"\\d*:\\d*\")");
+
+        Assert.Equal($"{data[dataField]}{literal}23:00", eventData[eventField]); 
+    }
 
     [Fact]
     public void Throws_Exception_When_Mapping_UnAllowed_Field()
