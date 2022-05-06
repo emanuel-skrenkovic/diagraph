@@ -1,0 +1,31 @@
+.wrapper {
+    overflow:auto;
+    max-height: 35%;
+}
+
+.wrapper * {
+    border-collapse: collapse;
+}
+
+.block {
+    border: 1px solid black;
+    border-collapse: collapse;
+    background: #f5f2f2;
+}
+
+.padding {
+    min-width: 3.115em;
+    text-align: center;
+}
+
+.csv-table {
+    height: 20px;
+}
+
+.csv-table tbody tr td {
+    font-size: 0.825em !important;
+}
+
+.csv-table thead tr th {
+    font-size: 0.825em !important;
+}
