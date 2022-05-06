@@ -4,5 +4,5 @@ public class UpdateImportTemplateCommand
 {
     public string Name { get; set; }
      
-    public string Data { get; set; } 
+    public dynamic Data { get; set; } 
 }

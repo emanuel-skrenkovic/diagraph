@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as Papa from 'papaparse';
 
@@ -12,6 +13,8 @@ import 'App.css';
 export const ImportEvents = () => {
     const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
     const [importEventsDryRun, importEventsResult] = useImportEventsDryRunMutation(undefined);
+
+    const navigate = useNavigate();
 
     const [csvData, setCsvData]             = useState<string[][]>([]);
     const [exampleEvents, setExampleEvents] = useState<Event[]>(importEventsResult.data ?? []);
@@ -44,7 +47,9 @@ export const ImportEvents = () => {
                 </div>
                 <div className="item container horizontal">
                     <label htmlFor="selectTemplate">Templates</label>
-                    <select id="selectTemplate" onChange={e => setSelectedTemplate(e.currentTarget.value)}>
+                    <select id="selectTemplate"
+                            value={selectedTemplate}
+                            onChange={e => setSelectedTemplate(e.currentTarget.value)}>
                         <option key={undefined}></option>
                         <For each={data ?? []} onEach={t => (
                             <option key={t.id}>
@@ -52,43 +57,47 @@ export const ImportEvents = () => {
                             </option>
                         )} />
                     </select>
+                    <button className={`button blue item ${!!selectedTemplate ? '' : 'disabled'}`}
+                            onClick={() => {
+                                const templateId = data?.find(t => t.name === selectedTemplate)?.id;
+                                if (!templateId) return;
+                                navigate(`/templates/edit?template_id=${templateId}`)
+                            }}>
+                        Edit Template
+                    </button>
                     <button className="button blue item"
                             onClick={onCheckTemplateMapping}>
                         Check template mapping
                     </button>
                 </div>
             </div>
-            <div className="item">
-                {csvData.length > 0 && (
-                    <>
-                        <h3>Csv data</h3>
-                        <CsvPreview data={csvData.slice(0, 6)}/>
-                    </>
-                )}
+            {csvData.length > 0 && (
+                <div className="item">
+                    <h3>Csv data</h3>
+                    <CsvPreview data={csvData.slice(0, 6)}/>
+                </div>
+            )}
+            {exampleEvents.length > 0 && (
+                <div className="item">
+                <h3>Mapped events</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Occurred At</th>
+                        <th>Text</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <For each={exampleEvents} onEach={e => (
+                            <tr>
+                                <td>{e.occurredAtUtc}</td>
+                                <td>{e.text}</td>
+                            </tr>
+                        )}/>
+                    </tbody>
+                </table>
             </div>
-            <div className="item">
-                {exampleEvents.length > 0 && (
-                    <>
-                    <h3>Mapped events</h3>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Occurred At</th>
-                            <th>Text</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <For each={exampleEvents} onEach={e => (
-                                <tr>
-                                    <td>{e.occurredAtUtc}</td>
-                                    <td>{e.text}</td>
-                                </tr>
-                            )}/>
-                        </tbody>
-                    </table>
-                </>
-                )}
-            </div>
+            )}
         </div>
     )
 }

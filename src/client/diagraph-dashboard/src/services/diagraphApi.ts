@@ -12,7 +12,7 @@ export const diagraphApi = createApi({
         baseUrl: 'https://localhost:7053', // TODO: configuration
         credentials: 'include'
     }),
-    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data', 'Graph'],
+    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data', 'Graph', 'ImportTemplates'],
     endpoints: (builder) => ({
         getEvents: builder.query<Event[], any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} }),
@@ -96,13 +96,19 @@ export const diagraphApi = createApi({
         }),
 
         getImportTemplates: builder.query<ImportTemplate[], any>({
-            query: () => ({ url: 'events/import-templates', method: 'GET' })
+            query: () => ({ url: 'events/import-templates', method: 'GET' }),
+            providesTags: [{ type: 'ImportTemplates', id: 'all'}]
+        }),
+        getImportTemplate: builder.query<ImportTemplate, any>({
+            query: id => ({ url: `events/import-templates/${id}`, method: 'GET' }),
+            providesTags: [{ type: 'ImportTemplates', id: 'all'}] // TODO: single id
         }),
         createImportTemplate: builder.mutation<any, any>({
             query: template => ({ url: 'events/import-templates', method: 'POST', body: template }),
         }),
-        updateImportTemplate: builder.mutation<any, any>({
-            query: template => ({ url: 'events/import-templates', method: 'PUT', body: template} )
+        updateImportTemplate: builder.mutation<any, { template: ImportTemplate, id: string }>({
+            query: ({ template, id }) => ({ url: `events/import-templates/${id}`, method: 'PUT', body: template} ),
+            invalidatesTags: [{ type: 'ImportTemplates', id: 'all' }]
         }),
 
         getSession: builder.query<any, any>({
@@ -171,8 +177,9 @@ export const {
     useGetProfileQuery,
     useUpdateProfileMutation,
     useGetImportTemplatesQuery,
+    useGetImportTemplateQuery,
     useCreateImportTemplateMutation,
-    // useUpdateImportTemplateMutation,
+    useUpdateImportTemplateMutation,
     useGetSessionQuery,
     useLoginMutation,
     useLogoutMutation,

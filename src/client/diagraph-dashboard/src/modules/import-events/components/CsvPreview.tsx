@@ -14,15 +14,16 @@ export const CsvPreview: React.FC<CsvPreviewProps> = ({ data }) => {
                 <thead>
                 <tr>
                     <th className="block padding"/>
-                    <For each={data[0]} onEach={h => <th className="block">{h}</th>}/>
+                    <For each={data[0]}
+                         onEach={(h, i) => <th className="block" key={i}>{h}</th>}/>
                 </tr>
                 </thead>
                 <tbody>
                 <For each={data} onEach={(row, i) => (
-                    <tr>
+                    <tr key={i}>
                         <td className="block padding">{i}</td>
-                        <For each={row} onEach={val => (
-                            <td>{val}</td>
+                        <For each={row} onEach={(val, j)=> (
+                            <td key={j}>{val}</td>
                         )} />
                     </tr>
                 )} />

@@ -4,25 +4,25 @@ import { For } from 'modules/common';
 import { Rule, RuleForm, TemplateHeaderMapping } from 'modules/import-events';
 
 export interface HeaderMappingFormProps {
-    initial?: TemplateHeaderMapping;
+    value?: TemplateHeaderMapping;
     onSubmit: (template: TemplateHeaderMapping) => void;
 }
 
-const DEFAULT_TEMPLATE = {
+const DEFAULT_MAPPING = {
     header: '',
     rules: [],
     tags: []
 };
 
-export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ initial, onSubmit }) => {
+export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onSubmit }) => {
     const [tags, setTags] = useState<string[]>([]);
     const [editingRuleId, setEditingRuleId] = useState<string | undefined>(undefined);
-    const [template, setTemplate] = useState<TemplateHeaderMapping>(initial ?? DEFAULT_TEMPLATE);
+    const [template, setTemplate] = useState<TemplateHeaderMapping>(value ?? DEFAULT_MAPPING);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
         onSubmit(template);
-        setTemplate(DEFAULT_TEMPLATE);
+        setTemplate(DEFAULT_MAPPING);
     }
 
     function renderRule(rule: Rule) {

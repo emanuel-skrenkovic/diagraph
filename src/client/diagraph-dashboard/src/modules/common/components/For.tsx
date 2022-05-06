@@ -5,10 +5,5 @@ export interface ForProps<T> {
     onEach: (e: T, index: number) => JSX.Element;
 }
 
-export const For = <T extends unknown>({ each, onEach }: ForProps<T>) => {
-   return (
-       <>
-           {each.map(onEach)}
-       </>
-   );
-};
+export const For = <T extends unknown>({ each, onEach }: ForProps<T>) =>
+    <>{each.map(onEach)}</>;

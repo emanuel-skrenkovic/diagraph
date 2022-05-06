@@ -10,7 +10,7 @@ import { Dashboard } from 'modules/graph';
 import { Login, Register } from 'modules/auth';
 import { NavigationBar } from 'modules/navigation';
 import { Loader, ProtectedRoute } from 'modules/common';
-import { ImportEvents, Templates } from 'modules/import-events';
+import { ImportEvents, Templates, EditTemplate } from 'modules/import-events';
 
 import 'App.css';
 
@@ -71,6 +71,11 @@ function App() {
                         <Route path="templates" element={
                             <ProtectedRoute condition={authenticated} fallback="/login">
                                 <Templates />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="templates/edit" element={
+                            <ProtectedRoute condition={authenticated} fallback="/login">
+                                <EditTemplate />
                             </ProtectedRoute>
                         } />
                     </Routes>
