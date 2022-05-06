@@ -38,6 +38,8 @@ html * {
 .button {
     border: 1px;
     border-radius: 3px;
+    padding: 0.25em !important;
+    width: fit-content;
 }
 
 .button:hover {

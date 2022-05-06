@@ -8,8 +8,9 @@ import 'App.css';
 
 export const Templates = () => {
     const [templateName, setTemplateName] = useState('');
-    const [mappings, setMappings] = useState<TemplateHeaderMapping[]>([]);
-    const [showHeaderMappingForm, setShowHeaderMappingForm] = useState(false);
+    const [mappings, setMappings]         = useState<TemplateHeaderMapping[]>([]);
+
+    const [editingHeaderMapping, setEditingHeaderMapping] = useState<TemplateHeaderMapping | undefined>()
 
     const [createImportTemplate] = useCreateImportTemplateMutation();
 
@@ -40,16 +41,29 @@ export const Templates = () => {
                     Create Template
                 </button>
             </div>
-            <h3>Mappings</h3>
-            <table>
-                <thead>
-                <tr>
-                    <th>Header</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                    <For each={mappings} onEach={m => (
+            <div style={{width:"10%", float:"right"}}>
+                <button className="button blue"
+                        style={{width: "max-content", paddingLeft: "2em", paddingRight: "2em"}}
+                        onClick={() => setEditingHeaderMapping(
+                            !!editingHeaderMapping
+                                ? undefined
+                                : {} as TemplateHeaderMapping
+                        )}>
+                    {!!editingHeaderMapping ? 'Close' : 'New Mapping'}
+                </button>
+            </div>
+            <div className="container">
+                <div className="item" style={{width:"40%"}}>
+                    <h3>Mappings</h3>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Header</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <For each={mappings} onEach={m => (
                             <tr>
                                 <td>{m.header}</td>
                                 <td>
@@ -64,15 +78,14 @@ export const Templates = () => {
                                 </td>
                             </tr>
                         )} />
-                </tbody>
-                <button className="button blue"
-                        onClick={() => setShowHeaderMappingForm(!showHeaderMappingForm)}>
-                    New Mapping
-                </button>
-            </table>
-            {showHeaderMappingForm &&
-                <HeaderMappingForm onSubmit={t => setMappings([...mappings, t])}/>}
-
+                        </tbody>
+                    </table>
+                </div>
+                <div className="item" style={{width:"70", float:"right"}}>
+                    {editingHeaderMapping &&
+                        <HeaderMappingForm onSubmit={t => setMappings([...mappings, t])}/>}
+                </div>
+            </div>
         </div>
     )
 };

@@ -1,8 +1,9 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as Papa from 'papaparse';
 
 import { Event } from 'types';
+import { CsvPreview } from 'modules/import-events';
 import { FileUploadForm, For, Loader } from 'modules/common';
 import { useGetImportTemplatesQuery, useImportEventsDryRunMutation } from 'services';
 
@@ -10,18 +11,16 @@ import 'App.css';
 
 export const ImportEvents = () => {
     const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
-    const [
-        importEventsDryRun,
-        { data: dryRunData, isLoading: isDryRunLoading }
-    ] = useImportEventsDryRunMutation(undefined);
+    const [importEventsDryRun, importEventsResult] = useImportEventsDryRunMutation(undefined);
 
-    const [csvData, setCsvData] = useState<string[][]>([]);
-    const [exampleEvents, setExampleEvents] = useState<Event[]>(dryRunData ?? []);
+    const [csvData, setCsvData]             = useState<string[][]>([]);
+    const [exampleEvents, setExampleEvents] = useState<Event[]>(importEventsResult.data ?? []);
 
     const [file, setFile] = useState<File | undefined>();
+
     const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
 
-    async function checkTemplateMapping() {
+    async function onCheckTemplateMapping() {
         if (!file) return;
 
         const csvData = Papa.parse(await file.text());
@@ -32,7 +31,7 @@ export const ImportEvents = () => {
         if (selectedTemplate) importEventsDryRun({ file, templateName: selectedTemplate });
     }
 
-    if (isLoading || isDryRunLoading) return <Loader />
+    if (isLoading || importEventsResult.isLoading) return <Loader />
     if (isError) console.error(error); // TODO
 
     return (
@@ -40,46 +39,30 @@ export const ImportEvents = () => {
             <Link to="/templates">Create Import Template</Link>
             <div className="container">
                 <div className="item">
-                    <h3>Data</h3>
                     <FileUploadForm onSubmit={() => console.log('Uploading...')}
                                     onSelect={setFile}/>
                 </div>
-                <div className="item">
-                    <h3>Templates</h3>
-                    <form className="container horizontal">
-                        <label htmlFor="newTemplateName">Name</label>
-                        <input id="newTemplateName" type="text" />
-                        <label htmlFor="selectTemplate">Templates</label>
-                        <select id="selectTemplate" onChange={e => setSelectedTemplate(e.currentTarget.value)}>
-                            <option key={undefined}></option>
-                            <For each={data ?? []} onEach={t => (
-                                <option key={t.id}>
-                                    {t.name}
-                                </option>
-                            )} />
-                        </select>
-                    </form>
+                <div className="item container horizontal">
+                    <label htmlFor="selectTemplate">Templates</label>
+                    <select id="selectTemplate" onChange={e => setSelectedTemplate(e.currentTarget.value)}>
+                        <option key={undefined}></option>
+                        <For each={data ?? []} onEach={t => (
+                            <option key={t.id}>
+                                {t.name}
+                            </option>
+                        )} />
+                    </select>
+                    <button className="button blue item"
+                            onClick={onCheckTemplateMapping}>
+                        Check template mapping
+                    </button>
                 </div>
             </div>
-            <button className="button blue" onClick={checkTemplateMapping}>Check template mapping</button>
             <div className="item">
                 {csvData.length > 0 && (
                     <>
                         <h3>Csv data</h3>
-                        <table>
-                            <thead>
-                            <tr>
-                                <For each={csvData[0]} onEach={h => <th>{h}</th>}/>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <For each={csvData.slice(1, 6)} onEach={row => (
-                                    <tr>
-                                        <For each={row} onEach={val => <td>{val}</td>} />
-                                    </tr>
-                                )} />
-                            </tbody>
-                        </table>
+                        <CsvPreview data={csvData.slice(0, 6)}/>
                     </>
                 )}
             </div>
