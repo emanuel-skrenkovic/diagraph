@@ -4,6 +4,7 @@ using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.Events.Api.DataImports.Commands;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
+using Diagraph.Modules.Events.DataImports.Csv;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ public class ImportTemplatesController : ControllerBase
             await _context
                 .Templates
                 .WithUser(_userContext.UserId)
+                .Select(t => ImportTemplateView.FromTemplate<CsvTemplate>(t, _mapper))
                 .ToListAsync()
         );
 
@@ -64,7 +66,10 @@ public class ImportTemplatesController : ControllerBase
 
         if (template is null) return NotFound();
         
-        return Ok(template);
+        return Ok
+        (
+            ImportTemplateView.FromTemplate<CsvTemplate>(template, _mapper)
+        );
     }
 
     [HttpPut]

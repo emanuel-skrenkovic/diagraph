@@ -14,5 +14,7 @@ public class EventsAutoMapperProfile : Profile
 
         CreateMap<CreateImportTemplateCommand, ImportTemplate>();
         CreateMap<UpdateImportTemplateCommand, ImportTemplate>();
+
+        CreateMap<ImportTemplate, ImportTemplateView>();
     }
 }
