@@ -57,9 +57,9 @@ export const ImportEvents = () => {
                             value={selectedTemplate}
                             onChange={e => setSelectedTemplate(e.currentTarget.value)}>
                         <option key={undefined}></option>
-                        <For each={data ?? []} onEach={t => (
-                            <option key={t.id}>
-                                {t.name}
+                        <For each={data ?? []} onEach={({ name, id }) => (
+                            <option key={id}>
+                                {name}
                             </option>
                         )} />
                     </select>
@@ -95,7 +95,7 @@ export const ImportEvents = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        <For each={exampleEvents} onEach={e => (
+                        <For each={exampleEvents.slice(0, 100)} onEach={e => (
                             <tr>
                                 <td>{e.occurredAtUtc}</td>
                                 <td>{e.text}</td>
