@@ -17,9 +17,12 @@ public class EventsCsvImportAutoMapperProfile : Profile
     private DateTime GetOrDefault(Dictionary<string, object> dict, string key)
     {
         Dictionary<string, object> caseInsensitive = new(dict, StringComparer.OrdinalIgnoreCase);
-        if (caseInsensitive.TryGetValue(key, out object occurredAtUtc))
+        if (caseInsensitive.TryGetValue(key, out object occurredAtUtcString))
         {
-            return DateTime.SpecifyKind(DateTime.Parse((string)occurredAtUtc), DateTimeKind.Utc);
+            string occurredAtUtc = (string) occurredAtUtcString;
+            if (string.IsNullOrWhiteSpace(occurredAtUtc)) return default;
+            
+            return DateTime.SpecifyKind(DateTime.Parse(occurredAtUtc), DateTimeKind.Utc);
         }
         
         return default;
