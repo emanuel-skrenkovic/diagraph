@@ -37,6 +37,7 @@ public class EventCsvTemplateDataParser : IEventTemplateDataParser
             dynamic row = csv.GetRecord<dynamic>();
             foreach (Event @event in runner.MapRow(row))
             {
+                if (string.IsNullOrWhiteSpace(@event.Text)) continue;
                 events.Add(@event);
             }
         }
