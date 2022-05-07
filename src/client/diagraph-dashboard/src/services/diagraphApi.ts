@@ -39,6 +39,10 @@ export const diagraphApi = createApi({
             invalidatesTags: (_result, _error, { id }) => [{ type: 'Events' as const, id }]
         }),
 
+        getTags: builder.query<any, any>({
+            query: () => ({ url: 'events/tags' })
+        }),
+
         importEventsDryRun: builder.mutation<any, any>({
             async queryFn(request, queryApi, extraOptions, fetch) {
                 const formData = new FormData();
@@ -171,6 +175,7 @@ export const {
     useGetEventsQuery,
     useCreateEventMutation,
     useUpdateEventMutation,
+    useGetTagsQuery,
     useImportEventsDryRunMutation,
     useGetDataQuery,
     useImportDataMutation,

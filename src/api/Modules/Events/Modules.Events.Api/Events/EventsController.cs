@@ -101,4 +101,19 @@ public class EventsController : ControllerBase
 
         return Ok();
     }
+    
+    [HttpGet]
+    [Route("tags")]
+    public async Task<IActionResult> GetTags()
+    {
+        return Ok
+        (
+            await _context
+                .Events
+                .WithUser(_userContext.UserId)
+                .Include(nameof(Event.Tags))
+                .SelectMany(e => e.Tags)
+                .ToListAsync()
+        );
+    }
 }
