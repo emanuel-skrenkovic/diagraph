@@ -1,12 +1,3 @@
-.wrapper {
-    overflow:auto;
-    max-height: 35%;
-}
-
-.wrapper * {
-    border-collapse: collapse;
-}
-
 .block {
     border: 1px solid black;
     border-collapse: collapse;
@@ -19,13 +10,16 @@
 }
 
 .csv-table {
+    border-collapse: collapse;
     height: 20px;
 }
 
 .csv-table tbody tr td {
     font-size: 0.825em !important;
+    vertical-align: top;
 }
 
 .csv-table thead tr th {
     font-size: 0.825em !important;
+    vertical-align: top;
 }

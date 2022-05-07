@@ -1,5 +1,5 @@
 import React from 'react';
-import { For } from 'modules/common';
+import { For, ScrollBar } from 'modules/common';
 
 import './CsvPreview.css';
 
@@ -9,7 +9,7 @@ export interface CsvPreviewProps {
 
 export const CsvPreview: React.FC<CsvPreviewProps> = ({ data }) => {
     return (
-        <div className="wrapper">
+        <ScrollBar heightPx={500}>
             <table className="csv-table">
                 <thead>
                 <tr>
@@ -29,6 +29,6 @@ export const CsvPreview: React.FC<CsvPreviewProps> = ({ data }) => {
                 )} />
                 </tbody>
             </table>
-        </div>
+        </ScrollBar>
     );
 };
