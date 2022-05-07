@@ -5,19 +5,20 @@ import * as Papa from 'papaparse';
 
 import { Event } from 'types';
 import { CsvPreview } from 'modules/import-events';
-import { FileUploadForm, For, Loader } from 'modules/common';
+import { FileUploadForm,  For, Loader, ScrollBar } from 'modules/common';
 import { useGetImportTemplatesQuery, useImportEventsDryRunMutation } from 'services';
 
 import 'App.css';
 
 export const ImportEvents = () => {
     const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
-    const [importEventsDryRun, importEventsResult] = useImportEventsDryRunMutation(undefined);
+    const [importEventsDryRun, importEventsDryRunResult] = useImportEventsDryRunMutation(undefined);
+    const [fulfilled, setFulfilled] = useState(0);
 
     const navigate = useNavigate();
 
     const [csvData, setCsvData]             = useState<string[][]>([]);
-    const [exampleEvents, setExampleEvents] = useState<Event[]>(importEventsResult.data ?? []);
+    const [exampleEvents, setExampleEvents] = useState<Event[]>([]);
 
     const [file, setFile] = useState<File | undefined>();
 
@@ -34,7 +35,12 @@ export const ImportEvents = () => {
         if (selectedTemplate) importEventsDryRun({ file, templateName: selectedTemplate });
     }
 
-    if (isLoading || importEventsResult.isLoading) return <Loader />
+    if (importEventsDryRunResult.isSuccess && importEventsDryRunResult.fulfilledTimeStamp > fulfilled) {
+        setExampleEvents(importEventsDryRunResult.data);
+        setFulfilled(importEventsDryRunResult.fulfilledTimeStamp);
+    }
+
+    if (isLoading || importEventsDryRunResult.isLoading) return <Loader />
     if (isError) console.error(error); // TODO
 
     return (
@@ -80,22 +86,24 @@ export const ImportEvents = () => {
             {exampleEvents.length > 0 && (
                 <div className="item">
                 <h3>Mapped events</h3>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Occurred At</th>
-                        <th>Text</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <ScrollBar heightPx={500}>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Occurred At</th>
+                            <th>Text</th>
+                        </tr>
+                        </thead>
+                        <tbody>
                         <For each={exampleEvents} onEach={e => (
                             <tr>
                                 <td>{e.occurredAtUtc}</td>
                                 <td>{e.text}</td>
                             </tr>
                         )}/>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </ScrollBar>
             </div>
             )}
         </div>
