@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import * as Papa from 'papaparse';
 
 import { Event } from 'types';
 import { CsvPreview } from 'modules/import-events';
@@ -13,25 +12,18 @@ import 'App.css';
 export const ImportEvents = () => {
     const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
     const [importEventsDryRun, importEventsDryRunResult] = useImportEventsDryRunMutation(undefined);
-    const [fulfilled, setFulfilled] = useState(0);
 
     const navigate = useNavigate();
 
-    const [csvData, setCsvData]             = useState<string[][]>([]);
-    const [exampleEvents, setExampleEvents] = useState<Event[]>([]);
-
-    const [file, setFile] = useState<File | undefined>();
-
+    const [file, setFile]                         = useState<File | undefined>();
+    const [fulfilled, setFulfilled]               = useState(0);
+    const [exampleEvents, setExampleEvents]       = useState<Event[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
 
     async function onCheckTemplateMapping() {
         if (!file) return;
 
-        const csvData = Papa.parse(await file.text());
-        if (csvData) {
-            setCsvData(csvData.data.slice(0, 6) as string[][]);
-        }
-
+        setFile(file);
         if (selectedTemplate) importEventsDryRun({ file, templateName: selectedTemplate });
     }
 
@@ -77,13 +69,13 @@ export const ImportEvents = () => {
                     </button>
                 </div>
             </div>
-            {csvData.length > 0 && (
+            {file && exampleEvents.length > 0 && (
                 <div className="item">
                     <h3>Csv data</h3>
-                    <CsvPreview data={csvData.slice(0, 6)}/>
+                    <CsvPreview csvFile={file}/>
                 </div>
             )}
-            {exampleEvents.length > 0 && (
+            {file && exampleEvents.length > 0 && (
                 <div className="item">
                 <h3>Mapped events</h3>
                 <ScrollBar heightPx={500}>
@@ -95,8 +87,8 @@ export const ImportEvents = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        <For each={exampleEvents.slice(0, 100)} onEach={e => (
-                            <tr>
+                        <For each={exampleEvents.slice(0, 100)} onEach={(e, i) => (
+                            <tr key={i}>
                                 <td>{e.occurredAtUtc}</td>
                                 <td>{e.text}</td>
                             </tr>
