@@ -68,7 +68,7 @@ function App() {
                                 <ImportEvents />
                             </ProtectedRoute>
                         } />
-                        <Route path="templates" element={
+                        <Route path="templates/add" element={
                             <ProtectedRoute condition={authenticated} fallback="/login">
                                 <Templates />
                             </ProtectedRoute>
