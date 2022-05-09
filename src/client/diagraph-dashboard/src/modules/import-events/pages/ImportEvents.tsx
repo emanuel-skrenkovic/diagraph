@@ -69,10 +69,12 @@ export const ImportEvents = () => {
                 </div>
             </div>
             {showPreview && file && selectedTemplate && (
-                <TemplateMappingPreview
-                    csvFile={file}
-                    template={selectedTemplate}
-                />
+                <div className="box">
+                    <TemplateMappingPreview
+                        csvFile={file}
+                        template={selectedTemplate}
+                    />
+                </div>
             )}
         </div>
     )
