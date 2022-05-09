@@ -27,9 +27,19 @@ export const ImportEvents = () => {
         if (selectedTemplate) importEventsDryRun({ file, templateName: selectedTemplate });
     }
 
-    if (importEventsDryRunResult.isSuccess && importEventsDryRunResult.fulfilledTimeStamp > fulfilled) {
-        setExampleEvents(importEventsDryRunResult.data);
-        setFulfilled(importEventsDryRunResult.fulfilledTimeStamp);
+    function onEditTemplate() {
+        const templateId = data?.find(t => t.name === selectedTemplate)?.id;
+        if (!templateId) return;
+        navigate(`/templates/edit?template_id=${templateId}`)
+    }
+
+    {
+        const { data, isSuccess, fulfilledTimeStamp } = importEventsDryRunResult;
+
+        if (isSuccess && fulfilledTimeStamp > fulfilled) {
+            setExampleEvents(data);
+            setFulfilled(fulfilledTimeStamp);
+        }
     }
 
     if (isLoading || importEventsDryRunResult.isLoading) return <Loader />
@@ -56,11 +66,7 @@ export const ImportEvents = () => {
                         )} />
                     </select>
                     <button className={`button blue item ${!!selectedTemplate ? '' : 'disabled'}`}
-                            onClick={() => {
-                                const templateId = data?.find(t => t.name === selectedTemplate)?.id;
-                                if (!templateId) return;
-                                navigate(`/templates/edit?template_id=${templateId}`)
-                            }}>
+                            onClick={onEditTemplate}>
                         Edit Template
                     </button>
                     <button className="button blue item"
