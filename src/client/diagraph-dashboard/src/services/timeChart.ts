@@ -163,9 +163,9 @@ export class TimeChart {
     verticalLine = (at: number, color: string, onClick: () => void): TimeChart => {
         this.drawSteps.push(() => {
             this.svg.append('line')
-                .attr('x1', this.x!(at))
+                .attr('x1', this.margin.left + this.padding + this.x!(at))
                 .attr('y1', this.margin.top + 2 * this.padding + this.margin.top)
-                .attr('x2', this.x!(at))
+                .attr('x2', this.margin.left + this.padding + this.x!(at))
                 .attr('y2', this.height + 2 * this.padding)
                 .style('stroke-width', 2.5)
                 .style('stroke', color)

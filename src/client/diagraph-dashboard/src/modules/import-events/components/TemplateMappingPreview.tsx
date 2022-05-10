@@ -11,10 +11,10 @@ export interface TemplateMappingPreviewProps {
 }
 
 export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ csvFile, template }) => {
-    const [events, setEvents] = useState<Event[]>([])
+    const [events, setEvents]           = useState<Event[]>([])
     const [fulfilledAt, setFulfilledAt] = useState(0);
 
-    const [importEventsDryRun, importEventsDryRunResult] = useImportEventsDryRunMutation(undefined);
+    const [importEventsDryRun, importEventsDryRunResult]     = useImportEventsDryRunMutation(undefined);
     const { data, isLoading, isSuccess, fulfilledTimeStamp } = importEventsDryRunResult;
 
     useEffect(() => {

@@ -68,8 +68,7 @@ export const ImportEvents = () => {
                             New Template
                         </button>
                     </div>
-                    <button className="button blue item"
-                            onClick={onCheckTemplateMapping}>
+                    <button className="button blue item" onClick={onCheckTemplateMapping}>
                         Check template mapping
                     </button>
                 </div>

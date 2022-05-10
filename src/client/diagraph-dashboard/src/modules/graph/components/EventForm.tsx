@@ -11,8 +11,8 @@ export interface EventFormProps {
 }
 
 function hoursFormat(date: Date) {
-    const hours   = new Date(date).getHours().toString().padStart(2, '0');
-    const minutes = new Date(date).getMinutes().toString().padStart(2, '0');
+    const hours   = new Date(date).getUTCHours().toString().padStart(2, '0');
+    const minutes = new Date(date).getUTCMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
 }
 
