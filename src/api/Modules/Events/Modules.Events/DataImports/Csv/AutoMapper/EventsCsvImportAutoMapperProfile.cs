@@ -16,6 +16,11 @@ public class EventsCsvImportAutoMapperProfile : Profile
             (
                 e => e.Text,
                 conf => conf.MapFrom(dict => dict[nameof(Event.Text)])
+            )
+            .ForMember
+            (
+                e => e.Tags,
+                conf => conf.MapFrom(dict => dict[nameof(Event.Tags)])
             );
     }
     

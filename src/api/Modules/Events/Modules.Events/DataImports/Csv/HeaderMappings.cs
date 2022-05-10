@@ -6,5 +6,5 @@ public class HeaderMappings
     
     public IEnumerable<Rule> Rules { get; set; }
     
-    public IEnumerable<string> Tags { get; set; }
+    public IEnumerable<EventTag> Tags { get; set; }
 }

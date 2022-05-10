@@ -23,10 +23,7 @@ public class CsvTemplateRunner : ITemplateRunner
             Dictionary<string, object> eventData = new()
             {
                 [nameof(Event.Text)] = expando[map.Header],
-                [nameof(Event.Tags)] = map
-                    .Tags
-                    .Select(tag => new EventTag { Name = tag })
-                    .ToList()
+                [nameof(Event.Tags)] = map.Tags
             };
 
             if (map.Rules?.Any() == true)
