@@ -23,7 +23,7 @@ public class CsvTemplateCustomization : ICustomization
                                 Expression = "occurredAtUtc = \"2020-01-01\""
                             }
                         },
-                        Tags = new [] { "Tag1", "Tag2" }
+                        Tags = new [] { new EventTag { Name = "Tag1" } , new EventTag { Name = "Tag2" } }
                     }
                 }
             }
