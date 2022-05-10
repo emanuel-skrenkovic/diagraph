@@ -1,11 +1,13 @@
 import React, { useState, MouseEvent } from 'react';
 
 import { For } from 'modules/common';
-import { HeaderMappingForm, ImportTemplate, TemplateHeaderMapping } from 'modules/import-events';
+import { HeaderMappingForm } from 'modules/import-events';
+import { EventTag, ImportTemplate, TemplateHeaderMapping } from 'types';
 
 export interface ImportTemplateFormProps {
     initial? : ImportTemplate;
     onSubmit: (t: ImportTemplate) => void;
+    tags?: EventTag[];
 }
 
 const DEFAULT_MAPPING = {
@@ -21,7 +23,7 @@ const DEFAULT_TEMPLATE = {
     }
 } as ImportTemplate;
 
-export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial, onSubmit }) => {
+export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial, onSubmit, tags }) => {
     const [template, setTemplate] = useState(initial ?? DEFAULT_TEMPLATE);
     const [editingHeaderMapping, setEditingHeaderMapping] = useState<TemplateHeaderMapping | undefined>();
 
@@ -92,12 +94,12 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                         </tr>
                         </thead>
                         <tbody>
-                        <For each={template.data.headerMappings} onEach={m => (
-                            <tr>
-                                <td>{m.header}</td>
+                        <For each={template.data.headerMappings} onEach={(mapping, index) => (
+                            <tr key={index}>
+                                <td>{mapping.header}</td>
                                 <td>
                                     <button className="button blue"
-                                            onClick={() => {setEditingHeaderMapping(m)}}>
+                                            onClick={() => {setEditingHeaderMapping(mapping)}}>
                                         Edit
                                     </button>
                                     <button className="button red"
@@ -109,7 +111,7 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                                                         headerMappings: template
                                                             .data
                                                             .headerMappings
-                                                            .filter(map => map !== m)
+                                                            .filter(m => m !== mapping)
                                                     }
                                                 })}>
                                         Remove
@@ -122,7 +124,9 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                 </div>
                 <div className="item" style={{width:"100"}}>
                     {editingHeaderMapping &&
-                        <HeaderMappingForm value={editingHeaderMapping} onSubmit={onSaveMapping}/>
+                        <HeaderMappingForm value={editingHeaderMapping}
+                                           onSubmit={onSaveMapping}
+                                           tags={tags ?? []} />
                     }
                 </div>
             </div>

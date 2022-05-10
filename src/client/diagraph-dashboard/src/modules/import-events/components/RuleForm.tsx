@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
-import { Rule } from 'modules/import-events';
+import { Rule } from 'types';
 
 export interface RuleFormProps {
     initial?: Rule

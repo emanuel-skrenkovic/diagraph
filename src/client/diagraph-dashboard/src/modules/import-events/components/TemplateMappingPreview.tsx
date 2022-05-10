@@ -19,7 +19,7 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
 
     useEffect(() => {
         importEventsDryRun({ file: csvFile, templateName: template });
-    }, [csvFile, template]);
+    }, [csvFile, template, importEventsDryRun]);
 
     if (isSuccess && fulfilledTimeStamp > fulfilledAt) {
         setEvents(data);
@@ -45,6 +45,7 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
                             <tr>
                                 <th>Occurred At</th>
                                 <th>Text</th>
+                                <th>Tags</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -52,6 +53,11 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
                                 <tr key={i}>
                                     <td>{e.occurredAtUtc}</td>
                                     <td>{e.text}</td>
+                                    <td>
+                                        [<For each={e.tags ?? []} onEach={(t, i) => (
+                                            <span key={i}>{`${t.name} `}</span>
+                                        )} />]
+                                    </td>
                                 </tr>
                             )}/>
                             </tbody>

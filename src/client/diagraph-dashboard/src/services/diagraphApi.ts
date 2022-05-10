@@ -1,10 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { Event, GlucoseMeasurement } from 'types';
 
 import { login, logout } from 'modules/auth';
-import { ImportTemplate } from 'modules/import-events';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
+import { Event, GlucoseMeasurement, EventTag, ImportTemplate } from 'types';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',
@@ -39,7 +38,7 @@ export const diagraphApi = createApi({
             invalidatesTags: (_result, _error, { id }) => [{ type: 'Events' as const, id }]
         }),
 
-        getTags: builder.query<any, any>({
+        getTags: builder.query<EventTag[], any>({
             query: () => ({ url: 'events/tags' })
         }),
 

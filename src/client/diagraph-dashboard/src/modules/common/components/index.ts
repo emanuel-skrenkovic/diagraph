@@ -1,4 +1,5 @@
 export * from './For';
+export * from './Tag';
 export * from './Loader';
 export * from './ScrollBar';
 export * from './LocalTime';

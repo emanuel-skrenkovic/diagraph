@@ -1,11 +1,13 @@
 import React, { useState, FormEvent } from 'react';
 
-import { For } from 'modules/common';
-import { Rule, RuleForm, TemplateHeaderMapping } from 'modules/import-events';
+import { RuleForm } from 'modules/import-events';
+import { For, Tag } from 'modules/common';
+import { EventTag, Rule, TemplateHeaderMapping } from 'types';
 
 export interface HeaderMappingFormProps {
     value?: TemplateHeaderMapping;
     onSubmit: (template: TemplateHeaderMapping) => void;
+    tags: EventTag[];
 }
 
 const DEFAULT_MAPPING = {
@@ -14,8 +16,9 @@ const DEFAULT_MAPPING = {
     tags: []
 };
 
-export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onSubmit }) => {
-    const [tags, setTags] = useState<string[]>([]);
+export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onSubmit, tags }) => {
+    const [selectedTags, setSelectedTags] = useState<EventTag[]>(tags ?? []);
+
     const [editingRuleId, setEditingRuleId] = useState<string | undefined>(undefined);
     const [template, setTemplate] = useState<TemplateHeaderMapping>(value ?? DEFAULT_MAPPING);
 
@@ -25,10 +28,23 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
         setTemplate(DEFAULT_MAPPING);
     }
 
-    function renderRule(rule: Rule) {
-        if (editingRuleId == rule.expression) {
+    function setTemplateTags(tags: EventTag[]) {
+        setTemplate({
+            ...template,
+            tags
+        });
+    }
+
+    function setTagSelection(tagName: string) {
+        console.log(tagName);
+        // setSelectedTags([]);
+    }
+
+    function renderRule(rule: Rule, index: number) {
+        if (editingRuleId === rule.expression) {
             return (
-                <RuleForm initial={rule}
+                <RuleForm key={index}
+                          initial={rule}
                           onSubmit={r => {
                               rule.expression = r.expression;
                               setEditingRuleId(undefined);
@@ -36,7 +52,7 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
             );
         } else {
             return (
-                <tr>
+                <tr key={index}>
                     <td>{rule.expression}</td>
                     <td>
                         <button onClick={() => setEditingRuleId(rule.expression)}>
@@ -76,7 +92,7 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
                         </tr>
                         </thead>
                         <tbody>
-                        <For each={template.rules} onEach={renderRule} />
+                            <For each={template.rules} onEach={renderRule} />
                         </tbody>
                     </table>
                     {!editingRuleId &&
@@ -88,13 +104,46 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
                 </div>
                 <div className="item container horizontal">
                     <label htmlFor="selectTags">Tags</label>
-                    <select id="selectTags"
-                            style={{width: "20%"}}
-                            multiple
-                            onChange={e => console.log(e.currentTarget.value)}>
-                        <For each={tags} onEach={t => <option key={t}>{t}</option>} />
+                    <select multiple onChange={e => setTagSelection(e.currentTarget.value)}>
+                        <For each={tags} onEach={(tag, index) => (
+                            <option key={index}>{tag.name}</option>
+                        )} />
                     </select>
+                    <button className="button blue"
+                            onClick={e => {
+                                e.preventDefault();
+                                setTemplateTags([...template.tags, ...selectedTags]);
+                                setSelectedTags([]); }}>
+                        Add
+                    </button>
                 </div>
+                <h3>Tags</h3>
+                <For each={template.tags ?? []} onEach={(tag, index) => (
+                    <div className="container" key={index}>
+                        <Tag value={tag.name} onChange={changed => {
+                            const updated = [...template.tags];
+                            updated[index] = { name: changed } as EventTag;
+
+                            setTemplateTags(updated);
+                        }} />
+                        <button className="button blue"
+                                onClick={e => {
+                                    e.preventDefault();
+                                    const updated = [...template.tags];
+                                    updated.splice(index, 1);
+
+                                    setTemplateTags(updated);
+                                }}>
+                            X
+                        </button>
+                    </div>
+                )} />
+                <button className="button blue" onClick={(e) => {
+                    e.preventDefault();
+                    setTemplateTags([...template.tags, { name: '' } as EventTag]);
+                }}>
+                    +
+                </button>
             </div>
             <button className="button blue" onClick={onClickSubmit}>Save Mapping</button>
         </form>
