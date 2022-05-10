@@ -42,6 +42,24 @@ export const diagraphApi = createApi({
             query: () => ({ url: 'events/tags' })
         }),
 
+        importEvents: builder.mutation<any, any>({
+            async queryFn(request, queryApi, extraOptions, fetch) {
+                const formData = new FormData();
+                formData.append('file', request.file, request.file.name);
+                formData.append('templateName', request.templateName);
+
+                const response = await fetch({
+                    url: 'events/data-import',
+                    method: 'POST',
+                    body: formData
+                });
+
+                // TODO: this bit
+                if (response.error) throw response.error;
+                return response.data ? { data: response.data } : { error: response.error };
+            }
+        }),
+
         importEventsDryRun: builder.mutation<any, any>({
             async queryFn(request, queryApi, extraOptions, fetch) {
                 const formData = new FormData();
@@ -49,7 +67,7 @@ export const diagraphApi = createApi({
                 formData.append('templateName', request.templateName);
 
                 const response = await fetch({
-                    url: `events/data-import/dry-run`,
+                    url: 'events/data-import/dry-run',
                     method: 'POST',
                     body: formData
                 });
@@ -175,6 +193,7 @@ export const {
     useCreateEventMutation,
     useUpdateEventMutation,
     useGetTagsQuery,
+    useImportEventsMutation,
     useImportEventsDryRunMutation,
     useGetDataQuery,
     useImportDataMutation,

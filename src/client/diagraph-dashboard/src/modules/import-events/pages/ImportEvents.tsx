@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { useGetImportTemplatesQuery } from 'services';
+import { useImportEventsMutation, useGetImportTemplatesQuery } from 'services';
 import { FileUploadForm,  For, Loader } from 'modules/common';
 import { TemplateMappingPreview } from 'modules/import-events';
 
@@ -10,11 +10,17 @@ import 'App.css';
 export const ImportEvents = () => {
     const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
 
+    const [importEvents] = useImportEventsMutation();
+
     const navigate = useNavigate();
 
     const [file, setFile]                         = useState<File | undefined>();
     const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
     const [showPreview, setShowPreview]           = useState(false);
+
+    function onUpload() {
+        importEvents({ file, templateName: selectedTemplate }) ;
+    }
 
     async function onCheckTemplateMapping() {
         if (!file) return;
@@ -38,7 +44,7 @@ export const ImportEvents = () => {
         <div className="container horizontal">
             <div className="container">
                 <div className="item">
-                    <FileUploadForm onSubmit={() => console.log('Uploading...')}
+                    <FileUploadForm onSubmit={onUpload}
                                     onSelect={setFile}/>
                 </div>
                 <div className="item container horizontal">
