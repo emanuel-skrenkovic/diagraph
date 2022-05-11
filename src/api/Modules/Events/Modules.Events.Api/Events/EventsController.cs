@@ -113,6 +113,7 @@ public class EventsController : ControllerBase
                 .WithUser(_userContext.UserId)
                 .Include(nameof(Event.Tags))
                 .SelectMany(e => e.Tags)
+                .DistinctByField(t => t.Name)
                 .ToListAsync()
         );
     }
