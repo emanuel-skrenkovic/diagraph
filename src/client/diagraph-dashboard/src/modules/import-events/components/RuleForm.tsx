@@ -1,39 +1,54 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, FormEvent } from 'react';
 
 import { Rule } from 'types';
 
 export interface RuleFormProps {
-    initial?: Rule
+    value?: Rule
     onSubmit: (rule: Rule) => void;
+    disabled?: boolean;
+    buttonText?: string;
 }
 
-const EMPTY_RULE = { expression: '' };
+export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, buttonText }) => {
+    let initialField      = '';
+    let initialExpression = '';
+    if (value) {
+        const parts = value.expression.split('=');
 
-export const RuleForm: React.FC<RuleFormProps> = ({ initial, onSubmit }) => {
-    const [rule, setRule] = useState<Rule>(initial ? initial :  EMPTY_RULE);
+        initialField      = parts[0].trim();
+        initialExpression = parts[1].trim();
+    }
+
+    const [field, setField]           = useState<string | undefined>(initialField);
+    const [expression, setExpression] = useState<string | undefined>(initialExpression);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
 
-        if (rule) onSubmit(rule);
-        setRule(EMPTY_RULE)
+        if (field && expression) {
+            onSubmit({ expression: `${field} = ${expression}` });
+        }
     }
-
-    function onExpressionChange(e: ChangeEvent<HTMLInputElement>) {
-        setRule({ ...rule, expression: e.currentTarget.value });
-    }
-
-    // TODO: split inputs into multiple:
-    // 1. field
-    // 2. selector for every '+'
-    // 3. ...
 
     return (
         <>
-            <input type="text"
-                   value={rule.expression}
-                   onChange={onExpressionChange}/>
-            <button className="button blue" type="submit" onClick={onClickSubmit}>Submit</button>
+            <div className="container" style={{width:"fit-content"}}>
+                <select value={field}
+                        onChange={e => setField(e.currentTarget.value)}
+                        disabled={disabled ?? false}>
+                    <option />
+                    <option>occurredAtUtc</option>
+                    <option>text</option>
+                </select>
+                <span>=</span>
+                <input type="text"
+                       value={expression}
+                       onChange={e => setExpression(e.currentTarget.value)}
+                       disabled={disabled ?? false} />
+            </div>
+            <button className="button blue" type="submit" onClick={onClickSubmit}>
+                {buttonText ?? 'Add'}
+            </button>
         </>
     );
 };

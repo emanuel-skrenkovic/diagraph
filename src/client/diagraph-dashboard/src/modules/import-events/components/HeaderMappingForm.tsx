@@ -1,7 +1,9 @@
+// noinspection JSDeprecatedSymbols
+
 import React, { useState, FormEvent } from 'react';
 
-import { RuleForm } from 'modules/import-events';
 import { For, Tag } from 'modules/common';
+import { RuleForm } from 'modules/import-events';
 import { EventTag, Rule, TemplateHeaderMapping } from 'types';
 
 export interface HeaderMappingFormProps {
@@ -17,15 +19,21 @@ const DEFAULT_MAPPING = {
 };
 
 export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onSubmit, tags }) => {
-    const [selectedTags, setSelectedTags] = useState<EventTag[]>(tags ?? []);
+    const [selectedTags, setSelectedTags] = useState<EventTag[]>([]);
 
-    const [editingRuleId, setEditingRuleId] = useState<string | undefined>(undefined);
+    const [editingRuleId, setEditingRuleId] = useState<number>(-1);
     const [template, setTemplate] = useState<TemplateHeaderMapping>(value ?? DEFAULT_MAPPING);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
         onSubmit(template);
         setTemplate(DEFAULT_MAPPING);
+    }
+
+    function addSelectedTags(e: FormEvent<HTMLButtonElement>) {
+        e.preventDefault();
+        setTemplateTags([...template.tags, ...selectedTags]);
+        setSelectedTags([]);
     }
 
     function setTemplateTags(tags: EventTag[]) {
@@ -35,41 +43,35 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
         });
     }
 
-    function setTagSelection(tagName: string) {
-        console.log(tagName);
-        // setSelectedTags([]);
+    function onSaveRule(rule: Rule, index: number) {
+        const newRules = [...template.rules];
+        newRules[index] = rule
+
+        setTemplateRules(newRules);
+        setEditingRuleId(-1);
     }
 
-    function renderRule(rule: Rule, index: number) {
-        if (editingRuleId === rule.expression) {
-            return (
-                <RuleForm key={index}
-                          initial={rule}
-                          onSubmit={r => {
-                              rule.expression = r.expression;
-                              setEditingRuleId(undefined);
-                          }} />
-            );
-        } else {
-            return (
-                <tr key={index}>
-                    <td>{rule.expression}</td>
-                    <td>
-                        <button onClick={() => setEditingRuleId(rule.expression)}>
-                            Edit
-                        </button>
-                    </td>
-                    <td>
-                        <button onClick={() => setTemplate({
-                            ...template,
-                            rules: template.rules.filter(r => r !== rule)
-                        })}>
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-            );
-        }
+    function onAddRule(rule: Rule) {
+        setTemplateRules([...template.rules, rule]);
+        setEditingRuleId(-1);
+    }
+
+    function setTemplateRules(rules: Rule[]) {
+        setTemplate({
+            ...template,
+            rules
+        })
+    }
+
+    function setTagSelection(tagNames: string[]) {
+        setSelectedTags(tagNames.map(n => ({ name: n } as EventTag)));
+    }
+
+    function onTagChanged(newValue: string, index: number) {
+        const updated = [...template.tags];
+        updated[index] = { name: newValue } as EventTag;
+
+        setTemplateTags(updated);
     }
 
     return (
@@ -84,48 +86,49 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
                 </div>
                 <div className="item">
                     <label>Rules</label>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <For each={template.rules} onEach={renderRule} />
-                        </tbody>
-                    </table>
-                    {!editingRuleId &&
-                        <RuleForm onSubmit={r => setTemplate({
-                            ...template,
-                            rules: [...template.rules, r]
-                        })} />
-                    }
+                    <For each={template.rules} onEach={(rule, index) => (
+                        <div className="container" key={index}>
+                            <RuleForm value={rule}
+                                      onSubmit={newValue => onSaveRule(newValue, index)}
+                                      disabled={editingRuleId !== index}
+                                      buttonText="Save" />
+                            <button className="button blue" onClick={e => {
+                                e.preventDefault();
+                                setEditingRuleId(editingRuleId === index ? -1 : index);
+                            }}>
+                                {editingRuleId === index ? 'Close' : 'Edit'}
+                            </button>
+                            <button className="button blue"
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        const updated = [...template.rules];
+                                        updated.splice(index, 1);
+
+                                        setTemplateRules(updated);
+                                    }}>
+                                Remove
+                            </button>
+                        </div>
+                    )} />
+                    {editingRuleId !== -1 && <button className="button blue">New</button>}
+                    {editingRuleId === -1 && <RuleForm key={-1} onSubmit={onAddRule} />}
                 </div>
                 <div className="item container horizontal">
                     <label htmlFor="selectTags">Tags</label>
-                    <select multiple onChange={e => setTagSelection(e.currentTarget.value)}>
+                    <select multiple
+                            onChange={e => setTagSelection(Array.from(e.currentTarget.selectedOptions, o => o.value))}>
                         <For each={tags} onEach={(tag, index) => (
                             <option key={index}>{tag.name}</option>
                         )} />
                     </select>
-                    <button className="button blue"
-                            onClick={e => {
-                                e.preventDefault();
-                                setTemplateTags([...template.tags, ...selectedTags]);
-                                setSelectedTags([]); }}>
+                    <button className="button blue" onClick={addSelectedTags}>
                         Add
                     </button>
                 </div>
                 <h3>Tags</h3>
                 <For each={template.tags ?? []} onEach={(tag, index) => (
                     <div className="container" key={index}>
-                        <Tag value={tag.name} onChange={changed => {
-                            const updated = [...template.tags];
-                            updated[index] = { name: changed } as EventTag;
-
-                            setTemplateTags(updated);
-                        }} />
+                        <Tag value={tag.name} onChange={newValue => onTagChanged(newValue, index)} />
                         <button className="button blue"
                                 onClick={e => {
                                     e.preventDefault();
