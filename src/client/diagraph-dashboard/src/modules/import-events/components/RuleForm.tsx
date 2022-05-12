@@ -46,9 +46,14 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
                        onChange={e => setExpression(e.currentTarget.value)}
                        disabled={disabled ?? false} />
             </div>
-            <button className="button blue" type="submit" onClick={onClickSubmit}>
-                {buttonText ?? 'Add'}
-            </button>
+            {!disabled &&
+                <button className="button blue"
+                        onClick={onClickSubmit}
+                        disabled={disabled ?? false}>
+                    {buttonText ?? 'Add'}
+                </button>
+            }
+
         </>
     );
 };
