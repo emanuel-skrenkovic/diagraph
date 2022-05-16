@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from 'store';
-import { Event, GlucoseMeasurement } from 'types';
+import { Event, EventTag, GlucoseMeasurement } from 'types';
 import { Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
 import { GlucoseGraph, EventForm, RecentEvents, setDateRange, setData, setEvents } from 'modules/graph';
 import {
@@ -10,9 +10,16 @@ import {
     useUpdateEventMutation,
     useGetEventsQuery,
     useGetDataQuery,
-    useGetProfileQuery } from 'services';
+    useGetProfileQuery,
+    useGetTagsQuery } from 'services';
 
 import 'App.css';
+
+const EMPTY_EVENT = {
+    occurredAtUtc: new Date(),
+    text: '',
+    tags: [] as EventTag[]
+} as Event;
 
 function toLocalDate(dateString: string): Date {
     const date = new Date(dateString);
@@ -39,14 +46,21 @@ export function Dashboard() {
             isLoading: isEventsLoading,
             isError:   isEventsError,
             error:     eventsError } = useGetEventsQuery({ from: dateRange.from, to: dateRange.to });
+    const {
+        data:      tagsData,
+        isLoading: isTagsLoading,
+        isError:   isTagsError,
+        error:     tagsError
+    } = useGetTagsQuery(undefined);
     const { isLoading: isProfileLoading } = useGetProfileQuery(undefined);
 
     const dispatch = useDispatch();
 
     if (isDataError)   console.error(dataError); // TODO
     if (isEventsError) console.error(eventsError);
+    if (isTagsError)   console.error(tagsError);
 
-    if (isDataLoading || isEventsLoading || isProfileLoading) return <Loader />;
+    if (isDataLoading || isEventsLoading || isProfileLoading || isTagsLoading) return <Loader />;
 
     if (measurementData) dispatch(setData(measurementData));
     if (eventData)       dispatch(setEvents(eventData));
@@ -106,6 +120,7 @@ export function Dashboard() {
                                 updateEvent(e);
                                 setEditing(false);
                             }}
+                            tagOptions={tagsData ?? []}
                             submitButtonText="Save"
                             disabled={!editing} />
                     </>
@@ -117,11 +132,9 @@ export function Dashboard() {
                 </div>
                 <div className="item">
                     <EventForm
-                        value={{
-                            occurredAtUtc: new Date(),
-                            text: ''
-                        } as Event}
+                        value={EMPTY_EVENT}
                         onSubmit={createEvent}
+                        tagOptions={tagsData ?? []}
                         submitButtonText="Create Event" />
                 </div>
             </div>

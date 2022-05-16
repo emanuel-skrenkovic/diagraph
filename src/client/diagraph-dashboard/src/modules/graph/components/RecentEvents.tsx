@@ -11,7 +11,6 @@ export interface RecentEventsProps {
 }
 
 export const RecentEvents: React.FC<RecentEventsProps> = ({ events }) => {
-    console.log(events);
     return (
         <div className="box">
             <h3>Recent events:</h3>
@@ -20,8 +19,8 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events }) => {
                 <tr>
                     {events.length > 0 && (
                         <>
-                            <td>Occurred at</td>
-                            <td>Text</td>
+                            <td></td>
+                            <td></td>
                         </>
                     )}
                 </tr>

@@ -19,6 +19,7 @@ export const Tag: React.FC<TagProps> = ({ value, disabled, onChange }) => {
     return (
         <span className="container button">
                 <input type="text"
+                       style={{width:"100%"}}
                        value={value}
                        disabled={!isEditing}
                        placeholder="..."

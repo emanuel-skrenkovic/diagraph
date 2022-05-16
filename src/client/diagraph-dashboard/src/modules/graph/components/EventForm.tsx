@@ -1,14 +1,16 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 
-import { Event } from 'types';
+import { Event, EventTag } from 'types';
+import { TagSelector } from 'modules/common';
 
 import 'App.css';
 
 export interface EventFormProps {
     value: Event;
     onSubmit: (e: Event) => void;
+    tagOptions: EventTag[];
     submitButtonText?: string | undefined;
-    disabled?: boolean
+    disabled?: boolean,
 }
 
 function hoursFormat(date: Date) {
@@ -19,7 +21,6 @@ function hoursFormat(date: Date) {
 
 export function EventForm(props: EventFormProps) {
     const [event, setEvent] = useState(props.value);
-
     useEffect(() => setEvent(props.value), [props]);
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
@@ -50,14 +51,20 @@ export function EventForm(props: EventFormProps) {
                     value={event.text}
                     onChange={e => setEvent({ ...event, text: e.currentTarget.value })}/>
             </div>
-            <div className="item">
-                <label htmlFor="eventOccurredAt">Time</label>
-                <input
-                    id="eventOccurredAt"
-                    type="time"
-                    disabled={disabled}
-                    value={hoursFormat(event.occurredAtUtc)}
-                    onChange={onChangeTime} />
+            <div className="container">
+                <div className="item">
+                    <label htmlFor="eventOccurredAt">Time</label>
+                    <input
+                        id="eventOccurredAt"
+                        type="time"
+                        disabled={disabled}
+                        value={hoursFormat(event.occurredAtUtc)}
+                        onChange={onChangeTime} />
+                </div>
+                <div className="item">
+                    <TagSelector initialSelectedTags={event.tags}
+                                 onChange={tags => setEvent({...event, tags})} />
+                </div>
             </div>
             {!disabled &&
                 <button className="submit button blue" onClick={onClickSubmit} type="submit">

@@ -3,6 +3,7 @@ export * from './Tag';
 export * from './Loader';
 export * from './ScrollBar';
 export * from './LocalTime';
+export * from './TagSelector';
 export * from './ProtectedRoute';
 export * from './FileUploadForm';
 export * from './MultiSelectForm';
