@@ -5,4 +5,5 @@ export * from './ScrollBar';
 export * from './LocalTime';
 export * from './ProtectedRoute';
 export * from './FileUploadForm';
+export * from './MultiSelectForm';
 export * from './DateRangePicker';

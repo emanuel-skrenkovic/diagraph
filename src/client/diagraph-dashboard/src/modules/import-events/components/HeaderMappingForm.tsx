@@ -2,7 +2,7 @@
 
 import React, { useState, FormEvent } from 'react';
 
-import { For, Tag } from 'modules/common';
+import { For, Tag, MultiSelectForm } from 'modules/common';
 import { RuleForm } from 'modules/import-events';
 import { EventTag, Rule, TemplateHeaderMapping } from 'types';
 
@@ -19,8 +19,6 @@ const DEFAULT_MAPPING = {
 };
 
 export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onSubmit, tags }) => {
-    const [selectedTags, setSelectedTags] = useState<EventTag[]>([]);
-
     const [editingRuleId, setEditingRuleId] = useState<number>(-1);
     const [template, setTemplate] = useState<TemplateHeaderMapping>(value ?? DEFAULT_MAPPING);
 
@@ -30,10 +28,11 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
         setTemplate(DEFAULT_MAPPING);
     }
 
-    function addSelectedTags(e: FormEvent<HTMLButtonElement>) {
-        e.preventDefault();
-        setTemplateTags([...template.tags, ...selectedTags]);
-        setSelectedTags([]);
+    function addSelectedTags(selectedTags: EventTag[]) {
+        const tagsToAdd = selectedTags.filter(
+            t => !template.tags.map(t => t.name).includes(t.name)
+        );
+        setTemplateTags([...template.tags, ...tagsToAdd]);
     }
 
     function setTemplateTags(tags: EventTag[]) {
@@ -61,10 +60,6 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
             ...template,
             rules
         })
-    }
-
-    function setTagSelection(tagNames: string[]) {
-        setSelectedTags(tagNames.map(n => ({ name: n } as EventTag)));
     }
 
     function onTagChanged(newValue: string, index: number) {
@@ -115,15 +110,9 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
                 </div>
                 <div className="item container horizontal">
                     <label htmlFor="selectTags">Tags</label>
-                    <select multiple
-                            onChange={e => setTagSelection(Array.from(e.currentTarget.selectedOptions, o => o.value))}>
-                        <For each={tags} onEach={(tag, index) => (
-                            <option key={index}>{tag.name}</option>
-                        )} />
-                    </select>
-                    <button className="button blue" onClick={addSelectedTags}>
-                        Add
-                    </button>
+                    <MultiSelectForm options={tags}
+                                     keySelector={(t: EventTag) => t.name}
+                                     onAdd={tags => addSelectedTags(tags)} />
                 </div>
                 <h3>Tags</h3>
                 <For each={template.tags ?? []} onEach={(tag, index) => (
