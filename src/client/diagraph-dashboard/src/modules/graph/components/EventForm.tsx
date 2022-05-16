@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 
 import { Event } from 'types';
 
@@ -19,6 +19,8 @@ function hoursFormat(date: Date) {
 
 export function EventForm(props: EventFormProps) {
     const [event, setEvent] = useState(props.value);
+
+    useEffect(() => setEvent(props.value), [props]);
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
