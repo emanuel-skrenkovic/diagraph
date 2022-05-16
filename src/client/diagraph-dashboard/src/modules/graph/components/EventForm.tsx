@@ -44,6 +44,7 @@ export function EventForm(props: EventFormProps) {
         <form className="container horizontal box">
             <div className="item">
                 <textarea
+                    style={{height:"125px", width:"300px"}}
                     disabled={disabled}
                     id="eventText"
                     value={event.text}

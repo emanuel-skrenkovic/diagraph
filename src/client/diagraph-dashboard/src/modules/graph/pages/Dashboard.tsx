@@ -113,7 +113,7 @@ export function Dashboard() {
             </div>
             <div className="container">
                 <div className="item">
-                    <RecentEvents events={events} pageSize={10} />
+                    <RecentEvents events={events} />
                 </div>
                 <div className="item">
                     <EventForm
