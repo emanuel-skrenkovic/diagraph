@@ -24,7 +24,7 @@ export const Login = () => {
     if (isLoading) return <Loader />;
 
     return (
-        <div className="container horizontal">
+        <div className="container vertical">
             <div className="container">
                 <LoginForm onSubmit={onClickLogin} />
             </div>

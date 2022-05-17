@@ -54,7 +54,7 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
     }
 
     return (
-        <div className="container horizontal">
+        <div className="container vertical">
             <div className="container">
                 <div className="item">
                     <label htmlFor="templateNameInput">Template Name</label>

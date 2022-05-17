@@ -31,7 +31,7 @@ export const MultiSelectForm = <T extends object>({ options, keySelector, onAdd 
     }
 
     return (
-        <div className="container horizontal">
+        <div className="container vertical">
             <select className="item" multiple onChange={onChange}>
                 <For each={options} onEach={(option, index) => (
                     <option key={index}>

@@ -51,10 +51,10 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }
     }
 
     return (
-        <div className="container horizontal box"
+        <div className="container vertical box"
              onDragOver={e => e.preventDefault()}
              onDrop={handleDrop}>
-            <form className="container horizontal box item"
+            <form className="container vertical box item"
                   onClick={() => fileUploadInput.current!.click()}>
                 <label onClick={e => e.stopPropagation()}
                        htmlFor="fileUploadInput">

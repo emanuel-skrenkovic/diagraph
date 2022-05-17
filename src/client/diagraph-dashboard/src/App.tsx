@@ -25,10 +25,10 @@ function App() {
     return (
         <div className="container wide">
             <BrowserRouter>
-                <div className="container horizontal wide">
+                <div className="container vertical wide">
                     {authenticated &&
                         <NavigationBar>
-                            <div className="container horizontal wide">
+                            <div className="container vertical wide">
                                 <div className="item">
                                     <span><b>Diagraph</b></span>
                                     <button className="button red"

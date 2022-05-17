@@ -41,13 +41,13 @@ export const ImportEvents = () => {
     if (isError) console.error(error); // TODO
 
     return (
-        <div className="container horizontal">
+        <div className="container vertical">
             <div className="container">
                 <div className="item">
                     <FileUploadForm onSubmit={onUpload}
                                     onSelect={setFile}/>
                 </div>
-                <div className="item container horizontal">
+                <div className="item container vertical">
                     <label htmlFor="selectTemplate">Templates</label>
                     <select id="selectTemplate"
                             value={selectedTemplate}

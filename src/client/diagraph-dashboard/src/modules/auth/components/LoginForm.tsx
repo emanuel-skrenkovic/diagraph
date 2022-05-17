@@ -37,7 +37,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
     }
 
     return (
-        <form className="container horizontal box">
+        <form className="container vertical box">
             <label htmlFor="emailInput">Email:</label>
             <div className="item">
                 <input className={emailError && 'input invalid'}

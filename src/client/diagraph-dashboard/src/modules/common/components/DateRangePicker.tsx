@@ -39,7 +39,7 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
     }
 
     return (
-        <div className="container horizontal">
+        <div className="container vertical">
             <div className="container">
                 <button
                     className="button"
@@ -47,14 +47,14 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
                     &lt;
                 </button>
                 <div className="container">
-                    <div className="container horizontal">
+                    <div className="container vertical">
                         <label htmlFor="from">From</label>
                         <input id="from"
                                type="date"
                                value={dateRange.from}
                                onChange={e => setDateRange({...dateRange, from: e.currentTarget.value})}/>
                     </div>
-                    <div className="container horizontal">
+                    <div className="container vertical">
                         <label htmlFor="to">To</label>
                         <input id="to"
                                type="date"

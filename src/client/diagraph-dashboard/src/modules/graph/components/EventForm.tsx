@@ -42,7 +42,7 @@ export function EventForm(props: EventFormProps) {
     const { disabled } = props;
 
     return (
-        <form className="container horizontal box">
+        <form className="container vertical box">
             <div className="item">
                 <textarea
                     style={{height:"125px", width:"300px"}}

@@ -66,7 +66,7 @@ export function Dashboard() {
     if (eventData)       dispatch(setEvents(eventData));
 
     return (
-        <div className="container horizontal">
+        <div className="container vertical">
             <div className="container">
                 <DateRangePicker
                     from={toLocalDate(dateRange.from)}
@@ -90,7 +90,7 @@ export function Dashboard() {
             </div>
             <div className="container">
                 {selectedMeasurement && (
-                    <div className="container horizontal box item">
+                    <div className="container vertical box item">
                         <button className="button"
                                 onClick={() => setSelectedMeasurement(undefined)}>
                             x
@@ -103,7 +103,7 @@ export function Dashboard() {
                 )}
                 {selectedEvent && (
                     <>
-                        <div className="container horizontal box">
+                        <div className="container vertical box">
                             <button className="button" onClick={() => {
                                 setSelectedEvent(undefined);
                                 if (editing) setEditing(false);

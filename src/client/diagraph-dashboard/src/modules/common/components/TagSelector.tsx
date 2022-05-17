@@ -78,7 +78,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
     if (isTagsError) console.error(tagsError); // TODO
 
     return (
-        <div className="container horizontal box">
+        <div className="container vertical box">
             <div className="item" style={{width:"200px"}}>
                 <MultiSelectForm options={availableTags}
                                  keySelector={(t: EventTag) => t.name}

@@ -5,7 +5,7 @@ html * {
 }
 
 * {
-    padding: 3px;
+    padding: 2px;
 }
 
 .container {
@@ -18,7 +18,7 @@ html * {
     width: 100%;
 }
 
-.container .horizontal {
+.container .vertical {
     flex-direction: column;
 }
 
@@ -32,13 +32,13 @@ html * {
     border: solid 1px rgba(63, 61, 65, 0.24);
     border-radius: 4px;
     margin-outside: 15px;
-    padding: 15px;
+    padding: 5px;
 }
 
 .button {
     border: 1px;
     border-radius: 3px;
-    padding: 0.25em !important;
+    padding: 0.15em !important;
     width: fit-content;
 }
 

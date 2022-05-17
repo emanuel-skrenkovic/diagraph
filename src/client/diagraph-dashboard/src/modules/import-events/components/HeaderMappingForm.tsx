@@ -54,8 +54,8 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
     }
 
     return (
-        <form className="container horizontal box">
-            <div className="container horizontal">
+        <form className="container vertical box">
+            <div className="container vertical">
                 <div className="item">
                     <label htmlFor="headerName">Header</label>
                     <input id="headerName"

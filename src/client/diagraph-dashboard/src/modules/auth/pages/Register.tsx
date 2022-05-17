@@ -11,7 +11,7 @@ export const Register = () => {
     if (isLoading) return <Loader />;
 
     return (
-        <div className="container horizontal">
+        <div className="container vertical">
             <div className="container">
                 <RegisterForm onSubmit={(email, password) => register({ email, password })} />
             </div>
