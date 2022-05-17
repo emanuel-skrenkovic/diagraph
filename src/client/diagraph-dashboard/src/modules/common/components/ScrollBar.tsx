@@ -9,8 +9,8 @@ export const ScrollBar: React.FC<ScrollBarProps> = ({ heightPx, widthPx, childre
     return (
         <div className="scrollBar"
               style={{
-                  height: heightPx,
-                  width: widthPx,
+                  maxHeight: heightPx,
+                  maxWidth: widthPx,
                   overflow: "scroll"
               }}>
             {children}

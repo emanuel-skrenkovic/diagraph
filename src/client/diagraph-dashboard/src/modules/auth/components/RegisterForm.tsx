@@ -1,47 +1,46 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import React, { FormEvent } from 'react';
+
+import { useValidation } from 'modules/common';
 
 import 'App.css';
+
+function passwordValidation(password: string | undefined): [boolean, string] {
+    if (!password) return [false, 'Password must not be empty.'];
+    return [false, ''];
+}
+
+function emailValidation(email: string | undefined): [boolean, string] {
+    if (!email) return [false, 'Email must not be empty'];
+    return [true, ''];
+}
 
 export interface RegisterFormProps {
     onSubmit: (email: string, password: string) => void;
 }
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
-    const [email, setEmail]                     = useState('');
-    const [emailError, setEmailError]           = useState('');
+    function confirmPasswordValidation(confirmPassword: string | undefined): [boolean, string] {
+        if (password !== confirmPassword) return [false, 'Password fields do not match.'];
+        return [true, ''];
+    }
 
-    const [password, setPassword]               = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordError, setPasswordError]     = useState('');
+    const [password, setPassword, passwordError, validatePassword]
+        = useValidation<string>(passwordValidation, '');
+    const [confirmPassword, setConfirmPassword, confirmPasswordError, validateConfirmPassword]
+        = useValidation<string>(confirmPasswordValidation, '');
+    const [email, setEmail, emailError, validateEmail]
+        = useValidation<string>(emailValidation, '');
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        if (!email)    setEmailError('Email must not be empty.');
-        if (!password) setPasswordError('Password must not be empty.');
+        const validEmail        = validateEmail();
+        const validPassword     = validatePassword();
+        const passwordConfirmed = validateConfirmPassword();
 
-        onSubmit(email, password);
-    };
+        if (!validEmail || !validPassword || !passwordConfirmed) return;
 
-    const onChangeConfirmPassword = (e: ChangeEvent<HTMLInputElement>) => {
-        if (password !== e.currentTarget.value) setPasswordError('Password fields do not match.');
-        else if (passwordError)                 setPasswordError('');
-
-        setConfirmPassword(e.currentTarget.value)
-    };
-
-    const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!e.currentTarget.value) setEmailError('Email must not be empty.');
-        else                        setEmailError('');
-
-        setEmail(e.currentTarget.value);
-    };
-
-    const onChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!e.currentTarget.value) setPasswordError('Password must not be empty.');
-        else                        setPasswordError('');
-
-        setPassword(e.currentTarget.value);
+        onSubmit(email!, password!);
     };
 
     return (
@@ -53,7 +52,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                            id="emailInput"
                            type="text"
                            value={email}
-                           onChange={onChangeEmail} />
+                           onChange={e => setEmail(e.currentTarget.value)} />
                 </div>
                 <span className="input label">{emailError ?? ' '}</span>
                 <label htmlFor="passwordInput">Password:</label>
@@ -62,15 +61,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                            id="passwordInput"
                            type="password"
                            value={password}
-                           onChange={onChangePassword} />
+                           onChange={e => setPassword(e.currentTarget.value)} />
                 </div>
-                <span className="input label">{passwordError}</span>
+                <span className="input label">{confirmPasswordError || passwordError}</span>
                 <label htmlFor="confirmPasswordInput">Confirm password:</label>
                 <div className="item">
                     <input id="confirmPasswordInput"
                            type="password"
                            value={confirmPassword}
-                           onChange={onChangeConfirmPassword} />
+                           onChange={e => setConfirmPassword(e.currentTarget.value)} />
                 </div>
                 <button className="button blue centered"
                         type="submit"

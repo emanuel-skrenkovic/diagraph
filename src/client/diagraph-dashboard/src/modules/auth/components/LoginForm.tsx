@@ -1,41 +1,44 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { FormEvent } from 'react';
+
+import { useValidation } from 'modules/common';
 
 import 'App.css';
+
+const emailValidation = (email: string | undefined): [boolean, string] => {
+    if (!email) return [false, 'Email must not be empty.'];
+
+    return [true, ''];
+}
+
+const passwordValidation = (password: string | undefined): [boolean, string] => {
+    if (!password) return [false, 'Password must not be empty.'];
+
+    return [true, ''];
+};
 
 export interface LoginFormProps {
     onSubmit: (email: string, password: string) => void;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-    const [email, setEmail]                 = useState('');
-    const [emailError, setEmailError]       = useState('');
-
-    const [password, setPassword]           = useState('');
-    const [passwordError, setPasswordError] = useState('');
+    const [email,
+           setEmail,
+           emailError,
+           validateEmail] = useValidation<string>(emailValidation, '');
+    const [password,
+           setPassword,
+           passwordError,
+           validatePassword] = useValidation<string>(passwordValidation, '');
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        if (!email)    setEmailError('Email must not be empty.');
-        if (!password) setPasswordError('Password must not be empty.');
+        const emailValid    = validateEmail();
+        const passwordValid = validatePassword();
 
-        if (!email || !password) return;
+        if (!emailValid || !passwordValid) return;
 
-        onSubmit(email, password);
-    }
-
-    const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!e.currentTarget.value) setEmailError('Email must not be empty.');
-        else                        setEmailError('');
-
-        setEmail(e.currentTarget.value);
-    };
-
-    const onChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!e.currentTarget.value) setPasswordError('Password must not be empty.');
-        else                        setPasswordError('');
-
-        setPassword(e.currentTarget.value);
+        onSubmit(email!, password!);
     }
 
     return (
@@ -46,7 +49,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                        id="emailInput"
                        type="text"
                        value={email}
-                       onChange={onChangeEmail} />
+                       onChange={e => setEmail(e.currentTarget.value)} />
             </div>
             <span className="input label">{emailError}</span>
             <label htmlFor="passwordInput">Password:</label>
@@ -55,7 +58,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                        id="passwordInput"
                        type="password"
                        value={password}
-                       onChange={onChangePassword} />
+                       onChange={e => setPassword(e.currentTarget.value)} />
             </div>
             <span className="input label">{passwordError}</span>
             <button className="button blue centered"
