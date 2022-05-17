@@ -1,5 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
+import 'App.css';
+
 export interface LoginFormProps {
     onSubmit: (email: string, password: string) => void;
 }
@@ -56,8 +58,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                        onChange={onChangePassword} />
             </div>
             <span className="input label">{passwordError}</span>
-            <button className="button blue"
-                    style={{margin: "2px"}}
+            <button className="button blue centered"
                     type="submit"
                     disabled={!!emailError || !!passwordError}
                     onClick={onClickSubmit}>Log in</button>

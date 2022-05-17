@@ -87,7 +87,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
             <div className="item">
                 <For each={selectedTags} onEach={(tag, index) => (
                     <div className="container" key={index}>
-                        <Tag value={tag.name} onChange={newValue => onTagChanged(newValue, index)} />
+                        <Tag value={tag.name} onChange={newValue => onTagChanged(newValue, index)} disabled />
                         <button className="button blue" onClick={e => removeTag(e, index)}>
                             X
                         </button>

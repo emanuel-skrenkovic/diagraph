@@ -8,10 +8,6 @@ export interface FileUploadProps {
 }
 
 export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }) => {
-    // TODO: convert this to a form,
-    // create a FileUpload page, and add pages to the
-    // navigation bar - e.g. | Dashboard | | Upload |
-
     const fileUploadInput = useRef<HTMLInputElement>(null);
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -69,8 +65,7 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }
                        style={{display: "none"}}
                        onChange={onSelectFile}/>
             </form>
-            <button className="button blue item"
-                    style={{width: "40%", marginLeft: "30%"}}
+            <button className="button blue item centered"
                     type="submit"
                     onClick={onClickSubmit}>
                 Upload

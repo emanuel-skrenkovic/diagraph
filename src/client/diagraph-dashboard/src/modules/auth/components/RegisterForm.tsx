@@ -72,7 +72,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                            value={confirmPassword}
                            onChange={onChangeConfirmPassword} />
                 </div>
-                <button className="button blue"
+                <button className="button blue centered"
                         type="submit"
                         disabled={!!emailError || !!passwordError}
                         onClick={onClickSubmit}>Register</button>

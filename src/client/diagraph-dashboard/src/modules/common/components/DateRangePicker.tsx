@@ -68,7 +68,9 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
                     &gt;
                 </button>
             </div>
-            <button className="button item" onClick={onClickSubmit}>{submitButtonText ?? 'Submit'}</button>
+            <button className="button item centered" onClick={onClickSubmit}>
+                {submitButtonText ?? 'Submit'}
+            </button>
         </div>
 );
 };

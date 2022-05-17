@@ -78,3 +78,7 @@ html * {
     padding-top: 11px;
     padding-bottom: 11px;
 }
+
+.centered {
+    margin: 0 auto;
+}
