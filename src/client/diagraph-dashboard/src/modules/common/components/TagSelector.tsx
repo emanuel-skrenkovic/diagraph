@@ -13,7 +13,7 @@ export interface TagSelectorProps {
 
 export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, onChange }) => {
     const [availableTags, setAvailableTags] = useState<EventTag[]>([]);
-    const [selectedTags, setSelectedTags] = useState<EventTag[]>(initialSelectedTags);
+    const [selectedTags, setSelectedTags]   = useState<EventTag[]>(initialSelectedTags);
 
     const {
         data:      tagsData,

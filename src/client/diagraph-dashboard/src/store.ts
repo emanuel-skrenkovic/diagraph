@@ -6,6 +6,7 @@ import {
 
 import { diagraphApi } from 'services';
 import { graphReducer } from 'modules/graph';
+import { sharedReducer } from 'modules/common';
 import { profileReducer } from 'modules/profile';
 import { authReducer, logoutActionType } from 'modules/auth';
 
@@ -13,7 +14,8 @@ const reducer = {
     [diagraphApi.reducerPath]: diagraphApi.reducer,
     graph: graphReducer,
     auth: authReducer,
-    profile: profileReducer
+    profile: profileReducer,
+    shared: sharedReducer
 };
 
 export type RootState = ReturnType<typeof combinedReducer>;
