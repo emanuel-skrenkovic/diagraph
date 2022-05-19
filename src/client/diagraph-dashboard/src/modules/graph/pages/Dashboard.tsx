@@ -89,53 +89,55 @@ export function Dashboard() {
                 </div>
             </div>
             <div className="container">
-                {selectedMeasurement && (
-                    <div className="container vertical box item">
-                        <button className="button"
-                                onClick={() => setSelectedMeasurement(undefined)}>
-                            x
-                        </button>
-                        <label>Date: </label>
-                        <input disabled value={selectedMeasurement!.takenAt.toLocaleString()} />
-                        <label>Glucose mmol/L</label>
-                        <input disabled value={selectedMeasurement!.level} />
-                    </div>
-                )}
-                {selectedEvent && (
-                    <>
-                        <div className="container vertical box">
-                            <button className="button" onClick={() => {
-                                setSelectedEvent(undefined);
-                                if (editing) setEditing(false);
-                            }}>
-                                Close
-                            </button>
-                            <button className="button" onClick={() => setEditing(!editing)}>
-                                Edit
-                            </button>
-                        </div>
-                        <EventForm
-                            value={selectedEvent}
-                            onSubmit={e => {
-                                updateEvent(e);
-                                setEditing(false);
-                            }}
-                            tagOptions={tagsData ?? []}
-                            submitButtonText="Save"
-                            disabled={!editing} />
-                    </>
-                )}
-            </div>
-            <div className="container">
                 <div className="item">
-                    <RecentEvents events={events} />
+                    {selectedMeasurement && (
+                        <div className="container vertical box item">
+                            <button className="button"
+                                    onClick={() => setSelectedMeasurement(undefined)}>
+                                x
+                            </button>
+                            <label>Date: </label>
+                            <input disabled value={selectedMeasurement!.takenAt.toLocaleString()} />
+                            <label>Glucose mmol/L</label>
+                            <input disabled value={selectedMeasurement!.level} />
+                        </div>
+                    )}
+                    {selectedEvent ? (
+                        <>
+                            <div className="container vertical box item">
+                                <button className="button centered" onClick={() => {
+                                    setSelectedEvent(undefined);
+                                    if (editing) setEditing(false);
+                                }}>
+                                    Close
+                                </button>
+                                <button className="button centered" onClick={() => setEditing(!editing)}>
+                                    Edit
+                                </button>
+                                <EventForm
+                                    value={selectedEvent}
+                                    onSubmit={e => {
+                                        updateEvent(e);
+                                        setEditing(false);
+                                    }}
+                                    tagOptions={tagsData ?? []}
+                                    submitButtonText="Save"
+                                    disabled={!editing} />
+                            </div>
+
+                        </>
+                    ) : (
+                        <div className="item">
+                            <EventForm
+                                value={EMPTY_EVENT}
+                                onSubmit={createEvent}
+                                tagOptions={tagsData ?? []}
+                                submitButtonText="Create Event" />
+                        </div>
+                    )}
                 </div>
                 <div className="item">
-                    <EventForm
-                        value={EMPTY_EVENT}
-                        onSubmit={createEvent}
-                        tagOptions={tagsData ?? []}
-                        submitButtonText="Create Event" />
+                    <RecentEvents events={events} />
                 </div>
             </div>
         </div>
