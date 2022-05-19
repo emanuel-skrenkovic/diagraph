@@ -9,7 +9,7 @@ import { Import } from 'modules/import';
 import { Dashboard } from 'modules/graph';
 import { Login, Register } from 'modules/auth';
 import { NavigationBar } from 'modules/navigation';
-import { Loader, ProtectedRoute } from 'modules/common';
+import { ErrorBoundary, Loader, ProtectedRoute } from 'modules/common';
 import { ImportEvents, Templates, EditTemplate } from 'modules/import-events';
 
 import 'App.css';
@@ -24,63 +24,65 @@ function App() {
 
     return (
         <div className="container wide">
-            <BrowserRouter>
-                <div className="container vertical wide">
-                    {authenticated &&
-                        <NavigationBar>
-                            <div className="container vertical wide">
-                                <div className="item">
-                                    <span><b>Diagraph</b></span>
-                                    <button className="button red"
-                                            style={{
-                                                width: "fit-content",
-                                                padding: "5px 10px 5px 10px",
-                                                float: "right",
-                                                marginLeft: "70%"
-                                            }}
-                                            onClick={logout}>
-                                        Log out
-                                    </button>
-                                    <span>Hello, {data?.userName}</span>
+            <ErrorBoundary>
+                <BrowserRouter>
+                    <div className="container vertical wide">
+                        {authenticated &&
+                            <NavigationBar>
+                                <div className="container vertical wide">
+                                    <div className="item">
+                                        <span><b>Diagraph</b></span>
+                                        <button className="button red"
+                                                style={{
+                                                    width: "fit-content",
+                                                    padding: "5px 10px 5px 10px",
+                                                    float: "right",
+                                                    marginLeft: "70%"
+                                                }}
+                                                onClick={logout}>
+                                            Log out
+                                        </button>
+                                        <span>Hello, {data?.userName}</span>
+                                    </div>
+                                    <div className="container wide item">
+                                        <Link className="item" to="/">Dashboard</Link>
+                                        <Link className="item" to="/import">Import</Link>
+                                        <Link className="item" to="/import-events">Import Events</Link>
+                                    </div>
                                 </div>
-                                <div className="container wide item">
-                                    <Link className="item" to="/">Dashboard</Link>
-                                    <Link className="item" to="/import">Import</Link>
-                                    <Link className="item" to="/import-events">Import Events</Link>
-                                </div>
-                            </div>
-                        </NavigationBar>
-                    }
-                    <Routes>
-                        <Route path="login" element={<Login />} />
-                        <Route path="register" element={<Register />} />
+                            </NavigationBar>
+                        }
+                        <Routes>
+                            <Route path="login" element={<Login />} />
+                            <Route path="register" element={<Register />} />
 
-                        <Route index element={
-                            <ProtectedRoute condition={authenticated} fallback="/login">
-                                <Dashboard />
-                            </ProtectedRoute>} />
-                        <Route path="import" element={
-                            <ProtectedRoute condition={authenticated} fallback="/login">
-                                <Import />
-                            </ProtectedRoute>} />
-                        <Route path="import-events" element={
-                            <ProtectedRoute condition={authenticated} fallback="/login">
-                                <ImportEvents />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="templates/add" element={
-                            <ProtectedRoute condition={authenticated} fallback="/login">
-                                <Templates />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="templates/edit" element={
-                            <ProtectedRoute condition={authenticated} fallback="/login">
-                                <EditTemplate />
-                            </ProtectedRoute>
-                        } />
-                    </Routes>
-                </div>
-            </BrowserRouter>
+                            <Route index element={
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <Dashboard />
+                                </ProtectedRoute>} />
+                            <Route path="import" element={
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <Import />
+                                </ProtectedRoute>} />
+                            <Route path="import-events" element={
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <ImportEvents />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="templates/add" element={
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <Templates />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="templates/edit" element={
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <EditTemplate />
+                                </ProtectedRoute>
+                            } />
+                        </Routes>
+                    </div>
+                </BrowserRouter>
+            </ErrorBoundary>
         </div>
     );
 }

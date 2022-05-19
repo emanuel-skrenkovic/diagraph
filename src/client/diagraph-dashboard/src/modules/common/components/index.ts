@@ -4,6 +4,7 @@ export * from './Loader';
 export * from './ScrollBar';
 export * from './LocalTime';
 export * from './TagSelector';
+export * from './ErrorBoundary';
 export * from './ProtectedRoute';
 export * from './FileUploadForm';
 export * from './MultiSelectForm';

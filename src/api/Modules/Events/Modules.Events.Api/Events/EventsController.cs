@@ -107,8 +107,7 @@ public class EventsController : ControllerBase
     [HttpGet]
     [Route("tags")]
     public async Task<IActionResult> GetTags()
-    {
-        return Ok
+        => Ok
         (
             await _context
                 .Events
@@ -118,5 +117,4 @@ public class EventsController : ControllerBase
                 .DistinctByField(t => t.Name)
                 .ToListAsync()
         );
-    }
 }
