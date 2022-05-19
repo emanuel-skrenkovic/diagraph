@@ -12,7 +12,7 @@ export const Register = () => {
 
     return (
         <div className="container vertical">
-            <div className="container">
+            <div className="container" style={{marginTop: "5%"}}>
                 <RegisterForm onSubmit={(email, password) => register({ email, password })} />
             </div>
             {isSuccess &&

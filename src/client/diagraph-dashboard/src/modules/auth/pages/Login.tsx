@@ -25,7 +25,7 @@ export const Login = () => {
 
     return (
         <div className="container vertical">
-            <div className="container">
+            <div className="container" style={{marginTop: "5%"}}>
                 <LoginForm onSubmit={onClickLogin} />
             </div>
             <div className="container item">
