@@ -3,8 +3,7 @@
 import React, { useState, useEffect, MouseEvent } from 'react';
 
 import { EventTag } from 'types';
-import { useGetTagsQuery } from 'services';
-import { For, Loader, MultiSelectForm, Tag } from 'modules/common';
+import { useTags, For, Loader, MultiSelectForm, Tag } from 'modules/common';
 
 export interface TagSelectorProps {
     initialSelectedTags: EventTag[];
@@ -15,27 +14,22 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
     const [availableTags, setAvailableTags] = useState<EventTag[]>([]);
     const [selectedTags, setSelectedTags]   = useState<EventTag[]>(initialSelectedTags);
 
-    const {
-        data:      tagsData,
-        isLoading: isTagsLoading,
-        isSuccess: isTagsSuccess,
-        isError:   isTagsError,
-        error:     tagsError
-    } = useGetTagsQuery(undefined);
+    const [tags, isLoading] = useTags();
 
     useEffect(() => {
-        if (!tagsData) return;
-        const newAvailableTags = tagsData.filter(
+        if (!tags) return;
+        const newAvailableTags = tags.filter(
             t => !selectedTags.map(st => st.name).includes(t.name)
         );
 
         setAvailableTags(newAvailableTags);
-    }, [isTagsSuccess, tagsData, selectedTags]);
+        setSelectedTags(initialSelectedTags);
+    }, [initialSelectedTags, tags, selectedTags]);
 
     function updateSelectedTags(updated: EventTag[]) {
         setSelectedTags(updated);
         setAvailableTags(
-            tagsData!.filter(
+            tags!.filter(
                 t => !updated.map(st => st.name).includes(t.name)
             )
         );
@@ -64,7 +58,10 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
 
     function newTagForm(e: MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        setSelectedTags([...selectedTags, { name: '' } as EventTag]);
+
+        const updated = [...selectedTags, { name: '' } as EventTag];
+        setSelectedTags(updated);
+        onChange(updated);
     }
 
     function onTagChanged(newValue: string, index: number) {
@@ -72,10 +69,10 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
         updated[index] = { name: newValue } as EventTag;
 
         setSelectedTags(updated);
+        onChange(updated);
     }
 
-    if (isTagsLoading) return <Loader />;
-    if (isTagsError) console.error(tagsError); // TODO
+    if (isLoading) return <Loader />;
 
     return (
         <div className="container vertical">

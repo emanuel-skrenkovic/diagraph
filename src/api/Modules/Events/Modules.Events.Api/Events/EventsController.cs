@@ -44,7 +44,7 @@ public class EventsController : ControllerBase
         await _context
             .Events
             .WithUser(_userContext.UserId)
-            .Include(nameof(Event.Tags)) // TODO: remove from here, pull event
+            .Include(e => e.Tags) // TODO: remove from here, pull event
             .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
             .OrderBy(e => e.OccurredAtUtc)
             .ToListAsync()
