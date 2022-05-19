@@ -146,12 +146,13 @@ public class TemplateLanguageParser
 
             List<string> regexMatches = new() { input };
             function(regexMatches, args[0]);
-            
 
             if (regexMatches.Count > 1)
             {
+                string valueBase = results.FirstOrDefault("");
+                
                 results.Clear();
-                results.AddRange(regexMatches);
+                results.AddRange(regexMatches.Select(m => valueBase + m));
             }
             else
             {
@@ -184,7 +185,6 @@ public class TemplateLanguageParser
         
         Regex regex = new(regEx);
         MatchCollection matches = regex.Matches(input);
-
 
         if (matches.Any())
         {

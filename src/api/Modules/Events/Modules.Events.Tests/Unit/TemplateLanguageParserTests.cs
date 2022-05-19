@@ -156,6 +156,36 @@ public class TemplateLanguageParserTests
     }
     
     [Fact]
+    public void Append_Data_Matching_Selector_Regex_With_Multiple_Matches()
+    {
+        const string date = "23:00h";
+        const string date2 = "23:30h";
+        const string textField = "Field";
+        
+        const string dateLiteral = "2020-01-01 ";
+        const string dateField = "DateTime";
+        
+        const string eventField = "occurredAtUtc";
+         
+        Dictionary<string, object> initialData = new();
+        Dictionary<string, object> data        = new()
+        {
+            [dateField] = dateLiteral,
+            [textField] = $"unrelated text\n{date}\nmore unrelated text {date2}"
+        };
+                
+        var parser = new TemplateLanguageParser(initialData, data);
+        var results = parser
+            .ApplyRule($"{eventField} = @{dateField} + @{textField}.regex(\"\\d*:\\d*\")")
+            .ToList();
+        
+        Assert.Equal(2, results.Count);
+        // TODO: correct assert
+        Assert.Contains(results, result => (string)result[eventField] == dateLiteral + "23:00");
+        Assert.Contains(results, result => (string)result[eventField] == dateLiteral + "23:30");
+    }
+    
+    [Fact]
     public void Appends_Data_Matching_Selector_Regex_To_Selector()
     {
         const string date = "text 23:00h";
