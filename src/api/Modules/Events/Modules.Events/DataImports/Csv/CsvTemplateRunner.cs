@@ -20,26 +20,23 @@ public class CsvTemplateRunner : ITemplateRunner
 
         foreach (HeaderMappings map in _template.HeaderMappings)
         {
-            Dictionary<string, object> eventData = new()
+            Dictionary<string, object> initialData = new()
             {
                 [nameof(Event.Text)] = expando[map.Header],
                 [nameof(Event.Tags)] = map.Tags
             };
 
-            if (map.Rules?.Any() == true)
+            if (map.Rules?.Any() != true) continue;
+            
+            foreach (Rule rule in map.Rules)
             {
-                TemplateLanguageParser parser = new(eventData, row);
-                foreach (Rule rule in map.Rules)
+                TemplateLanguageParser parser = new(initialData, row);
+                foreach (var mappingResult in 
+                         parser.ApplyRule(rule.Expression, new[] { "occurredAtUtc" }))
                 {
-                    parser.ApplyRule
-                    (
-                        rule.Expression,
-                        new[] { "occurredAtUtc" } // TODO: configuration?
-                    );
+                    yield return _mapper.Map<Event>(mappingResult);
                 }
             }
-
-            yield return _mapper.Map<Event>(eventData);
         }
     }
 }

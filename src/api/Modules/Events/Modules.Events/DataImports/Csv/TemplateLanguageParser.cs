@@ -12,25 +12,29 @@ public class TemplateLanguageParser
     private Token _previous;
     private Token _current;
 
-    private readonly IDictionary<string, object> _eventData;
+    private readonly IDictionary<string, object> _initialData;
     private readonly IDictionary<string, object> _data;
 
-    private readonly Dictionary<string, Func<string, string, string>> _functions = new()
+    private readonly Dictionary<string, Action<List<string>, string>> _functions = new()
     {
         ["regex"] = ApplyRegex
     };
 
     public TemplateLanguageParser
     (
-        IDictionary<string, object> eventData,
+        IDictionary<string, object> initialData,
         IDictionary<string, object> data 
     )
     {
-        _eventData  = eventData;
-        _data       = data;
+        _initialData = initialData;
+        _data        = data;
     }
     
-    public void ApplyRule(string expression, string[] allowedFields = null)
+    public IEnumerable<Dictionary<string, object>> ApplyRule
+    (
+        string expression, 
+        string[] allowedFields = null
+    )
     {
         Ensure.NotNullOrEmpty(expression);
 
@@ -52,12 +56,12 @@ public class TemplateLanguageParser
         Consume(Symbol.Equal, "Event identifier must be followed by '='.");
         
         Token current = _current;
-        string result = "";
+        List<string> results = new() { "" };
         while (current != null)
         {
             try
             {
-                result = AddExpr(result);
+                AddExpr(results);
                 current = Advance();
             }
             catch (ParseEnd)
@@ -65,50 +69,56 @@ public class TemplateLanguageParser
                 break;
             }
         }
-        
-        _eventData[field.Value] = result;
+
+        List<Dictionary<string, object>> mappedEventData = new();
+
+        foreach (string result in results)
+        {
+            Dictionary<string, object> values = new(_initialData);
+            values[field.Value] = result;
+            
+            mappedEventData.Add(values);
+        }
 
         _tokens.Clear();
         _current  = null;
         _position = -1;
+
+        return mappedEventData;
     }
     
-    private string AddExpr(string result)
+    private void AddExpr(List<string> results)
     {
-        result = SelectorExpr(result);
+        SelectorExpr(results);
         
         while (Match(Symbol.Plus))
         {
-            result = SelectorExpr(result);
+            SelectorExpr(results);
         }
-
-        return result;
     }
     
-    private string SelectorExpr(string result)
+    private void SelectorExpr(List<string> result)
     {
-        result = LiteralExpr(result);
+        LiteralExpr(result);
         
         if (Check(Symbol.Selector))
         {
             if (PeekNext().Type == Symbol.Dot)
             {
                 Advance();
-                result = CallExpr(result);
+                CallExpr(result);
             }
             else
             {
                 if (_data.ContainsKey(_current.Value))
                 {
-                    result += _data[_current.Value];
+                    result[0] = result[0] += _data[_current.Value];
                 }                
             }
         }
-        
-        return result;
     }
 
-    private string CallExpr(string result)
+    private void CallExpr(List<string> results)
     {
         _data.TryGetValue(_previous.Value, out object inputObj);
         string input = inputObj as string ?? "";
@@ -130,10 +140,23 @@ public class TemplateLanguageParser
                 "Function call dot (.) operator must be followed by an open bracket."
             );
 
-            string arg = LiteralExpr("");
+            List<string> args = new() { "" };
+            LiteralExpr(args);
             var function = _functions[functionIdentifier];
-            result += function(input, arg);
+
+            List<string> regexMatches = new() { input };
+            function(regexMatches, args[0]);
             
+
+            if (regexMatches.Count > 1)
+            {
+                results.Clear();
+                results.AddRange(regexMatches);
+            }
+            else
+            {
+                results[0] += regexMatches[0];
+            }
             /*
             Advance();
             Consume(Symbol.RightParen, "Function argument must be closed with a right bracket ')'.");
@@ -141,32 +164,45 @@ public class TemplateLanguageParser
         }
         else
         {
-            result = LiteralExpr(result);
+            LiteralExpr(results);
         }
-
-        return result;
     }
 
-    private string LiteralExpr(string result)
+    private void LiteralExpr(List<string> result)
     {
         if (Check(Symbol.Literal))
         {
-            result += _current.Value;
+            result[0] += _current.Value;
         }
-        
-        return result;
     }
 
-    private static string ApplyRegex(string result, string regEx)
+    private static void ApplyRegex(List<string> results, string regEx)
     {
         Ensure.NotNullOrEmpty(regEx);
+
+        string input = results.First();
         
         Regex regex = new(regEx);
-        Match match = regex.Match(result);
+        MatchCollection matches = regex.Matches(input);
 
+
+        if (matches.Any())
+        {
+            results.Clear();
+            
+            foreach (Match match in matches)
+            {
+                results.Add(!string.IsNullOrWhiteSpace(match.Value) 
+                    ? match.Value 
+                    : results[0]);
+            } 
+        }
+
+        /*
         return !string.IsNullOrWhiteSpace(match.Value) 
             ? match.Value 
             : result;
+        */
     }
 
     private void ScanTokens(string expression)

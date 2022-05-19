@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Diagraph.Modules.Events.DataImports.Csv;
 using Xunit;
 
@@ -10,24 +11,25 @@ public class TemplateLanguageParserTests
     [Fact]
     public void Assigns_Literal_To_Field()
     {
-        Dictionary<string, object> eventData = new();
-        Dictionary<string, object> data      = new();
-        var parser = new TemplateLanguageParser(eventData, data);
+        Dictionary<string, object> initialData = new();
+        Dictionary<string, object> data        = new();
+        var parser = new TemplateLanguageParser(initialData, data);
 
         const string date = "2020-01-01";
         const string field = "occurredAtUtc";
         
-        parser.ApplyRule($"{field} = \"{date}\"");
+        var result = parser.ApplyRule($"{field} = \"{date}\"").FirstOrDefault();
 
-        Assert.Equal(date, eventData[field]);
+        Assert.NotNull(result);
+        Assert.Equal(date, result[field]);
     }
 
     [Fact]
     public void Appends_Literals()
     {
-        Dictionary<string, object> eventData = new();
-        Dictionary<string, object> data      = new();
-        var parser = new TemplateLanguageParser(eventData, data);
+        Dictionary<string, object> initialData = new();
+        Dictionary<string, object> data        = new();
+        var parser = new TemplateLanguageParser(initialData, data);
 
         const string part1 = "2020-01-01";
         const string part2 = " ";
@@ -35,9 +37,12 @@ public class TemplateLanguageParserTests
         
         const string field = "occurredAtUtc";
         
-        parser.ApplyRule($"{field} = \"{part1}\" + \"{part2}\" + \"{part3}\"");
+        var result = parser
+            .ApplyRule($"{field} = \"{part1}\" + \"{part2}\" + \"{part3}\"")
+            .FirstOrDefault();
 
-        Assert.Equal(part1 + part2 + part3, eventData[field]); 
+        Assert.NotNull(result);
+        Assert.Equal(part1 + part2 + part3, result[field]); 
     }
 
     [Fact]
@@ -47,13 +52,14 @@ public class TemplateLanguageParserTests
         const string dataField = "Field";
         const string eventField = "occurredAtUtc";
         
-        Dictionary<string, object> eventData = new();
-        Dictionary<string, object> data      = new() { [dataField] = date };
-        var parser = new TemplateLanguageParser(eventData, data);
+        Dictionary<string, object> initialData = new();
+        Dictionary<string, object> data        = new() { [dataField] = date };
+        var parser = new TemplateLanguageParser(initialData, data);
         
-        parser.ApplyRule($"{eventField} = @{dataField}");
+        var result = parser.ApplyRule($"{eventField} = @{dataField}").FirstOrDefault();
 
-        Assert.Equal(data[dataField], eventData[eventField]); 
+        Assert.NotNull(result);
+        Assert.Equal(data[dataField], result[eventField]); 
     }
     
     [Fact]
@@ -63,13 +69,14 @@ public class TemplateLanguageParserTests
         const string dataField = "Field With Space";
         const string eventField = "occurredAtUtc";
         
-        Dictionary<string, object> eventData = new();
-        Dictionary<string, object> data      = new() { [dataField] = date };
-        var parser = new TemplateLanguageParser(eventData, data);
+        Dictionary<string, object> initialData = new();
+        Dictionary<string, object> data        = new() { [dataField] = date };
+        var parser = new TemplateLanguageParser(initialData, data);
         
-        parser.ApplyRule($"{eventField} = @\"{dataField}\"");
+        var result = parser.ApplyRule($"{eventField} = @\"{dataField}\"").FirstOrDefault();
 
-        Assert.Equal(data[dataField], eventData[eventField]); 
+        Assert.NotNull(result);
+        Assert.Equal(data[dataField], result[eventField]); 
     }
     
     [Fact]
@@ -79,15 +86,16 @@ public class TemplateLanguageParserTests
         const string dataField = "Field";
         const string eventField = "occurredAtUtc";
         
-        Dictionary<string, object> eventData = new();
-        Dictionary<string, object> data      = new() { [dataField] = date };
-        var parser = new TemplateLanguageParser(eventData, data);
+        Dictionary<string, object> initialData = new();
+        Dictionary<string, object> data        = new() { [dataField] = date };
+        var parser = new TemplateLanguageParser(initialData, data);
 
         const string literal = "2020-01-01 ";
         
-        parser.ApplyRule($"{eventField} = \"{literal}\" + @{dataField}");
+        var result = parser.ApplyRule($"{eventField} = \"{literal}\" + @{dataField}").FirstOrDefault();
 
-        Assert.Equal(literal + data[dataField], eventData[eventField]); 
+        Assert.NotNull(result);
+        Assert.Equal(literal + data[dataField], result[eventField]); 
     }
     
     [Fact]
@@ -97,15 +105,16 @@ public class TemplateLanguageParserTests
         const string dataField = "Field";
         const string eventField = "occurredAtUtc";
         
-        Dictionary<string, object> eventData = new();
-        Dictionary<string, object> data      = new() { [dataField] = date };
-        var parser = new TemplateLanguageParser(eventData, data);
+        Dictionary<string, object> initialData = new();
+        Dictionary<string, object> data        = new() { [dataField] = date };
+        var parser = new TemplateLanguageParser(initialData, data);
 
         const string literal = "2020-01-01 ";
         
-        parser.ApplyRule($"{eventField} = @{dataField} + \"{literal}\"");
+        var result = parser.ApplyRule($"{eventField} = @{dataField} + \"{literal}\"").FirstOrDefault();
 
-        Assert.Equal(data[dataField] + literal, eventData[eventField]); 
+        Assert.NotNull(result);
+        Assert.Equal(data[dataField] + literal, result[eventField]); 
     }
 
     [Fact]
@@ -121,9 +130,29 @@ public class TemplateLanguageParserTests
         }; 
                 
         var parser = new TemplateLanguageParser(eventData, data);
-        parser.ApplyRule($"{eventField} = @Time.regex(\"\\d*:\\d*\")"); 
+        var result = parser.ApplyRule($"{eventField} = @Time.regex(\"\\d*:\\d*\")").FirstOrDefault();
         
-        Assert.Equal(time, eventData[eventField]);
+        Assert.NotNull(result);
+        Assert.Equal(time, result[eventField]);
+    }
+    
+    [Fact]
+    public void Assigns_Data_Matching_Selector_Regex_With_Multiple_Matches()
+    {
+        const string time = "23:00";
+        const string eventField = "occurredAtUtc";
+         
+        Dictionary<string, object> eventData = new();
+        Dictionary<string, object> data      = new()
+        {
+            ["Time"] = $"unrelated text\n{time}\nmore unrelated text {time}"
+        }; 
+                
+        var parser = new TemplateLanguageParser(eventData, data);
+        var results = parser.ApplyRule($"{eventField} = @Time.regex(\"\\d*:\\d*\")").ToList();
+        
+        Assert.Equal(2, results.Count);
+        Assert.Contains(results, result => (string)result[eventField] == time);
     }
     
     [Fact]
@@ -133,15 +162,18 @@ public class TemplateLanguageParserTests
         const string dataField = "Field";
         const string eventField = "occurredAtUtc";
         
-        Dictionary<string, object> eventData = new();
+        Dictionary<string, object> initialData = new();
         Dictionary<string, object> data      = new() { [dataField] = date };
-        var parser = new TemplateLanguageParser(eventData, data);
+        var parser = new TemplateLanguageParser(initialData, data);
 
         const string literal = "2020-01-01 ";
         
-        parser.ApplyRule($"{eventField} = @{dataField} + \"{literal}\" + @{dataField}.regex(\"\\d*:\\d*\")");
+        var result = parser
+            .ApplyRule($"{eventField} = @{dataField} + \"{literal}\" + @{dataField}.regex(\"\\d*:\\d*\")")
+            .FirstOrDefault();
 
-        Assert.Equal($"{data[dataField]}{literal}23:00", eventData[eventField]); 
+        Assert.NotNull(result);
+        Assert.Equal($"{data[dataField]}{literal}23:00", result[eventField]); 
     }
 
     [Fact]
@@ -170,8 +202,11 @@ public class TemplateLanguageParserTests
                 
         var parser = new TemplateLanguageParser(eventData, data);
 
-        parser.ApplyRule($"{eventField} = \"2020-01-01\"", new[] { eventField });
+        var result = parser
+            .ApplyRule($"{eventField} = \"2020-01-01\"", new[] { eventField })
+            .FirstOrDefault();
         
-        Assert.Contains(eventData, kv => kv.Key == eventField);
+        Assert.NotNull(result);
+        Assert.Contains(result, kv => kv.Key == eventField);
     }
 }
