@@ -19,7 +19,7 @@ function hoursFormat(date: Date) {
     return `${hours}:${minutes}`;
 }
 
-export function EventForm(props: EventFormProps) {
+export const EventForm = (props: EventFormProps) => {
     const [event, setEvent, error, validateEvent] = useValidation<Event>(
         event => !(event?.text)
             ? [false, 'Event text must not be empty.']
@@ -80,4 +80,4 @@ export function EventForm(props: EventFormProps) {
             </div>
         </form>
     )
-}
+};

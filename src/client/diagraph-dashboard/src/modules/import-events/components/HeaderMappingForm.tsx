@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 
 import { For, TagSelector } from 'modules/common';
 import { RuleForm } from 'modules/import-events';
@@ -19,6 +19,8 @@ const DEFAULT_MAPPING = {
 export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onSubmit }) => {
     const [editingRuleId, setEditingRuleId] = useState<number>(-1);
     const [template, setTemplate] = useState<TemplateHeaderMapping>(value ?? DEFAULT_MAPPING);
+
+    useEffect(() => setTemplate(value ?? DEFAULT_MAPPING), [value]);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();

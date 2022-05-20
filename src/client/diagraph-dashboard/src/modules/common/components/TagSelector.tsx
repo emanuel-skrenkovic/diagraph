@@ -1,9 +1,12 @@
 // noinspection JSDeprecatedSymbols
 
 import React, { useState, useEffect, MouseEvent } from 'react';
+import { useSelector } from 'react-redux';
 
 import { EventTag } from 'types';
-import { useTags, For, Loader, MultiSelectForm, Tag } from 'modules/common';
+import { RootState } from 'store';
+import { useGetTagsQuery} from 'services';
+import { For, Loader, MultiSelectForm, Tag } from 'modules/common';
 
 export interface TagSelectorProps {
     initialSelectedTags: EventTag[];
@@ -11,10 +14,12 @@ export interface TagSelectorProps {
 }
 
 export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, onChange }) => {
+    const tags = useSelector((state: RootState) => state.shared.tags);
+
     const [availableTags, setAvailableTags] = useState<EventTag[]>([]);
     const [selectedTags, setSelectedTags]   = useState<EventTag[]>(initialSelectedTags);
 
-    const [tags, isLoading] = useTags();
+
 
     useEffect(() => {
         if (!tags) return;
@@ -72,7 +77,12 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
         onChange(updated);
     }
 
-    if (isLoading) return <Loader />;
+    {
+        const { isLoading, isError, error } = useGetTagsQuery(undefined);
+
+        if (isError)   console.error(error);
+        if (isLoading) return <Loader/>;
+    }
 
     return (
         <div className="container vertical">

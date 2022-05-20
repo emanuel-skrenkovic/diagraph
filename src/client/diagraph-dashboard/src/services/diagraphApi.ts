@@ -1,6 +1,6 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery, FetchBaseQueryMeta } from '@reduxjs/toolkit/query/react';
 
-
+import { setTags } from 'modules/common';
 import { login, logout } from 'modules/auth';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
 import { Event, GlucoseMeasurement, EventTag, ImportTemplate } from 'types';
@@ -39,7 +39,11 @@ export const diagraphApi = createApi({
         }),
 
         getTags: builder.query<EventTag[], any>({
-            query: () => ({ url: 'events/tags' })
+            query: () => ({ url: 'events/tags' }),
+            async onQueryStarted(api, { dispatch, queryFulfilled }) {
+                const { data } = await queryFulfilled;
+                dispatch(setTags(data ?? []));
+            },
         }),
 
         importEvents: builder.mutation<any, any>({
@@ -124,8 +128,12 @@ export const diagraphApi = createApi({
             query: id => ({ url: `events/import-templates/${id}`, method: 'GET' }),
             providesTags: [{ type: 'ImportTemplates', id: 'all'}] // TODO: single id
         }),
-        createImportTemplate: builder.mutation<any, any>({
+        createImportTemplate: builder.mutation<string, any>({
             query: template => ({ url: 'events/import-templates', method: 'POST', body: template }),
+            transformResponse(apiResponse, meta: FetchBaseQueryMeta) {
+                const location = meta?.response?.headers.get('location');
+                return location!.split('/').pop()!;
+            }
         }),
         updateImportTemplate: builder.mutation<any, { template: ImportTemplate, id: string }>({
             query: ({ template, id }) => ({ url: `events/import-templates/${id}`, method: 'PUT', body: template} ),
