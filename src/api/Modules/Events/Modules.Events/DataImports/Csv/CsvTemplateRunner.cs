@@ -32,7 +32,7 @@ public class CsvTemplateRunner : ITemplateRunner
             {
                 TemplateLanguageParser parser = new(initialData, row);
                 foreach (var mappingResult in 
-                         parser.ApplyRule(rule.Expression, new[] { "occurredAtUtc" }))
+                         parser.ApplyRule(rule.Expression, new[] { "occurredAtUtc", "text" }))
                 {
                     yield return _mapper.Map<Event>(mappingResult);
                 }
