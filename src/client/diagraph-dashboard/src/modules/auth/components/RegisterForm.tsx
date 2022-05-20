@@ -6,7 +6,7 @@ import 'App.css';
 
 function passwordValidation(password: string | undefined): [boolean, string] {
     if (!password) return [false, 'Password must not be empty.'];
-    return [false, ''];
+    return [true, ''];
 }
 
 function emailValidation(email: string | undefined): [boolean, string] {
