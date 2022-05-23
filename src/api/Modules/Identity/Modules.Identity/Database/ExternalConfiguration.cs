@@ -1,3 +1,4 @@
+using Diagraph.Modules.Identity.ExternalIntegrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

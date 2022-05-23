@@ -4,6 +4,7 @@ using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Identity.Database;
+using Diagraph.Modules.Identity.ExternalIntegrations.Google;
 using Diagraph.Modules.Identity.Registration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,14 @@ public class IdentityModule : Module
             Port = configuration.GetValue<int>("Mailhog:Port")
         });
         services.AddScoped<IEmailClient, EmailClient>();
+
+        services.AddSingleton(new GoogleConfiguration
+        {
+            AuthUrl      = configuration["Google:AuthUrl"],
+            RedirectUrl  = configuration["Google:RedirectUrl"],
+            ClientId     = configuration["Google:ClientId"],
+            ClientSecret = configuration["Google:ClientSecret"]
+        });
 
         services.AddScoped<PasswordTool>();
         services.AddScoped<IHashTool, Sha256HashTool>();

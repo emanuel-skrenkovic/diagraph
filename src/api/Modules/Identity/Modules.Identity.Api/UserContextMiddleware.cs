@@ -12,9 +12,11 @@ public static class UserContextMiddleware
         if (context.User.Identity?.IsAuthenticated == true)
         {
             // lol
-            UserContext userContext = (UserContext) context
+            UserContext userContext = context
                 .RequestServices
-                .GetRequiredService<IUserContext>();
+                .GetRequiredService<IUserContext>() as UserContext;
+
+            if (userContext is null) return next();
         
             userContext.UserId = Guid.Parse
             (

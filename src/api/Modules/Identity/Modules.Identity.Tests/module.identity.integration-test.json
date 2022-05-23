@@ -13,5 +13,11 @@
     "From": "noreply@diagraph.com",
     "Host": "localhost",
     "Port": 1025
+  },
+  "Google": {
+    "AuthUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+    "RedirectUrl": "https://localhost:7053/auth/external-access/google/scopes/confirm",
+    "ClientId": "b8b42ce8-db8c-4e90-ae1f-46127983117a",
+    "ClientSecret": "bee915a1-8908-4380-93e9-ca7c5116677f"
   }
 }
