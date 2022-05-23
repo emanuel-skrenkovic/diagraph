@@ -31,13 +31,13 @@ internal static class OpenPortsFinder
 
     private static bool CheckPort(int port)
     {
-        if (Ports.ContainsKey(port))           return false;
+        if (Ports.ContainsKey(port)) return false;
         
-        IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+        IPGlobalProperties ipGlobalProperties       = IPGlobalProperties.GetIPGlobalProperties();
         TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
         
         if (tcpConnInfoArray.Select(i => i.LocalEndPoint.Port).Contains(port)) return false; 
-        if (!Ports.TryAdd(port, Byte.MinValue)) return false; // TODO: redundant?
+        if (!Ports.TryAdd(port, Byte.MinValue))                                return false; // TODO: redundant?
 
         return true;
     }
