@@ -18,35 +18,36 @@ public class GoogleExternalAccessController : ControllerBase
     private readonly IdentityDbContext   _context;
     private readonly IUserContext        _userContext;
     private readonly GoogleConfiguration _configuration;
+    private readonly GoogleScopes _scopes;
 
     public GoogleExternalAccessController
     (
         IdentityDbContext   context, 
         IUserContext        userContext,
-        GoogleConfiguration configuration
+        GoogleConfiguration configuration,
+        GoogleScopes        scopes
     )
     {
         _context       = context;
         _userContext   = userContext;
         _configuration = configuration;
+        _scopes        = scopes;
     }
     
     [HttpPost]
     [Route("scopes/request")]
-    public IActionResult RequestGoogleScopesAccess
-    (
-        [FromBody] RequestGoogleScopesAccessCommand command
-    )
+    public async Task<IActionResult> RequestGoogleScopesAccess([FromQuery] string redirectUrl)
     {
-        if (command.Scopes?.Any() != true) return BadRequest();
-        UriBuilder builder = new(_configuration.AuthUrl);
+        UriBuilder builder         = new(_configuration.AuthUrl);
+        IEnumerable<string> scopes = await _scopes.RequestRequiredAsync("tasks", "v1");
         
         NameValueCollection query = HttpUtility.ParseQueryString("");
         query.Add(OAuth2Constants.GrantType, OAuth2Constants.GrantTypes.AuthorizationCode);
-        query.Add(OAuth2Constants.Scope, command.Scopes.Aggregate((acc, val) => $"{acc} {val}"));
+        query.Add(OAuth2Constants.Scope, scopes.Aggregate((acc, val) => $"{acc} {val}"));
         query.Add(OAuth2Constants.ClientId, _configuration.ClientId);
         query.Add(OAuth2Constants.ClientSecret, _configuration.ClientSecret);
-        query.Add(OAuth2Constants.RedirectUri, _configuration.RedirectUrl);
+        query.Add(OAuth2Constants.RedirectUri, redirectUrl);
+        
         builder.Query = query.ToString()!;
        
         return Ok
@@ -83,19 +84,12 @@ public class GoogleExternalAccessController : ControllerBase
             new GoogleIntegrationInfo
             {
                 AuthUrl       = _configuration.AuthUrl,
-                RedirectUrl   = _configuration.RedirectUrl,
                 GrantedScopes = command.Scopes
             }
         );
 
-        if (newIntegration)
-        {
-            _context.Add(external);
-        }
-        else
-        {
-            _context.Update(external); 
-        }
+        if (newIntegration) _context.Add(external);
+        else                _context.Update(external); 
         
         await _context.SaveChangesAsync();
         
@@ -104,7 +98,7 @@ public class GoogleExternalAccessController : ControllerBase
     
     [HttpGet]
     [Route("scopes")]
-    public async Task<IActionResult> RequestGoogleScopesAccess()
+    public async Task<IActionResult> RequestAvailableScopes()
     {
         External external = await _context
             .UserExternalIntegrations
@@ -113,7 +107,8 @@ public class GoogleExternalAccessController : ControllerBase
 
         return Ok
         (
-            new { 
+            new 
+            { 
                 GrantedScopes = external
                     ?.GetData<GoogleIntegrationInfo>()
                     .GrantedScopes ?? Array.Empty<string>()

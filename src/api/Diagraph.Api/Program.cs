@@ -5,6 +5,7 @@ using Diagraph.Modules.GlucoseData.Api;
 using Diagraph.Modules.Identity.Api;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables(prefix: "DIAGRAPH_");
 
 string env = builder.Environment.EnvironmentName;
 builder.Services.LoadModule<IdentityModule>(env);

@@ -3,10 +3,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Diagraph.Infrastructure.Tests.AutoFixture;
-using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google;
 using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
@@ -24,30 +22,6 @@ public class GoogleIntegrationsTests
 
     public GoogleIntegrationsTests(IdentityFixture fixture) 
         => _fixture = fixture;
-
-    [Theory, CustomizedAutoData]
-    public async Task Returns_Scopes_Request_Google_Url(RequestGoogleScopesAccessCommand command)
-    {
-        // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsJsonAsync
-        (
-            "auth/external-access/google/scopes/request",
-            command
-        );
-
-        // Assert
-        response.IsSuccessStatusCode.Should().BeTrue();
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var responseBody = JsonSerializer.Deserialize<RequestGoogleScopesAccessResponse>
-        (
-            await response.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-        );
-
-        responseBody.Should().NotBeNull();
-        responseBody!.RedirectUri.Should().NotBeNullOrWhiteSpace();
-    }
 
     [Theory, CustomizedAutoData]
     public async Task Creates_New_Integration(ConfirmGoogleScopesAccessCommand command)
