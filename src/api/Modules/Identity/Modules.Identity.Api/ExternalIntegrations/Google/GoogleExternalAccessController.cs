@@ -1,13 +1,14 @@
-using System.Collections.Specialized;
-using System.Web;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database.Extensions;
+using Diagraph.Infrastructure.Dynamic.Extensions;
 using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
 using Diagraph.Modules.Identity.ExternalIntegrations.Google;
+using Diagraph.Modules.Identity.OAuth2;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using IAuthorizationCodeFlow = Diagraph.Modules.Identity.OAuth2.IAuthorizationCodeFlow;
 
 namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google;
 
@@ -15,47 +16,44 @@ namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google;
 [Route("auth/external-access/google")]
 public class GoogleExternalAccessController : ControllerBase
 {
-    private readonly IdentityDbContext   _context;
-    private readonly IUserContext        _userContext;
-    private readonly GoogleConfiguration _configuration;
-    private readonly GoogleScopes _scopes;
+    private readonly IdentityDbContext      _context;
+    private readonly IUserContext           _userContext;
+    private readonly GoogleScopes           _scopes;
+    private readonly UserProfileManager     _userProfileManager;
+    private readonly IAuthorizationCodeFlow _authFlow;
 
     public GoogleExternalAccessController
     (
-        IdentityDbContext   context, 
-        IUserContext        userContext,
-        GoogleConfiguration configuration,
-        GoogleScopes        scopes
+        IdentityDbContext      context, 
+        IUserContext           userContext,
+        GoogleScopes           scopes,
+        UserProfileManager     userProfileManager,
+        IAuthorizationCodeFlow authFlow
     )
     {
-        _context       = context;
-        _userContext   = userContext;
-        _configuration = configuration;
-        _scopes        = scopes;
+        _context            = context;
+        _userContext        = userContext;
+        _scopes             = scopes;
+        _userProfileManager = userProfileManager;
+        _authFlow           = authFlow;
     }
     
-    [HttpPost]
+    [HttpGet]
     [Route("scopes/request")]
-    public async Task<IActionResult> RequestGoogleScopesAccess([FromQuery] string redirectUrl)
-    {
-        UriBuilder builder         = new(_configuration.AuthUrl);
-        IEnumerable<string> scopes = await _scopes.RequestRequiredAsync("tasks", "v1");
-        
-        NameValueCollection query = HttpUtility.ParseQueryString("");
-        query.Add(OAuth2Constants.GrantType, OAuth2Constants.GrantTypes.AuthorizationCode);
-        query.Add(OAuth2Constants.Scope, scopes.Aggregate((acc, val) => $"{acc} {val}"));
-        query.Add(OAuth2Constants.ClientId, _configuration.ClientId);
-        query.Add(OAuth2Constants.ClientSecret, _configuration.ClientSecret);
-        query.Add(OAuth2Constants.RedirectUri, redirectUrl);
-        
-        builder.Query = query.ToString()!;
-       
-        return Ok
+    public async Task<IActionResult> RequestGoogleScopesAccess([FromQuery] string redirectUri) 
+        => Ok
         (
-            new RequestGoogleScopesAccessResponse { RedirectUri = builder.ToString() }
+            new RequestGoogleScopesAccessResponse
+            {
+                RedirectUri = _scopes.GenerateRequestsScopesUrl
+                (
+                    await _scopes.RequestRequiredAsync("tasks", "v1"),
+                    redirectUri
+                )
+            }
         );
-    }
 
+    // TODO: refactor the entire procedure.
     [HttpPut]
     [Route("scopes/confirm")]
     public async Task<IActionResult> ConfirmGoogleScopesAccess
@@ -63,6 +61,12 @@ public class GoogleExternalAccessController : ControllerBase
         [FromBody] ConfirmGoogleScopesAccessCommand command
     )
     {
+        OAuth2TokenResponse tokenResponse = await _authFlow.ExecuteAsync
+        (
+            command.Code, 
+            command.RedirectUri
+        );
+        
         External external = await _context
             .UserExternalIntegrations
             .WithUser(_userContext.UserId)
@@ -83,14 +87,20 @@ public class GoogleExternalAccessController : ControllerBase
         (
             new GoogleIntegrationInfo
             {
-                AuthUrl       = _configuration.AuthUrl,
-                GrantedScopes = command.Scopes
+                GrantedScopes = command.Scope,
+                RefreshToken  = tokenResponse.RefreshToken
             }
         );
 
         if (newIntegration) _context.Add(external);
-        else                _context.Update(external); 
-        
+        else                _context.Update(external);
+
+        UserProfile profile = await _userProfileManager.GetOrAddProfile(_userContext.UserId);
+        profile.UpdateData<UserProfile, Dictionary<string, object>>
+        (
+            data => data["googleIntegration"] = true
+        );
+
         await _context.SaveChangesAsync();
         
         return Ok();

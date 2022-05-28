@@ -4,6 +4,7 @@ using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.Tests;
 using Diagraph.Modules.Identity.Database;
+using Diagraph.Modules.Identity.OAuth2;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
@@ -27,5 +28,18 @@ public class IdentityFixture : DatabaseModuleFixture<IdentityDbContext>
 
         services.AddScoped(_ => emailClientMock.Object);
         services.AddScoped(_ => userContextMock.Object);
+
+        Mock<IAuthorizationCodeFlow> authCodeFlowMock = new();
+        authCodeFlowMock.Setup
+        (
+            f => 
+                f.ExecuteAsync
+                (
+                    It.IsAny<string>(), 
+                    It.IsAny<string>()
+                )
+        ).ReturnsAsync(new OAuth2TokenResponse { RefreshToken = "refresh_token" });
+
+        services.AddScoped(_ => authCodeFlowMock.Object);
     }
 }

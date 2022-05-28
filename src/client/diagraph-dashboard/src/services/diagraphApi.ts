@@ -191,6 +191,19 @@ export const diagraphApi = createApi({
                 method: 'POST',
                 body: request
             })
+        }),
+
+        googleIntegration: builder.query<any, string>({
+            query: redirect => ({
+                url: `/auth/external-access/google/scopes/request?redirectUri=${redirect}`
+            })
+        }),
+        googleIntegrationConfirm: builder.mutation<any, any>({
+            query: request => ({
+                url: '/auth/external-access/google/scopes/confirm',
+                method: 'PUT',
+                body: request
+            })
         })
     })
 });
@@ -214,4 +227,6 @@ export const {
     useGetSessionQuery,
     useLoginMutation,
     useLogoutMutation,
-    useRegisterMutation } = diagraphApi;
+    useRegisterMutation,
+    useGoogleIntegrationQuery,
+    useGoogleIntegrationConfirmMutation } = diagraphApi;

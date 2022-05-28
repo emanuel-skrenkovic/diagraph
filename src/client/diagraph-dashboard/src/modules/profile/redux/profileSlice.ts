@@ -4,12 +4,14 @@ export interface Profile {
     showLowLimit: boolean;
     showHighLimit: boolean;
     showAverage: boolean;
+    googleIntegration: boolean;
 }
 
 export const defaultProfile: Profile = {
-    showLowLimit:  false,
-    showHighLimit: false,
-    showAverage:   false
+    showLowLimit:      false,
+    showHighLimit:     false,
+    showAverage:       false,
+    googleIntegration: false
 }
 
 export interface ProfileState {

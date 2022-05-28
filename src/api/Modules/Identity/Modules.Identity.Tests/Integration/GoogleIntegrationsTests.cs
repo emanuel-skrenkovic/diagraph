@@ -49,7 +49,8 @@ public class GoogleIntegrationsTests
 
             var info = external!.GetData<GoogleIntegrationInfo>();
             info.Should().NotBeNull();
-            info.GrantedScopes.Should().IntersectWith(command.Scopes);
+            info.GrantedScopes.Should().IntersectWith(command.Scope);
+            info.RefreshToken.Should().NotBeNullOrWhiteSpace();
         });
         
         await _fixture.Postgres.CleanAsync();
@@ -71,7 +72,7 @@ public class GoogleIntegrationsTests
             command
         );
 
-        command2.Scopes = command2.Scopes.Concat(command.Scopes).ToArray();
+        command2.Scope = command2.Scope.Concat(command.Scope).ToArray();
         
         // Act
         HttpResponseMessage response = await _fixture.Client.PutAsJsonAsync
@@ -93,8 +94,9 @@ public class GoogleIntegrationsTests
 
             var info = external!.GetData<GoogleIntegrationInfo>();
             info.Should().NotBeNull();
-            info.GrantedScopes.Should().IntersectWith(command.Scopes);
-            info.GrantedScopes.Should().IntersectWith(command2.Scopes);
+            info.GrantedScopes.Should().IntersectWith(command.Scope);
+            info.GrantedScopes.Should().IntersectWith(command2.Scope);
+            info.RefreshToken.Should().NotBeNullOrWhiteSpace();
         });
 
         await _fixture.Postgres.CleanAsync();

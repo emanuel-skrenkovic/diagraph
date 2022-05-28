@@ -11,6 +11,7 @@ import { Login, Register } from 'modules/auth';
 import { NavigationBar } from 'modules/navigation';
 import { ErrorBoundary, Loader, ProtectedRoute } from 'modules/common';
 import { ImportEvents, Templates, EditTemplate } from 'modules/import-events';
+import { GoogleIntegration, GoogleIntegrationConfirm } from 'modules/google-integration';
 
 import 'App.css';
 
@@ -48,6 +49,7 @@ function App() {
                                         <Link className="item" to="/">Dashboard</Link>
                                         <Link className="item" to="/import">Import</Link>
                                         <Link className="item" to="/import-events">Import Events</Link>
+                                        <Link className="item" to="/integrations/google">Google integration</Link>
                                     </div>
                                 </div>
                             </NavigationBar>
@@ -77,6 +79,16 @@ function App() {
                             <Route path="templates/edit" element={
                                 <ProtectedRoute condition={authenticated} fallback="/login">
                                     <EditTemplate />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="integrations/google" element={
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <GoogleIntegration />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="integrations/google/confirm" element={
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <GoogleIntegrationConfirm />
                                 </ProtectedRoute>
                             } />
                         </Routes>

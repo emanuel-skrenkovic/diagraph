@@ -6,6 +6,7 @@ using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations.Google;
 using Diagraph.Modules.Identity.ExternalIntegrations.Google.Configuration;
+using Diagraph.Modules.Identity.OAuth2;
 using Diagraph.Modules.Identity.Registration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +32,8 @@ public class IdentityModule : Module
                 .GetSection(DatabaseConfiguration.SectionName)
                 .Get<DatabaseConfiguration>()
         );
+
+        services.AddScoped<UserProfileManager>();
         
         services.AddSingleton(new EmailServerConfiguration
         {
@@ -40,10 +43,18 @@ public class IdentityModule : Module
         });
         services.AddScoped<IEmailClient, EmailClient>();
 
-        services.AddSingleton(new GoogleConfiguration
+        services.AddTransient(_ => new GoogleConfiguration
         {
-            AuthUrl      = configuration["Google:AuthUrl"]
+            AuthUrl      = configuration["Google:AuthUrl"],
+            ClientId     = Environment.GetEnvironmentVariable("DIAGRAPH_GOOGLE_CLIENT_ID"),
+            ClientSecret = Environment.GetEnvironmentVariable("DIAGRAPH_GOOGLE_CLIENT_SECRET")
         });
+        services.AddHttpClient
+        (
+            "GoogleOAuth2", 
+            c => c.BaseAddress = new(configuration["Google:TokenUrl"])
+        );
+        services.AddScoped<IAuthorizationCodeFlow, GoogleAuthorizationCodeFlow>();
 
         services.AddScoped<PasswordTool>();
         services.AddScoped<IHashTool, Sha256HashTool>();

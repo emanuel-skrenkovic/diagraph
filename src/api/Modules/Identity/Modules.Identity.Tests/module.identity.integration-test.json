@@ -15,6 +15,7 @@
     "Port": 1025
   },
   "Google": {
-    "AuthUrl": "https://accounts.google.com/o/oauth2/v2/auth"
+    "AuthUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+    "TokenUrl": "https://oauth2.googleapis.com/token"
   }
 }

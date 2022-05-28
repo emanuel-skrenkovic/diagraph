@@ -19,8 +19,6 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
     const [availableTags, setAvailableTags] = useState<EventTag[]>([]);
     const [selectedTags, setSelectedTags]   = useState<EventTag[]>(initialSelectedTags);
 
-
-
     useEffect(() => {
         if (!tags) return;
         const newAvailableTags = tags.filter(
