@@ -1,4 +1,4 @@
-namespace Diagraph.Modules.Identity.OAuth2;
+namespace Diagraph.Infrastructure.Auth.OAuth2;
 
 public interface IAuthorizationCodeFlow
 {

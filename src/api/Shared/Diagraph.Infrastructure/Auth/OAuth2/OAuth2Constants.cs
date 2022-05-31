@@ -1,4 +1,4 @@
-namespace Diagraph.Modules.Identity;
+namespace Diagraph.Infrastructure.Auth.OAuth2;
 
 public class OAuth2Constants
 {
@@ -12,6 +12,7 @@ public class OAuth2Constants
     public class GrantTypes
     {
         public const string AuthorizationCode = "authorization_code";
+        public const string RefreshToken      = "refresh_token";
     }
 
     public class ResponseTypes

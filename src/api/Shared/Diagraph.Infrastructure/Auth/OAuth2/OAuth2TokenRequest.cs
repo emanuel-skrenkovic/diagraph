@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Diagraph.Modules.Identity.OAuth2;
+namespace Diagraph.Infrastructure.Auth.OAuth2;
 
 public class OAuth2TokenRequest
 {
@@ -18,4 +18,10 @@ public class OAuth2TokenRequest
     
     [JsonPropertyName("redirect_uri")]
     public string RedirectUri { get; set; }
+    
+    [JsonPropertyName("refresh_token")]
+    public string RefreshToken { get; set; }
+    
+    [JsonPropertyName("scope")]
+    public string Scope { get; set; }
 }

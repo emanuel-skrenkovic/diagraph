@@ -1,4 +1,3 @@
-using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Dynamic;
 
@@ -11,4 +10,12 @@ public class UserProfile : DbEntity, IDynamicDataContainer
     public Guid UserId { get; set; }
     
     public string Data { get; set; }
+
+    public static UserProfile Create(Guid userId)
+    {
+        if (userId == default) 
+            throw new ArgumentException($"{nameof(userId)} cannot be equal to the default value.");
+        
+        return new() { UserId = userId };   
+    }
 }

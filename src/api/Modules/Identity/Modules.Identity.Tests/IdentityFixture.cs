@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using Diagraph.Infrastructure.Auth;
+using Diagraph.Infrastructure.Auth.OAuth2;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.Tests;
 using Diagraph.Modules.Identity.Database;
-using Diagraph.Modules.Identity.OAuth2;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 

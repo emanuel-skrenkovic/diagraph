@@ -1,14 +1,10 @@
-using System.Text.Json;
 using Diagraph.Infrastructure;
+using Diagraph.Infrastructure.Dynamic;
+using Diagraph.Infrastructure.Integrations;
 
 namespace Diagraph.Modules.Identity.ExternalIntegrations;
 
-public enum ExternalProvider
-{
-    Google
-}
-
-public class External : IUserRelated
+public class External : IUserRelated, IDynamicDataContainer
 {
     public int Id { get; set; }
     
@@ -18,7 +14,15 @@ public class External : IUserRelated
     
     public string Data { get; set; }
 
-    public T GetData<T>() => JsonSerializer.Deserialize<T>(Data);
+    public static External Create(Guid userId, ExternalProvider provider)
+    {
+        if (userId == default) 
+            throw new ArgumentException($"{nameof(userId)} cannot be equal to the default value.");
 
-    public void SetData<T>(T data) => Data = JsonSerializer.Serialize(data);
+        return new()
+        {
+            UserId   = userId,
+            Provider = provider
+        };
+    }
 }

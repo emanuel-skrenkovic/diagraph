@@ -23,12 +23,15 @@ public class EventsTests
         => _fixture = fixture;
     
     [Theory, CustomizedAutoData]
-    public async Task Creates_Event(Event @event)
+    public async Task Creates_Event(CreateEventCommand command)
     {
+        // Arrange
+        command.Notification = null;
+        
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsJsonAsync("/events", @event);
+            .PostAsJsonAsync("/events", command);
 
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();

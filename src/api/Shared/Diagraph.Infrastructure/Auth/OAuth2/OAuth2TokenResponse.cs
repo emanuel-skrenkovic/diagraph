@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Diagraph.Modules.Identity.OAuth2;
+namespace Diagraph.Infrastructure.Auth.OAuth2;
 
 public class OAuth2TokenResponse
 {

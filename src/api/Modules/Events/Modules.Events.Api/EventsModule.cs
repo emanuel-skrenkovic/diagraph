@@ -1,4 +1,5 @@
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Integrations.Extensions;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Events.Api.AutoMapper;
@@ -21,12 +22,14 @@ public class EventsModule : Module
         services.AddAutoMapper(typeof(EventsAutoMapperProfile));
         services.AddAutoMapper(typeof(EventsCsvImportAutoMapperProfile));
         
+        services.AddHttpContextAccessor();
         services.AddPostgres<EventsDbContext>
         (
             configuration
                 .GetSection(DatabaseConfiguration.SectionName)
                 .Get<DatabaseConfiguration>()
         );
+        services.AddGoogleIntegration(configuration);
 
         services.AddScoped<TemplateRunnerFactory>();
         services.AddScoped<IEventTemplateDataParser, EventCsvTemplateDataParser>();

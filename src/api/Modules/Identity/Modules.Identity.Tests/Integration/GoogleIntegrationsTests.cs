@@ -4,11 +4,12 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Diagraph.Infrastructure.Dynamic.Extensions;
+using Diagraph.Infrastructure.Integrations.Google;
 using Diagraph.Infrastructure.Tests.AutoFixture;
 using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
-using Diagraph.Modules.Identity.ExternalIntegrations.Google;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -106,6 +107,8 @@ public class GoogleIntegrationsTests
     {
         await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
         {
+            if (await context.Users.AnyAsync(u => u.Id == IdentityFixture.RegisteredUserId)) return;
+            
             context.Users.Add
             (
                 new User

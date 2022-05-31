@@ -1,4 +1,4 @@
-namespace Diagraph.Modules.Identity.ExternalIntegrations.Google;
+namespace Diagraph.Infrastructure.Integrations.Google;
 
 public class GoogleConfiguration
 {

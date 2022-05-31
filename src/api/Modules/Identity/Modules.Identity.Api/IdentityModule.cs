@@ -1,12 +1,10 @@
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.Hashing;
+using Diagraph.Infrastructure.Integrations.Extensions;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Identity.Database;
-using Diagraph.Modules.Identity.ExternalIntegrations.Google;
-using Diagraph.Modules.Identity.ExternalIntegrations.Google.Configuration;
-using Diagraph.Modules.Identity.OAuth2;
 using Diagraph.Modules.Identity.Registration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -32,8 +30,6 @@ public class IdentityModule : Module
                 .GetSection(DatabaseConfiguration.SectionName)
                 .Get<DatabaseConfiguration>()
         );
-
-        services.AddScoped<UserProfileManager>();
         
         services.AddSingleton(new EmailServerConfiguration
         {
@@ -43,33 +39,12 @@ public class IdentityModule : Module
         });
         services.AddScoped<IEmailClient, EmailClient>();
 
-        services.AddTransient(_ => new GoogleConfiguration
-        {
-            AuthUrl      = configuration["Google:AuthUrl"],
-            ClientId     = Environment.GetEnvironmentVariable("DIAGRAPH_GOOGLE_CLIENT_ID"),
-            ClientSecret = Environment.GetEnvironmentVariable("DIAGRAPH_GOOGLE_CLIENT_SECRET")
-        });
-        services.AddHttpClient
-        (
-            "GoogleOAuth2", 
-            c => c.BaseAddress = new(configuration["Google:TokenUrl"])
-        );
-        services.AddScoped<IAuthorizationCodeFlow, GoogleAuthorizationCodeFlow>();
-
         services.AddScoped<PasswordTool>();
         services.AddScoped<IHashTool, Sha256HashTool>();
         services.AddScoped<UserConfirmation>();
 
-        services.AddScoped
-        (
-            _ => new GoogleCredentials
-            {
-                ApplicationName = Environment.GetEnvironmentVariable("DIAGRAPH_GOOGLE_APPLICATION_NAME"), // TODO: pull from configuration
-                ApiKey          = Environment.GetEnvironmentVariable("DIAGRAPH_GOOGLE_API_KEY") // TODO: pull from configuration
-            }
-        );
-        services.AddScoped<GoogleScopes>();
-        
+        services.AddGoogleIntegration(configuration);
+
         services.AddAuthentication
         (
             opts =>

@@ -1,4 +1,6 @@
-namespace Diagraph.Modules.Identity.ExternalIntegrations.Google;
+using Diagraph.Infrastructure.Auth;
+
+namespace Diagraph.Infrastructure.Integrations.Google;
 
 public class GoogleIntegrationInfo
 {
@@ -8,6 +10,8 @@ public class GoogleIntegrationInfo
     public string RedirectUri { get; set; }
 
     public string[] GrantedScopes { get; set; }
+    
+    public TokenData AccessToken { get; set; }
     
     public string RefreshToken { get; set; } // TODO: insecure
 }
