@@ -9,6 +9,8 @@ public class EventsAutoMapperProfile : Profile
 {
     public EventsAutoMapperProfile()
     {
+        CreateMap<EventView, Event>();
+    
         CreateMap<CreateEventCommand, Event>();
         CreateMap<UpdateEventCommand, Event>();
 

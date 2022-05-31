@@ -8,14 +8,10 @@ public abstract class Module
     public abstract string ModuleName { get; }
     
     public void Load(IServiceCollection services, string environment = null)
-    {
-        RegisterServices(LoadConfiguration(environment), services);
-    }
+        => RegisterServices(LoadConfiguration(environment), services);
 
     public void Load(IServiceCollection services, IConfiguration configuration)
-    {
-        RegisterServices(configuration, services);
-    }
+        => RegisterServices(configuration, services);
     
     protected IConfiguration LoadConfiguration(string environment = null)
     {

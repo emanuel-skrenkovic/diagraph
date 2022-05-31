@@ -7,7 +7,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        RelationalEntityTypeBuilderExtensions.ToTable((EntityTypeBuilder)builder, "user");
+        builder.ToTable("user");
 
         builder.HasKey(u => u.Id);
         

@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from 'store';
-import { Event, EventTag, GlucoseMeasurement } from 'types';
-import { setTags, Loader, DateRangePicker, toLocalISODateString } from 'modules/common';
-import { GlucoseGraph, EventForm, RecentEvents, setDateRange, setData, setEvents } from 'modules/graph';
 import {
     useCreateEventMutation,
     useUpdateEventMutation,
@@ -12,6 +9,20 @@ import {
     useGetDataQuery,
     useGetProfileQuery,
     useGetTagsQuery } from 'services';
+import {
+    NotificationForm,
+    handleQuery,
+    Box,
+    Container,
+    Item,
+    setTags,
+    Loader,
+    DateRangePicker,
+    toLocalISODateString,
+    useValidation } from 'modules/common';
+import { Notification, CreateEventCommand, Event, EventTag, GlucoseMeasurement } from 'types';
+import { GlucoseGraph, EventForm, RecentEvents, setDateRange, setData, setEvents } from 'modules/graph';
+
 
 import 'App.css';
 
@@ -27,15 +38,31 @@ function toLocalDate(dateString: string): Date {
     return date;
 }
 
+function notificationValidation(notification: Notification | undefined): [boolean, string] {
+    if (!notification)                         return [false, ''];
+    if (notification.notifyAtUtc < new Date()) return [false, ''];
+    if (!notification.text)                    return [false, ''];
+
+    return [true, ''];
+}
+
 export function Dashboard() {
     const events       = useSelector((state: RootState) => state.graph.events);
     const measurements = useSelector((state: RootState) => state.graph.data);
     const dateRange    = useSelector((state: RootState) => state.graph.dateRange);
     const tagsData     = useSelector((state: RootState) => state.shared.tags);
+    const taskList     = useSelector((state: RootState) => state.profile.profile.googleTaskList);
+    const integration  = useSelector((state: RootState) => state.profile.profile.googleIntegration);
 
-    const [editing, setEditing] = useState(false);
+    const [createTask, setCreateTask]                   = useState(false);
+    const [editing, setEditing]                         = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<GlucoseMeasurement | undefined>();
     const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>();
+
+    const [notification, setNotification, notificationError] = useValidation(
+        notificationValidation,
+        {} as Notification
+    )
 
     const [createEvent] = useCreateEventMutation();
     const [updateEvent] = useUpdateEventMutation();
@@ -47,51 +74,35 @@ export function Dashboard() {
     const getTags    = useGetTagsQuery(undefined);
     const getProfile = useGetProfileQuery(undefined);
 
-    {
-        const { data, isLoading, isError, error } = getData;
+    if (handleQuery(getProfile))                                   return <Loader />
+    if (handleQuery(getData, data => dispatch(setData(data))))     return <Loader />
+    if (handleQuery(getEvents, data => dispatch(setEvents(data)))) return <Loader />
+    if (handleQuery(getTags, data => dispatch(setTags(data))))     return <Loader />
 
-        if (isError)   console.error(error); // TODO
-        if (isLoading) return <Loader />;
+    function onCreateEvent(event: Event) {
+        const command: CreateEventCommand = { event };
+        if (notification) command.notification = { ...notification, parent: taskList };
 
-        if (data) dispatch(setData(data));
+        createEvent(command);
     }
 
-    {
-        const { data, isLoading, isError, error } = getEvents;
-
-        if (isError)   console.error(error);
-        if (isLoading) return <Loader />;
-
-        if (data) dispatch(setEvents(data));
-    }
-
-    {
-        const { data, isLoading, isError, error} = getTags;
-
-        if (isError)   console.error(error);
-        if (isLoading) return <Loader />;
-
-        if (data) dispatch(setTags(data));
-    }
-
-    {
-        const { isLoading } = getProfile;
-        if (isLoading) return <Loader />;
+    function onChangeDateRange(from: Date, to: Date) {
+        dispatch(
+            setDateRange({from: toLocalISODateString(from), to: toLocalISODateString(to)})
+        );
     }
 
     return (
-        <div className="container vertical">
-            <div className="container">
+        <Container vertical>
+            <Container>
                 <DateRangePicker
                     from={toLocalDate(dateRange.from)}
                     to={toLocalDate(dateRange.to)}
-                    onSubmit={(from, to) => dispatch(setDateRange({
-                        from: toLocalISODateString(from), to: toLocalISODateString(to)
-                    }))}
+                    onSubmit={onChangeDateRange}
                     submitButtonText="Apply dates" />
-            </div>
-            <div className="container">
-                <div>
+            </Container>
+            <Container vertical>
+                <div className="centered">
                     <h2>Glucose graph</h2>
                     <GlucoseGraph
                         from={toLocalDate(dateRange.from)}
@@ -101,11 +112,12 @@ export function Dashboard() {
                         onClickEvent={setSelectedEvent}
                         onClickMeasurement={setSelectedMeasurement} />
                 </div>
-            </div>
-            <div className="container">
-                <div className="item">
+            </Container>
+            <Container>
+                <Item>
                     {selectedMeasurement && (
-                        <div className="container vertical box item">
+                        <Box>
+                        <Container vertical>
                             <button className="button"
                                     onClick={() => setSelectedMeasurement(undefined)}>
                                 x
@@ -114,46 +126,61 @@ export function Dashboard() {
                             <input disabled value={selectedMeasurement!.takenAt.toLocaleString()} />
                             <label>Glucose mmol/L</label>
                             <input disabled value={selectedMeasurement!.level} />
-                        </div>
+                        </Container>
+                        </Box>
                     )}
                     {selectedEvent ? (
-                        <>
-                            <div className="container vertical box item">
-                                <button className="button centered" onClick={() => {
-                                    setSelectedEvent(undefined);
-                                    if (editing) setEditing(false);
-                                }}>
-                                    Close
-                                </button>
-                                <button className="button centered" onClick={() => setEditing(!editing)}>
-                                    Edit
-                                </button>
-                                <EventForm
-                                    value={selectedEvent}
-                                    onSubmit={e => {
-                                        updateEvent(e);
-                                        setEditing(false);
-                                    }}
-                                    tagOptions={tagsData ?? []}
-                                    submitButtonText="Save"
-                                    disabled={!editing} />
-                            </div>
-
-                        </>
-                    ) : (
-                        <div className="item">
+                        <Item>
+                        <Container vertical>
+                        <Box>
+                            <button className="button centered" onClick={() => {
+                                setSelectedEvent(undefined);
+                                if (editing) setEditing(false);
+                            }}>
+                                Close
+                            </button>
+                            <button className="button centered" onClick={() => setEditing(!editing)}>
+                                Edit
+                            </button>
                             <EventForm
-                                value={EMPTY_EVENT}
-                                onSubmit={createEvent}
+                                value={selectedEvent}
+                                onSubmit={e => {
+                                    updateEvent(e);
+                                    setEditing(false);
+                                }}
                                 tagOptions={tagsData ?? []}
-                                submitButtonText="Create Event" />
-                        </div>
+                                submitButtonText="Save"
+                                disabled={!editing} />
+                        </Box>
+                        </Container>
+                        </Item>
+                    ) : (
+                        <Container>
+                            {integration && (
+                                <Item>
+                                    <label htmlFor="eventCreateTask">Create task</label>
+                                    <input id="eventCreateTask"
+                                           type="checkbox"
+                                           checked={createTask}
+                                           onChange={() => setCreateTask(!createTask)}/>
+                                    {createTask && <NotificationForm onChange={n => setNotification(n)} />}
+                                    {createTask && notificationError && <span>{notificationError}</span>}
+                                </Item>
+                            )}
+                            <Item>
+                                <EventForm
+                                    value={EMPTY_EVENT}
+                                    onSubmit={onCreateEvent}
+                                    tagOptions={tagsData ?? []}
+                                    submitButtonText="Create Event" />
+                            </Item>
+                        </Container>
                     )}
-                </div>
-                <div className="item">
+                </Item>
+                <Item>
                     <RecentEvents events={events} />
-                </div>
-            </div>
-        </div>
+                </Item>
+            </Container>
+        </Container>
     );
 }

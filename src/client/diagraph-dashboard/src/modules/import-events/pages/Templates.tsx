@@ -9,14 +9,14 @@ import 'App.css';
 
 export const Templates = () => {
     const [createImportTemplate, { data: templateId, isSuccess }] = useCreateImportTemplateMutation();
-    const { data, isLoading, isError, error } = useGetTagsQuery(undefined);
+    const { data, isLoading, isError, error }                     = useGetTagsQuery(undefined);
 
     if (isSuccess) {
         return <Navigate to={`/templates/edit?template_id=${templateId}`} />
     }
 
     if (isLoading) return <Loader />
-    if (isError) console.error(error); // TODO
+    if (isError)   console.error(error); // TODO
 
     return <ImportTemplateForm onSubmit={createImportTemplate}
                                tags={data ?? []} />;

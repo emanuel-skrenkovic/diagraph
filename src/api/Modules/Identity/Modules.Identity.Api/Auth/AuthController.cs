@@ -1,15 +1,20 @@
 using System.Security.Principal;
+using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.ErrorHandling;
+using Diagraph.Infrastructure.Integrations;
+using Diagraph.Infrastructure.Sessions;
 using Diagraph.Modules.Identity.Api.Auth.Commands;
 using Diagraph.Modules.Identity.Api.Extensions;
 using Diagraph.Modules.Identity.Database;
+using Diagraph.Modules.Identity.ExternalIntegrations;
 using Diagraph.Modules.Identity.Registration;
 using Diagraph.Modules.Identity.ValueObjects;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DiagraphUser = Diagraph.Modules.Identity.User;
 
 namespace Diagraph.Modules.Identity.Api.Auth;
 
@@ -19,20 +24,26 @@ public class AuthController : ControllerBase
 {
     private const string AuthScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     
-    private readonly IdentityDbContext _context;
-    private readonly PasswordTool      _passwordTool;
-    private readonly UserConfirmation  _userConfirmation;
+    private readonly IdentityDbContext           _context;
+    private readonly PasswordTool                _passwordTool;
+    private readonly UserConfirmation            _userConfirmation;
+    private readonly SessionManager              _sessionManager;
+    private readonly IIntegrationSessionProvider _integration;
 
     public AuthController
     (
-        IdentityDbContext context, 
-        PasswordTool passwordTool, 
-        UserConfirmation userConfirmation
+        IdentityDbContext           context, 
+        PasswordTool                passwordTool, 
+        UserConfirmation            userConfirmation,
+        SessionManager              sessionManager,
+        IIntegrationSessionProvider integration
     )
     {
         _context          = context;
         _passwordTool     = passwordTool;
         _userConfirmation = userConfirmation;
+        _sessionManager   = sessionManager;
+        _integration      = integration;
     }
 
     [HttpGet]
@@ -66,7 +77,7 @@ public class AuthController : ControllerBase
             return Ok();
         }
 
-        User user = Diagraph.Modules.Identity.User.Create
+        User user = DiagraphUser.Create
         (
             EmailAddress.Create(command.Email),
             Password.Create(command.Password),
@@ -117,6 +128,19 @@ public class AuthController : ControllerBase
         if (!authResult.Authenticated) return Unauthorized(authResult.Reason);
 
         await HttpContext.SignInUserAsync(user, AuthScheme);
+
+        List<External> externals = await _context
+            .UserExternalIntegrations
+            .WithUser(user.Id)
+            .ToListAsync();
+
+        await Task.WhenAll
+        (
+            externals
+                .Select(e => _integration.Get(e.Provider)?.InitializeAsync(e) ?? Task.CompletedTask)
+                .ToList()
+        );
+        
         return Ok();
     }
 
@@ -124,6 +148,7 @@ public class AuthController : ControllerBase
     [Route("logout")]
     public async Task<IActionResult> Logout()
     {
+        await _sessionManager.ClearAsync();
         await HttpContext.SignOutAsync(AuthScheme);
         return Ok();
     }

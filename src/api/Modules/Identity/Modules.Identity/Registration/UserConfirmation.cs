@@ -11,8 +11,7 @@ public class UserConfirmation
 {
     private readonly IEmailClient             _emailClient;
     private readonly EmailServerConfiguration _configuration;
-
-    private readonly IdentityDbContext _context;
+    private readonly IdentityDbContext        _context;
 
     public UserConfirmation
     (

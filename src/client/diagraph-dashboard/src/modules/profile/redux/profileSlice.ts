@@ -4,12 +4,16 @@ export interface Profile {
     showLowLimit: boolean;
     showHighLimit: boolean;
     showAverage: boolean;
+    googleIntegration: boolean;
+    googleTaskList: string;
 }
 
 export const defaultProfile: Profile = {
-    showLowLimit:  false,
-    showHighLimit: false,
-    showAverage:   false
+    showLowLimit:      false,
+    showHighLimit:     false,
+    showAverage:       false,
+    googleIntegration: false,
+    googleTaskList:    ''
 }
 
 export interface ProfileState {

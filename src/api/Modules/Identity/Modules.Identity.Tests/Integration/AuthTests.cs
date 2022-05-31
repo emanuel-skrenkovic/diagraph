@@ -13,7 +13,8 @@ using Xunit;
 
 namespace Diagraph.Modules.Identity.Tests.Integration;
 
-public class AuthTests : IClassFixture<IdentityFixture>
+[Collection(nameof(IdentityFixtureCollection))]
+public class AuthTests
 {
     private readonly IdentityFixture _fixture;
 

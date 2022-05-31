@@ -1,6 +1,7 @@
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.Hashing;
+using Diagraph.Infrastructure.Integrations.Extensions;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Identity.Database;
@@ -41,7 +42,9 @@ public class IdentityModule : Module
         services.AddScoped<PasswordTool>();
         services.AddScoped<IHashTool, Sha256HashTool>();
         services.AddScoped<UserConfirmation>();
-        
+
+        services.AddGoogleIntegration(configuration);
+
         services.AddAuthentication
         (
             opts =>

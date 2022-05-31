@@ -2,6 +2,7 @@ using AutoMapper;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Hashing;
+using Diagraph.Infrastructure.Notifications;
 using Diagraph.Modules.Events.Api.Events.Commands;
 using Diagraph.Modules.Events.Database;
 using Microsoft.AspNetCore.Authorization;
@@ -15,23 +16,26 @@ namespace Diagraph.Modules.Events.Api.Events;
 [Route("[controller]")]
 public class EventsController : ControllerBase
 {
-    private readonly IUserContext    _userContext;
-    private readonly EventsDbContext _context;
-    private readonly IMapper         _mapper;
-    private readonly IHashTool       _hashTool;
+    private readonly IUserContext           _userContext;
+    private readonly EventsDbContext        _context;
+    private readonly IMapper                _mapper;
+    private readonly IHashTool              _hashTool;
+    private readonly INotificationScheduler _notificationScheduler;
     
     public EventsController
     (
-        IUserContext             userContext, 
-        EventsDbContext          context, 
-        IMapper                  mapper,
-        IHashTool                hashTool
+        IUserContext           userContext, 
+        EventsDbContext        context, 
+        IMapper                mapper,
+        IHashTool              hashTool,
+        INotificationScheduler notificationScheduler
     )
     {
-        _userContext   = userContext;
-        _context       = context;   
-        _mapper        = mapper;
-        _hashTool      = hashTool;
+        _userContext           = userContext;
+        _context               = context;   
+        _mapper                = mapper;
+        _hashTool              = hashTool;
+        _notificationScheduler = notificationScheduler;
     }
 
     [HttpGet]
@@ -53,12 +57,16 @@ public class EventsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateEvent([FromBody] CreateEventCommand command)
     {
-        Event @event         = _mapper.Map<Event>(command);
+        Event @event         = _mapper.Map<Event>(command.Event);
         @event.UserId        = _userContext.UserId;
         @event.Discriminator = @event.ComputeDiscriminator(_hashTool);
-        
+
         Event createdEvent = _context.Events.Add(@event).Entity;
+        
         await _context.SaveChangesAsync();
+
+        Notification notification = command.Notification;
+        if (notification is not null) await _notificationScheduler.ScheduleAsync(notification);
 
         return CreatedAtRoute
         (
@@ -93,6 +101,7 @@ public class EventsController : ControllerBase
             .Include(nameof(Event.Tags))
             .WithUser(_userContext.UserId)
             .FirstOrDefaultAsync(e => e.Id == id);
+        
         if (@event is null) return NotFound();
 
         _mapper.Map(request, @event);

@@ -22,6 +22,34 @@ namespace Diagraph.Modules.Identity.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Diagraph.Modules.Identity.External", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("data");
+
+                    b.Property<int>("Provider")
+                        .HasColumnType("integer")
+                        .HasColumnName("provider");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("external", (string)null);
+                });
+
             modelBuilder.Entity("Diagraph.Modules.Identity.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -92,6 +120,15 @@ namespace Diagraph.Modules.Identity.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("user_profile", (string)null);
+                });
+
+            modelBuilder.Entity("Diagraph.Modules.Identity.External", b =>
+                {
+                    b.HasOne("Diagraph.Modules.Identity.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

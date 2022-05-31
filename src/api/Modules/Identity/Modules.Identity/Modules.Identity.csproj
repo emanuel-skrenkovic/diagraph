@@ -12,4 +12,10 @@
       <ProjectReference Include="..\..\..\Shared\Diagraph.Infrastructure\Diagraph.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Google.Apis.Discovery.v1" Version="1.57.0" />
+      <PackageReference Include="Google.Apis.Tasks.v1" Version="1.57.0.2384" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    </ItemGroup>
+
 </Project>

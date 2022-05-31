@@ -53,7 +53,6 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
                     {buttonText ?? 'Add'}
                 </button>
             }
-
         </>
     );
 };

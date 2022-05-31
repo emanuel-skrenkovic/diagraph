@@ -1,6 +1,6 @@
 import React, { useState, MouseEvent } from 'react';
 
-import { For } from 'modules/common';
+import { Container, Item, For } from 'modules/common';
 import { HeaderMappingForm } from 'modules/import-events';
 import { EventTag, ImportTemplate, TemplateHeaderMapping } from 'types';
 
@@ -24,12 +24,19 @@ const DEFAULT_TEMPLATE = {
 } as ImportTemplate;
 
 export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial, onSubmit, tags }) => {
-    const [template, setTemplate] = useState(initial ?? DEFAULT_TEMPLATE);
+    const [template, setTemplate]                         = useState(initial ?? DEFAULT_TEMPLATE);
     const [editingHeaderMapping, setEditingHeaderMapping] = useState<TemplateHeaderMapping | undefined>();
 
     function onClickSubmit(e: MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
         onSubmit(template);
+    }
+
+    function setTemplateName(name: string) {
+        setTemplate({
+            ...template,
+            name
+        });
     }
 
     function onSaveMapping(t: TemplateHeaderMapping) {
@@ -53,25 +60,35 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
         setEditingHeaderMapping(undefined);
     }
 
+    function removeHeaderMapping(mapping: TemplateHeaderMapping) {
+        setTemplate({
+            ...template,
+            data: {
+                ...template.data,
+                headerMappings: template
+                    .data
+                    .headerMappings
+                    .filter(m => m !== mapping)
+            }
+        });
+    }
+
     return (
-        <div className="container vertical">
-            <div className="container">
-                <div className="item">
+        <Container vertical>
+            <Container>
+                <Item>
                     <label htmlFor="templateNameInput">Template Name</label>
                     <input id="templateNameInput"
                            type="text"
                            value={template.name}
-                           onChange={e => setTemplate({
-                               ...template,
-                               name: e.currentTarget.value
-                           })} />
-                </div>
+                           onChange={e => setTemplateName(e.currentTarget.value)} />
+                </Item>
                 <button className="button blue"
                         type="submit"
                         onClick={onClickSubmit}>
                     Save Template
                 </button>
-            </div>
+            </Container>
             <div style={{width:"10%", float:"right"}}>
                 <button className="button blue"
                         style={{width: "max-content", paddingLeft: "2em", paddingRight: "2em"}}
@@ -83,7 +100,7 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                     {!!editingHeaderMapping ? 'Close' : 'New Mapping'}
                 </button>
             </div>
-            <div className="container">
+            <Container>
                 <div className="item" style={{width:"100%"}}>
                     <h3>Mappings</h3>
                     <table>
@@ -98,22 +115,10 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                             <tr key={index}>
                                 <td>{mapping.header}</td>
                                 <td>
-                                    <button className="button blue"
-                                            onClick={() => {setEditingHeaderMapping(mapping)}}>
+                                    <button className="button blue" onClick={() => {setEditingHeaderMapping(mapping)}}>
                                         Edit
                                     </button>
-                                    <button className="button red"
-                                            onClick={() =>
-                                                setTemplate({
-                                                    ...template,
-                                                    data: {
-                                                        ...template.data,
-                                                        headerMappings: template
-                                                            .data
-                                                            .headerMappings
-                                                            .filter(m => m !== mapping)
-                                                    }
-                                                })}>
+                                    <button className="button red" onClick={() => removeHeaderMapping(mapping)}>
                                         Remove
                                     </button>
                                 </td>
@@ -129,7 +134,7 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                                            tags={tags ?? []} />
                     }
                 </div>
-            </div>
-        </div>
+            </Container>
+        </Container>
     );
 };

@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { useImportEventsMutation, useGetImportTemplatesQuery } from 'services';
-import { FileUploadForm,  For, Loader } from 'modules/common';
 import { TemplateMappingPreview } from 'modules/import-events';
+import { useImportEventsMutation, useGetImportTemplatesQuery } from 'services';
+import { Box, Container, Item, FileUploadForm,  For, Loader } from 'modules/common';
 
 import 'App.css';
 
 export const ImportEvents = () => {
+    const [importEvents]                      = useImportEventsMutation();
     const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
-
-    const [importEvents] = useImportEventsMutation();
 
     const navigate = useNavigate();
 
     const [file, setFile]                         = useState<File | undefined>();
-    const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
+    const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>();
     const [showPreview, setShowPreview]           = useState(false);
 
     function onUpload() {
@@ -41,13 +40,14 @@ export const ImportEvents = () => {
     if (isError) console.error(error); // TODO
 
     return (
-        <div className="container vertical">
-            <div className="container">
-                <div className="item">
+        <Container vertical>
+            <Container>
+                <Item>
                     <FileUploadForm onSubmit={onUpload}
-                                    onSelect={setFile}/>
-                </div>
-                <div className="item container vertical">
+                                    onSelect={setFile} />
+                </Item>
+                <Item>
+                <Container vertical>
                     <label htmlFor="selectTemplate">Templates</label>
                     <select id="selectTemplate"
                             value={selectedTemplate}
@@ -59,7 +59,7 @@ export const ImportEvents = () => {
                             </option>
                         )} />
                     </select>
-                    <div className="container">
+                    <Container>
                         <button className={`button blue item ${!!selectedTemplate ? '' : 'disabled'}`}
                                 onClick={onEditTemplate}>
                             Edit Template
@@ -67,20 +67,21 @@ export const ImportEvents = () => {
                         <button className="button blue item" onClick={onNewTemplate}>
                             New Template
                         </button>
-                    </div>
+                    </Container>
                     <button className="button blue item" onClick={onCheckTemplateMapping}>
                         Check template mapping
                     </button>
-                </div>
-            </div>
+                </Container>
+                </Item>
+            </Container>
             {showPreview && file && selectedTemplate && (
-                <div className="box">
+                <Box>
                     <TemplateMappingPreview
                         csvFile={file}
                         template={selectedTemplate}
                     />
-                </div>
+                </Box>
             )}
-        </div>
+        </Container>
     )
 }

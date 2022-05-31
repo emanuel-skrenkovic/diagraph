@@ -5,11 +5,21 @@ using Diagraph.Modules.GlucoseData.Api;
 using Diagraph.Modules.Identity.Api;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables(prefix: "DIAGRAPH_");
 
 string env = builder.Environment.EnvironmentName;
 builder.Services.LoadModule<IdentityModule>(env);
 builder.Services.LoadModule<GlucoseDataModule>(env);
 builder.Services.LoadModule<EventsModule>(env);
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(opts =>
+{
+    opts.Cookie.HttpOnly     = true;
+    opts.Cookie.IsEssential  = true;
+    opts.Cookie.SameSite     = SameSiteMode.None;
+    opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 builder.Services.AddScoped<IUserContext, UserContext>();
 
@@ -43,6 +53,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 // Needs to be after UserAuthentication.
 app.Use(UserContextMiddleware.Handle);

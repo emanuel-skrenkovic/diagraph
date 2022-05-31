@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { EventTag } from 'types';
 import { RootState } from 'store';
 import { useGetTagsQuery} from 'services';
-import { For, Loader, MultiSelectForm, Tag } from 'modules/common';
+import { Container, Item, For, Loader, MultiSelectForm, Tag } from 'modules/common';
 
 export interface TagSelectorProps {
     initialSelectedTags: EventTag[];
@@ -18,8 +18,6 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
 
     const [availableTags, setAvailableTags] = useState<EventTag[]>([]);
     const [selectedTags, setSelectedTags]   = useState<EventTag[]>(initialSelectedTags);
-
-
 
     useEffect(() => {
         if (!tags) return;
@@ -85,14 +83,14 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
     }
 
     return (
-        <div className="container vertical">
+        <Container vertical>
             <label>Available Tags</label>
             <div className="item" style={{width:"200px"}}>
                 <MultiSelectForm options={availableTags}
                                  keySelector={(t: EventTag) => t.name}
                                  onAdd={tags => addNewTags(tags)} />
             </div>
-            <div className="item">
+            <Item>
                 <label>Selected Tags</label>
                 <For each={selectedTags} onEach={(tag, index) => (
                     <div className="container" key={index}>
@@ -102,10 +100,10 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
                         </button>
                     </div>
                 )} />
-            </div>
+            </Item>
             <button className="button blue item" onClick={newTagForm}>
                 +
             </button>
-        </div>
+        </Container>
     );
 };
