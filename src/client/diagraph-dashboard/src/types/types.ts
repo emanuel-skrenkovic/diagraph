@@ -1,6 +1,17 @@
+export interface Notification {
+    notifyAtUtc: Date;
+    text: string;
+    parent?: string;
+}
+
 export interface EventTag {
     eventId: number;
     name: string;
+}
+
+export interface CreateEventCommand {
+    event: Event,
+    notification?: Notification
 }
 
 export interface Event {

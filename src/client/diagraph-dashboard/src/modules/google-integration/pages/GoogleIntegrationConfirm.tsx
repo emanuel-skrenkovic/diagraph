@@ -1,21 +1,19 @@
 import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { useProfile } from 'modules/profile';
-import { Loader } from 'modules/common';
-import { useGoogleIntegrationConfirmMutation} from 'services';
+import { RootState } from 'store';
+import { useQuery, Loader } from 'modules/common';
+import { useGoogleIntegrationConfirmMutation } from 'services';
 
+// This page does nothing except pass on the Google integration parameters
+// back to the API.
 export const GoogleIntegrationConfirm: React.FC = () => {
-    const profileActions = useProfile();
-
-    const location = useLocation();
-    const query = new URLSearchParams(location.search);
-    const authorizationCode = query.get('code');
-
+    const profile = useSelector((state: RootState) => state.profile.profile);
+    const authorizationCode = useQuery('code');
     const [googleIntegrationConfirm, { isLoading, isSuccess }] = useGoogleIntegrationConfirmMutation();
 
     const navigate = useNavigate();
-
     useEffect(() => {
         if (isSuccess) {
             navigate('/');
@@ -25,21 +23,13 @@ export const GoogleIntegrationConfirm: React.FC = () => {
         googleIntegrationConfirm({
             code: authorizationCode,
             redirectUri: 'http://localhost:3000/integrations/google/confirm',
-            scopes: ['asdf', 'fdsa']
+            scopes: ['asdf', 'fdsa'] // WTF is this?
         });
-    }, [isSuccess]);
+    }, [profile, isSuccess]);
 
-    {
-        const [profile, _, { isLoading }] = profileActions;
-        if (isLoading) return <Loader />;
+    if (profile.googleIntegration) navigate('/');
+    if (!authorizationCode)        return <span>Invalid URL: no authorization code.</span>
+    if (isLoading)                 return <Loader />;
 
-        if (profile.googleIntegration) {
-            navigate('/');
-        }
-    }
-
-    if (!authorizationCode) console.error('TODO');
-    if (isLoading) return <Loader />;
-
-    return <>Hi</>
+    return null;
 };

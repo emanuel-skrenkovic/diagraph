@@ -16,6 +16,12 @@ public class GoogleAuthDelegatingHandler : DelegatingHandler
     )
     {
         string accessToken = await _authorizer.EnsureAuthorizedAsync();
+
+        // TODO: inefficient
+        if (request.Headers.Contains("Authorization"))
+        {
+            request.Headers.Remove("Authorization");
+        }
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
         
         return await base.SendAsync(request, cancellationToken);

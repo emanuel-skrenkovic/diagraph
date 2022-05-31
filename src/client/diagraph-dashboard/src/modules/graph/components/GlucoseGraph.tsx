@@ -5,7 +5,7 @@ import { useProfile } from 'modules/profile';
 
 import { TimeChart } from 'services';
 import { Event, GlucoseMeasurement } from 'types';
-import { useWindowDimensions } from 'modules/common';
+import { Container, useWindowDimensions } from 'modules/common';
 
 import "App.css";
 
@@ -100,7 +100,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
                 {showOptions ? 'Close Options' : 'Show Options'}
             </button>
             {showOptions && (
-                <div className="container">
+                <Container>
                     <label>High limit line</label>
                     <input type="checkbox"
                            defaultChecked={profile.showHighLimit}
@@ -113,7 +113,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
                     <input type="checkbox"
                            defaultChecked={profile.showAverage}
                            onChange={() => setProfile({...profile, showAverage: !showAverage})} />
-                </div>
+                </Container>
             )}
             <div ref={chartElemRef} />
         </>

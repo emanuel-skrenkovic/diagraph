@@ -1,8 +1,8 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 
-import { For, TagSelector } from 'modules/common';
 import { RuleForm } from 'modules/import-events';
 import { EventTag, Rule, TemplateHeaderMapping } from 'types';
+import { Box, Container, Item, For, TagSelector } from 'modules/common';
 
 export interface HeaderMappingFormProps {
     value?: TemplateHeaderMapping;
@@ -29,10 +29,7 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
     }
 
     function setTemplateTags(tags: EventTag[]) {
-        setTemplate({
-            ...template,
-            tags
-        });
+        setTemplate({ ...template, tags });
     }
 
     function onSaveRule(rule: Rule, index: number) {
@@ -49,23 +46,21 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
     }
 
     function setTemplateRules(rules: Rule[]) {
-        setTemplate({
-            ...template,
-            rules
-        })
+        setTemplate({ ...template, rules })
     }
 
     return (
-        <form className="container vertical box">
-            <div className="container vertical">
-                <div className="item">
+        <Container vertical>
+        <Box>
+            <Container vertical>
+                <Item>
                     <label htmlFor="headerName">Header</label>
                     <input id="headerName"
                            type="text"
                            value={template.header}
                            onChange={e => setTemplate({ ...template, header: e.currentTarget.value })}/>
-                </div>
-                <div className="item">
+                </Item>
+                <Item>
                     <label>Rules</label>
                     <For each={template.rules} onEach={(rule, index) => (
                         <div className="container" key={index}>
@@ -93,10 +88,11 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
                     )} />
                     {editingRuleId !== -1 && <button className="button blue">New</button>}
                     {editingRuleId === -1 && <RuleForm key={-1} onSubmit={onAddRule} />}
-                </div>
+                </Item>
                 <TagSelector initialSelectedTags={template.tags} onChange={setTemplateTags} />
-            </div>
+            </Container>
             <button className="button blue" onClick={onClickSubmit}>Save Mapping</button>
-        </form>
+        </Box>
+        </Container>
     )
 };

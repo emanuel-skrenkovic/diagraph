@@ -21,7 +21,7 @@ export const CsvPreview: React.FC<CsvPreviewProps> = ({ csvFile }) => {
         })();
     }, [csvFile])
 
-    if (csvData.length == 0) return <Loader />;
+    if (csvData.length == 0) return null;
 
     return (
         <ScrollBar heightPx={500}>

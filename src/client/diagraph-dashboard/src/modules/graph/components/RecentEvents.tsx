@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Event } from 'types';
-import { For, LocalTime, ScrollBar } from 'modules/common';
+import { Box, For, LocalTime, ScrollBar } from 'modules/common';
 
 import 'App.css';
 import './RecentEvents.css';
@@ -12,7 +12,7 @@ export interface RecentEventsProps {
 
 export const RecentEvents: React.FC<RecentEventsProps> = ({ events }) => {
     return (
-        <div className="box">
+        <Box>
             <h3>Recent events:</h3>
             <table className="table">
                 <thead>
@@ -27,20 +27,20 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events }) => {
                 </thead>
                 <tbody>
                 <For each={events} onEach={e => (
-                        <tr key={e.id.toString()}>
-                            <td className="box">
-                                <LocalTime date={e.occurredAtUtc} />
-                            </td>
-                            <td className="block" style={{whiteSpace:"pre-line"}}>
-                                <ScrollBar heightPx={125} widthPx={300}>
-                                    {e.text}
-                                </ScrollBar>
-                            </td>
-                        </tr>
-                    )}
+                    <tr key={e.id.toString()}>
+                        <td className="box">
+                            <LocalTime date={e.occurredAtUtc} />
+                        </td>
+                        <td className="block" style={{whiteSpace:"pre-line"}}>
+                            <ScrollBar heightPx={125} widthPx={300}>
+                                {e.text}
+                            </ScrollBar>
+                        </td>
+                    </tr>
+                )}
                 />
                 </tbody>
             </table>
-        </div>
+        </Box>
     );
 }

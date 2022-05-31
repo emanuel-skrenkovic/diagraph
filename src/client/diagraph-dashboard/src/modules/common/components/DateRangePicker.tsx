@@ -1,5 +1,6 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { toLocalISODateString } from 'modules/common';
+
+import { toLocalISODateString, Container } from 'modules/common';
 
 import 'App.css';
 
@@ -31,7 +32,7 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
     useEffect(() => setDateRange({
             from: toLocalISODateString(from),
             to:   toLocalISODateString(to)
-        }), [from, to]);
+    }), [from, to]);
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -39,38 +40,38 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
     }
 
     return (
-        <div className="container vertical">
-            <div className="container">
+        <Container vertical>
+            <Container>
                 <button
                     className="button"
                     onClick={() => moveDateRange(-1)}>
                     &lt;
                 </button>
-                <div className="container">
-                    <div className="container vertical">
+                <Container>
+                    <Container vertical>
                         <label htmlFor="from">From</label>
                         <input id="from"
                                type="date"
                                value={dateRange.from}
                                onChange={e => setDateRange({...dateRange, from: e.currentTarget.value})}/>
-                    </div>
-                    <div className="container vertical">
+                    </Container>
+                    <Container vertical>
                         <label htmlFor="to">To</label>
                         <input id="to"
                                type="date"
                                value={dateRange.to}
                                onChange={e => setDateRange({...dateRange, to: e.currentTarget.value})} />
-                    </div>
-                </div>
+                    </Container>
+                </Container>
                 <button
                     className="button"
                     onClick={() => moveDateRange(1)}>
                     &gt;
                 </button>
-            </div>
+            </Container>
             <button className="button item centered" onClick={onClickSubmit}>
                 {submitButtonText ?? 'Submit'}
             </button>
-        </div>
+        </Container>
 );
 };

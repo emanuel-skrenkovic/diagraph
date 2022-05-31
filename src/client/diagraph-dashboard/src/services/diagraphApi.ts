@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery, FetchBaseQueryMeta } from '@reduxjs/toolkit/
 import { setTags } from 'modules/common';
 import { login, logout } from 'modules/auth';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
-import { Event, GlucoseMeasurement, EventTag, ImportTemplate } from 'types';
+import { CreateEventCommand, Event, GlucoseMeasurement, EventTag, ImportTemplate } from 'types';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',
@@ -22,7 +22,7 @@ export const diagraphApi = createApi({
         getEvent: builder.query<any, any>({
             query: id => ({ url: `events/${id}` })
         }),
-        createEvent: builder.mutation<void, Event>({
+        createEvent: builder.mutation<void, CreateEventCommand>({
             query: (request) => ({
                 url: 'events',
                 method: 'POST',
