@@ -1,21 +1,17 @@
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.GlucoseData.Database;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diagraph.Modules.GlucoseData.Api.GlucoseData;
 
-[Authorize]
-[ApiController]
-[Route("[controller]")]
-public class DataController : ControllerBase
+public class GetGlucoseDataEndpoint : EndpointWithoutRequest<List<GlucoseMeasurement>>
 {
     private readonly IUserContext         _userContext;
     private readonly GlucoseDataDbContext _context;
 
-    public DataController
+    public GetGlucoseDataEndpoint
     (
         IUserContext         userContext,
         GlucoseDataDbContext context
@@ -24,18 +20,24 @@ public class DataController : ControllerBase
         _userContext = userContext;
         _context     = context;
     }
+    
+    public override void Configure()
+        => Get("data");
 
-    [HttpGet]
-    public async Task<IActionResult> GetData([FromQuery] DateTime from, [FromQuery] DateTime to)
-        => Ok
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        var from = Query<DateTime>("from");
+        var to   = Query<DateTime>("to");
+        
+        await SendOkAsync
         (
             await _context
                 .GlucoseMeasurements
                 .WithUser(_userContext.UserId)
-                .Where(m => m.TakenAt >= from && m.TakenAt < to&& m.Level > 0)
+                .Where(m => m.TakenAt >= from && m.TakenAt < to && m.Level > 0)
                 .OrderBy(m => m.TakenAt)
-                .ToListAsync()
+                .ToListAsync(ct),
+            ct
         );
-    
-
+    }
 }
