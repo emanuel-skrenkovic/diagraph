@@ -1,4 +1,4 @@
-namespace Diagraph.Modules.Identity.Api.Auth;
+namespace Diagraph.Modules.Identity.Api.Auth.Commands;
 
 public class SessionInfo
 {

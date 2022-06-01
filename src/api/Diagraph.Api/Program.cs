@@ -3,9 +3,12 @@ using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Events.Api;
 using Diagraph.Modules.GlucoseData.Api;
 using Diagraph.Modules.Identity.Api;
+using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables(prefix: "DIAGRAPH_");
+
+builder.Services.AddFastEndpoints();
 
 string env = builder.Environment.EnvironmentName;
 builder.Services.LoadModule<IdentityModule>(env);
@@ -53,7 +56,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseDefaultExceptionHandler();
 app.UseSession();
+app.UseFastEndpoints();
 
 // Needs to be after UserAuthentication.
 app.Use(UserContextMiddleware.Handle);
