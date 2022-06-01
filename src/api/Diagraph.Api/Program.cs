@@ -27,11 +27,12 @@ builder.Services.AddSession(opts =>
 
 builder.Services.AddProblemDetails(opts =>
 {
-    opts.MapToStatusCode<Exception>(400); // TODO: oof
+    opts.MapToStatusCode<Exception>(400); // TODO: It's not me, it's you.
 });
 
 builder.Services.AddScoped<IUserContext, UserContext>();
 
+// AddProblemDetails breaks if AddControllers is removed.
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -70,7 +71,5 @@ app.UseFastEndpoints();
 
 // Needs to be after UserAuthentication.
 app.Use(UserContextMiddleware.Handle);
-
-app.MapControllers();
 
 app.Run();

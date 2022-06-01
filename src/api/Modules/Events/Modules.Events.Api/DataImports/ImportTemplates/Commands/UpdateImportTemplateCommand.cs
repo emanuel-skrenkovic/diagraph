@@ -1,4 +1,4 @@
-namespace Diagraph.Modules.Events.Api.DataImports.Commands;
+namespace Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Commands;
 
 public class UpdateImportTemplateCommand
 {

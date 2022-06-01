@@ -1,6 +1,6 @@
 using System.Text.Json;
 using AutoFixture;
-using Diagraph.Modules.Events.Api.DataImports.Commands;
+using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Commands;
 using Diagraph.Modules.Events.DataImports.Csv;
 
 namespace Diagraph.Modules.Events.Tests.Customizations;

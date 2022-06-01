@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Diagraph.Infrastructure.Tests.AutoFixture;
 using Diagraph.Infrastructure.Tests.Extensions;
-using Diagraph.Modules.Events.Api.DataImports.Commands;
+using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Commands;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
 using FluentAssertions;

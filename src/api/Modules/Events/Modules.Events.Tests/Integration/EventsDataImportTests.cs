@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Diagraph.Modules.Events.Api.DataImports.Commands;
+using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Commands;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports.Csv;
 using FluentAssertions;

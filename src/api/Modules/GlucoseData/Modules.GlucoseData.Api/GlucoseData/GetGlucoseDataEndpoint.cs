@@ -8,21 +8,20 @@ namespace Diagraph.Modules.GlucoseData.Api.GlucoseData;
 
 public class GetGlucoseDataEndpoint : EndpointWithoutRequest<List<GlucoseMeasurement>>
 {
-    private readonly IUserContext         _userContext;
     private readonly GlucoseDataDbContext _context;
+    private readonly IUserContext         _userContext;
 
     public GetGlucoseDataEndpoint
     (
-        IUserContext         userContext,
-        GlucoseDataDbContext context
+        GlucoseDataDbContext context,
+        IUserContext         userContext
     )
     {
-        _userContext = userContext;
         _context     = context;
+        _userContext = userContext;
     }
     
-    public override void Configure()
-        => Get("data");
+    public override void Configure() => Get("data");
 
     public override async Task HandleAsync(CancellationToken ct)
     {
