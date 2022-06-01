@@ -4,6 +4,7 @@ using Diagraph.Modules.Events.Api;
 using Diagraph.Modules.GlucoseData.Api;
 using Diagraph.Modules.Identity.Api;
 using FastEndpoints;
+using Hellang.Middleware.ProblemDetails;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables(prefix: "DIAGRAPH_");
@@ -22,6 +23,11 @@ builder.Services.AddSession(opts =>
     opts.Cookie.IsEssential  = true;
     opts.Cookie.SameSite     = SameSiteMode.None;
     opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
+builder.Services.AddProblemDetails(opts =>
+{
+    opts.MapToStatusCode<Exception>(400); // TODO: oof
 });
 
 builder.Services.AddScoped<IUserContext, UserContext>();
@@ -52,12 +58,14 @@ app.UseCors(opts =>
     opts.Build();
 });
 
+app.UseProblemDetails();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseDefaultExceptionHandler();
+
 app.UseSession();
+
 app.UseFastEndpoints();
 
 // Needs to be after UserAuthentication.
