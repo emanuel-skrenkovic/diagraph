@@ -4,17 +4,13 @@ using Diagraph.Infrastructure.Hashing;
 using Diagraph.Modules.GlucoseData.Database;
 using Diagraph.Modules.GlucoseData.Imports;
 using Diagraph.Modules.GlucoseData.Imports.Contracts;
-using Microsoft.AspNetCore.Authorization;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diagraph.Modules.GlucoseData.Api.Imports;
 
-[Authorize]
-[ApiController]
-[Route("data/[controller]")]
-public class ImportsController : ControllerBase
+public class ImportsEndpoint : EndpointWithoutRequest
 {
     private readonly IUserContext         _userContext;
     private readonly GlucoseDataDbContext _context;
@@ -22,7 +18,7 @@ public class ImportsController : ControllerBase
     private readonly GlucoseDataImport    _dataImport;
     private readonly IHashTool            _hashTool;
     
-    public ImportsController
+    public ImportsEndpoint
     (
         IUserContext         userContext,
         GlucoseDataDbContext context, 
@@ -37,27 +33,46 @@ public class ImportsController : ControllerBase
         _dataImport  = dataImport;
         _hashTool    = hashTool;
     }
-    
-    [HttpPost]
-    public async Task<IActionResult> ImportData(IFormFile file)
+
+    public override void Configure()
     {
-        if (file == null) return BadRequest("TODO file null reason");
+        Post("data/imports");
+        AllowFileUploads();
+    }
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        IFormFile file = Files.GetFile("file");
+
+        if (file is null)
+        {
+            await SendAsync("TODO file null reason", 400, ct);
+            return;
+        }
 
         // TODO: think about moving this to separate class
         string data = await file.ReadAsync();
         string hash = _hashTool.ComputeHash(data);
 
-        if (await _context.Imports.AnyAsync(i => i.Hash == hash)) return Ok();
+        if (await _context.Imports.AnyAsync(i => i.Hash == hash, ct))
+        {
+            await SendOkAsync(ct);
+            return;
+        }
 
         Import import = await _dataImport.CreateAsync(_dataParser.Parse(data));
-        if (import == null) return Ok(); // No data to import
+        if (import == null) 
+        {
+             await SendOkAsync(ct);
+             return;  // No data to import
+        }
         
         import.Hash = _hashTool.ComputeHash(data);
         import.WithUser(_userContext.UserId);
         
         _context.Imports.Add(import);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
-        return StatusCode(201);
+        await this.SendCreated(ct);
     }
 }

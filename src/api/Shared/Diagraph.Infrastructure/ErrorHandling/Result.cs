@@ -2,7 +2,7 @@ namespace Diagraph.Infrastructure.ErrorHandling;
 
 public class Result
 {
-    private static Result OkValue = new();
+    private static readonly Result OkValue = new();
 
     private protected readonly Error _error;
 
@@ -31,7 +31,7 @@ public class Result
 
     public Task Match(Func<Task> ok, Func<Error, Task> error)
         => IsOk ? ok() : error(_error);
-
+    
     public TResult Match<TResult>(Func<TResult> ok, Func<Error, TResult> error)
         => IsOk ? ok() : error(_error);
 

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Diagraph.Modules.Events.Api.DataImports.Commands;
+namespace Diagraph.Modules.Events.Api.DataImports.ImportEvents.Commands;
 
 public class ImportEventsCommand
 {

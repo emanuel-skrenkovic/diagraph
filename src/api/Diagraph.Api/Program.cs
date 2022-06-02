@@ -3,9 +3,13 @@ using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Events.Api;
 using Diagraph.Modules.GlucoseData.Api;
 using Diagraph.Modules.Identity.Api;
+using FastEndpoints;
+using Hellang.Middleware.ProblemDetails;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables(prefix: "DIAGRAPH_");
+
+builder.Services.AddFastEndpoints();
 
 string env = builder.Environment.EnvironmentName;
 builder.Services.LoadModule<IdentityModule>(env);
@@ -21,8 +25,14 @@ builder.Services.AddSession(opts =>
     opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
+builder.Services.AddProblemDetails(opts =>
+{
+    opts.MapToStatusCode<Exception>(400); // TODO: It's not me, it's you.
+});
+
 builder.Services.AddScoped<IUserContext, UserContext>();
 
+// AddProblemDetails breaks if AddControllers is removed.
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -49,15 +59,16 @@ app.UseCors(opts =>
     opts.Build();
 });
 
+app.UseProblemDetails();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseSession();
 
 // Needs to be after UserAuthentication.
 app.Use(UserContextMiddleware.Handle);
-
-app.MapControllers();
+app.UseFastEndpoints();
 
 app.Run();

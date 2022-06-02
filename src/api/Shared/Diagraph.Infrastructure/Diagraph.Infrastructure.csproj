@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="11.0.1" />
       <PackageReference Include="CsvHelper" Version="27.2.1" />
+      <PackageReference Include="FastEndpoints" Version="4.2.0" />
       <PackageReference Include="Google.Apis.Discovery.v1" Version="1.57.0" />
       <PackageReference Include="Google.Apis.Tasks.v1" Version="1.57.0.2384" />
       <PackageReference Include="MailKit" Version="3.2.0" />
@@ -19,10 +20,6 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Api" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 using AutoMapper;
-using Diagraph.Modules.Events.Api.DataImports.Commands;
+using Diagraph.Modules.Events.Api.DataImports.ImportTemplates;
+using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Commands;
 using Diagraph.Modules.Events.Api.Events.Commands;
 using Diagraph.Modules.Events.DataImports;
 

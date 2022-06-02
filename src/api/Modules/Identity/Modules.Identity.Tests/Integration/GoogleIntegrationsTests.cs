@@ -25,7 +25,7 @@ public class GoogleIntegrationsTests
         => _fixture = fixture;
 
     [Theory, CustomizedAutoData]
-    public async Task Creates_New_Integration(ConfirmGoogleScopesAccessCommand command)
+    public async Task Creates_New_Integration(ConfirmGoogleTasksScopesCommand command)
     {
         // Arrange
         await RegisterUser();
@@ -60,8 +60,8 @@ public class GoogleIntegrationsTests
     [Theory, CustomizedAutoData]
     public async Task Updates_Existing_Integration
     (
-        ConfirmGoogleScopesAccessCommand command, 
-        ConfirmGoogleScopesAccessCommand command2
+        ConfirmGoogleTasksScopesCommand command, 
+        ConfirmGoogleTasksScopesCommand command2
     )
     {
         // Arrange

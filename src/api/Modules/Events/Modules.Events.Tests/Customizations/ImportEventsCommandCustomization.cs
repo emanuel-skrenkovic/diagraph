@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using Diagraph.Modules.Events.Api.DataImports.Commands;
+using Diagraph.Modules.Events.Api.DataImports.ImportEvents.Commands;
 using Microsoft.AspNetCore.Http;
 
 namespace Diagraph.Modules.Events.Tests.Customizations;

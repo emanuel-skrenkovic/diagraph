@@ -7,24 +7,21 @@ using Diagraph.Infrastructure.Integrations.Google;
 using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using FastEndpoints;
 
 namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google;
 
-[ApiController]
-[Route("auth/external-access/google")]
-public class GoogleExternalAccessController : ControllerBase
+public class ConfirmGoogleTasksScopesEndpoint : Endpoint<ConfirmGoogleTasksScopesCommand>
 {
     private readonly IdentityDbContext _context;
     private readonly IUserContext      _userContext;
     private readonly GoogleAuthorizer  _authorizer;
 
-    public GoogleExternalAccessController
+    public ConfirmGoogleTasksScopesEndpoint
     (
         IdentityDbContext context, 
-        IUserContext      userContext,
-        GoogleAuthorizer  authorizer
+        IUserContext userContext, 
+        GoogleAuthorizer authorizer
     )
     {
         _context     = context;
@@ -32,33 +29,15 @@ public class GoogleExternalAccessController : ControllerBase
         _authorizer  = authorizer;
     }
     
-    [HttpGet]
-    [Route("scopes/request")]
-    public async Task<IActionResult> RequestGoogleScopesAccess([FromQuery] string redirectUri) 
-        => Ok
-        (
-            new RequestGoogleScopesAccessResponse
-            {
-                RedirectUri = _authorizer.Scopes.GenerateRequestsScopesUrl
-                (
-                    await _authorizer.Scopes.RequestRequiredAsync("tasks", "v1"),
-                    redirectUri
-                )
-            }
-        );
+    public override void Configure()
+        => Put("auth/external-access/google/scopes/confirm");
 
-    // TODO: refactor the entire procedure.
-    [HttpPut]
-    [Route("scopes/confirm")]
-    public async Task<IActionResult> ConfirmGoogleScopesAccess
-    (
-        [FromBody] ConfirmGoogleScopesAccessCommand command
-    )
+    public override async Task HandleAsync(ConfirmGoogleTasksScopesCommand req, CancellationToken ct)
     {
         OAuth2TokenResponse tokenResponse = await _authorizer.AuthFlow.ExecuteAsync
         (
-            command.Code, 
-            command.RedirectUri
+            req.Code, 
+            req.RedirectUri
         );
         
         External external = await _context.GetOrAddAsync
@@ -70,7 +49,7 @@ public class GoogleExternalAccessController : ControllerBase
         (
             new GoogleIntegrationInfo
             {
-                GrantedScopes = command.Scope,
+                GrantedScopes = req.Scope,
                 AccessToken   = new TokenData(tokenResponse.AccessToken, tokenResponse.ExpiresIn),
                 RefreshToken  = tokenResponse.RefreshToken
             }
@@ -86,34 +65,14 @@ public class GoogleExternalAccessController : ControllerBase
             data => data["googleIntegration"] = true // UGLY
         );
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
         await _authorizer.InitializeSessionDataAsync
         (
             tokenResponse.AccessToken,
             tokenResponse.ExpiresIn,
             tokenResponse.RefreshToken
         );
-        
-        return Ok();
-    }
-    
-    [HttpGet]
-    [Route("scopes")]
-    public async Task<IActionResult> RequestAvailableScopes()
-    {
-        External external = await _context
-            .UserExternalIntegrations
-            .WithUser(_userContext.UserId)
-            .FirstOrDefaultAsync(e => e.Provider == ExternalProvider.Google);
 
-        return Ok
-        (
-            new 
-            { 
-                GrantedScopes = external
-                    ?.GetData<GoogleIntegrationInfo>()
-                    .GrantedScopes ?? Array.Empty<string>()
-            }
-        );
+        await SendOkAsync(ct);
     }
 }
