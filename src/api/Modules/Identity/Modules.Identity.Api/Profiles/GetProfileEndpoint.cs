@@ -27,8 +27,7 @@ public class GetProfileEndpoint : EndpointWithoutRequest
         );
 
         await _context.SaveChangesAsync(ct);
-
-        // TODO: might be incorrectly serialized json.
-        await SendOkAsync(profile.Data, ct);
+        
+        await SendStringAsync(profile.Data, 200, cancellation: ct);
     }
 }

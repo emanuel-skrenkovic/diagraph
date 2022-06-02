@@ -5,7 +5,7 @@ using FastEndpoints;
 
 namespace Diagraph.Modules.Identity.Api.Profiles;
 
-public class UpdateProfileEndpoint : Endpoint<dynamic>
+public class UpdateProfileEndpoint : Endpoint<PlainTextRequest>
 {
     private readonly IdentityDbContext _context;
     private readonly IUserContext      _userContext;
@@ -18,15 +18,15 @@ public class UpdateProfileEndpoint : Endpoint<dynamic>
 
     public override void Configure() => Put("my/profile");
 
-    public override async Task HandleAsync(dynamic req, CancellationToken ct)
+    public override async Task HandleAsync(PlainTextRequest req, CancellationToken ct)
     {
         UserProfile profile = await _context.GetOrAddAsync
         (
             p => p.UserId == _userContext.UserId,
             UserProfile.Create(_userContext.UserId)
         );
-        
-        profile.Data = req.ToString();
+
+        profile.Data = req.Content;
 
         _context.Update(profile);
         await _context.SaveChangesAsync(ct);

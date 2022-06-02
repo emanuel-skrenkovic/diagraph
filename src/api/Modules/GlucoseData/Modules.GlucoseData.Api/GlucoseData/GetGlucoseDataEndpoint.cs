@@ -11,11 +11,7 @@ public class GetGlucoseDataEndpoint : EndpointWithoutRequest<List<GlucoseMeasure
     private readonly GlucoseDataDbContext _context;
     private readonly IUserContext         _userContext;
 
-    public GetGlucoseDataEndpoint
-    (
-        GlucoseDataDbContext context,
-        IUserContext         userContext
-    )
+    public GetGlucoseDataEndpoint(GlucoseDataDbContext context, IUserContext userContext)
     {
         _context     = context;
         _userContext = userContext;

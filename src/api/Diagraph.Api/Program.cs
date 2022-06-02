@@ -67,9 +67,8 @@ app.UseAuthorization();
 
 app.UseSession();
 
-app.UseFastEndpoints();
-
 // Needs to be after UserAuthentication.
 app.Use(UserContextMiddleware.Handle);
+app.UseFastEndpoints();
 
 app.Run();
