@@ -13,7 +13,8 @@ public class RegisterConfirmEndpoint : EndpointWithoutRequest
 
     public override void Configure()
     {
-        Get("register/confirm");
+        Get("auth/register/confirm");   
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(CancellationToken ct)
