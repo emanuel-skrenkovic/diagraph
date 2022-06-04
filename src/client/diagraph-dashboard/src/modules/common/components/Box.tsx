@@ -2,4 +2,8 @@ import React from 'react';
 
 import 'App.css';
 
-export const Box: React.FC = ({ children }) => <div className="box">{children}</div>;
+export interface BoxProps {
+    children?: React.ReactNode;
+}
+
+export const Box: React.FC<BoxProps> = ({ children }) => <div className="box">{children}</div>;

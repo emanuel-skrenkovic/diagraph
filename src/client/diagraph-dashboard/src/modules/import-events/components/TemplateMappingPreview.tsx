@@ -1,3 +1,5 @@
+// noinspection JSDeprecatedSymbols
+
 import React, { useState, useEffect } from 'react';
 
 import { Event } from 'types';
@@ -51,7 +53,7 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
                             <tbody>
                             <For each={events.slice(0, 100)} onEach={(e, i) => (
                                 <tr key={i}>
-                                    <td>{e.occurredAtUtc}</td>
+                                    <td>{e.occurredAtUtc.toString()}</td>
                                     <td>{e.text}</td>
                                     <td>
                                         [<For each={e.tags ?? []} onEach={(t, i) => (

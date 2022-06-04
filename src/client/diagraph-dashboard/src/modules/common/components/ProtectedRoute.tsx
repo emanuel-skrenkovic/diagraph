@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 export interface ProtectedRouteProps {
     condition: boolean
     fallback: string;
+    children?: React.ReactNode;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ condition, fallback, children }) => {

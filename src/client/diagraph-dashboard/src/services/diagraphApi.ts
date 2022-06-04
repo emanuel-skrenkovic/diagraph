@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery, FetchBaseQueryMeta } from '@reduxjs/toolkit/
 
 import { setTags } from 'modules/common';
 import { login, logout } from 'modules/auth';
+import { setData, setEvents } from 'modules/graph';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
 import { CreateEventCommand, Event, GlucoseMeasurement, EventTag, ImportTemplate } from 'types';
 
@@ -15,6 +16,10 @@ export const diagraphApi = createApi({
     endpoints: (builder) => ({
         getEvents: builder.query<Event[], any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} }),
+            async onQueryStarted(api, { dispatch, queryFulfilled }) {
+                const { data } = await queryFulfilled;
+                dispatch(setEvents(data ?? []));
+            },
             providesTags: (result) => result
                 ? [...result.map(r => ({ type: 'Events' as const, id: r.id }))]
                 : [{ type: 'Events' as const, id: 'NONE' }]
@@ -84,6 +89,11 @@ export const diagraphApi = createApi({
 
         getData: builder.query<GlucoseMeasurement[], { from: string, to: string }>({
             query: ({from, to}) => ({ url: 'data', params: {from, to}}),
+            async onQueryStarted(request, { dispatch, queryFulfilled }) {
+                const { data } = await queryFulfilled;
+                dispatch(setData(data))
+            },
+            providesTags: [{ type: 'ImportTemplates', id: 'all'}],
         }),
         importData: builder.mutation<any, any>({
             async queryFn(file, queryApi, extraOptions, fetch) {

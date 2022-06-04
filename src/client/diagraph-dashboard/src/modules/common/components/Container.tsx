@@ -4,6 +4,7 @@ import 'App.css';
 
 export interface ContainerProps {
     vertical?: boolean;
+    children?: React.ReactNode;
 }
 
 export const Container: React.FC<ContainerProps> = ({ vertical, children }) =>

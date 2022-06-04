@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { RootState } from 'store';
+import { RootState, AppDispatch } from 'store';
 import {
+    diagraphApi,
     useCreateEventMutation,
     useUpdateEventMutation,
     useGetEventsQuery,
@@ -15,13 +16,12 @@ import {
     Box,
     Container,
     Item,
-    setTags,
     Loader,
     DateRangePicker,
     toLocalISODateString,
     useValidation } from 'modules/common';
 import { Notification, CreateEventCommand, Event, EventTag, GlucoseMeasurement } from 'types';
-import { GlucoseGraph, EventForm, RecentEvents, setDateRange, setData, setEvents } from 'modules/graph';
+import { GlucoseGraph, EventForm, RecentEvents, setDateRange } from 'modules/graph';
 
 
 import 'App.css';
@@ -54,6 +54,8 @@ export function Dashboard() {
     const taskList     = useSelector((state: RootState) => state.profile.profile.googleTaskList);
     const integration  = useSelector((state: RootState) => state.profile.profile.googleIntegration);
 
+    useEffect(() => {}, [dateRange, events, measurements]);
+
     const [createTask, setCreateTask]                   = useState(false);
     const [editing, setEditing]                         = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<GlucoseMeasurement | undefined>();
@@ -67,17 +69,17 @@ export function Dashboard() {
     const [createEvent] = useCreateEventMutation();
     const [updateEvent] = useUpdateEventMutation();
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const getData    = useGetDataQuery({ from: dateRange.from, to: dateRange.to });
     const getEvents  = useGetEventsQuery({ from: dateRange.from,to: dateRange.to });
     const getTags    = useGetTagsQuery(undefined);
     const getProfile = useGetProfileQuery(undefined);
 
-    if (handleQuery(getProfile))                                   return <Loader />
-    if (handleQuery(getData, data => dispatch(setData(data))))     return <Loader />
-    if (handleQuery(getEvents, data => dispatch(setEvents(data)))) return <Loader />
-    if (handleQuery(getTags, data => dispatch(setTags(data))))     return <Loader />
+    if (handleQuery(getProfile)) return <Loader />
+    if (handleQuery(getData))    return <Loader />
+    if (handleQuery(getEvents))  return <Loader />
+    if (handleQuery(getTags))    return <Loader />
 
     function onCreateEvent(event: Event) {
         const command: CreateEventCommand = { event };
@@ -87,9 +89,12 @@ export function Dashboard() {
     }
 
     function onChangeDateRange(from: Date, to: Date) {
-        dispatch(
-            setDateRange({from: toLocalISODateString(from), to: toLocalISODateString(to)})
-        );
+        const dateRange = {from: toLocalISODateString(from), to: toLocalISODateString(to)};
+        dispatch(setDateRange(dateRange));
+
+        const fetchOptions = { subscribe: false, forceRefetch: true };
+        dispatch(diagraphApi.endpoints.getData.initiate(dateRange, fetchOptions));
+        dispatch(diagraphApi.endpoints.getEvents.initiate(dateRange, fetchOptions));
     }
 
     return (

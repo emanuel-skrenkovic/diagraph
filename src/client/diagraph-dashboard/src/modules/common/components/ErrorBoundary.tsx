@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface ErrorBoundaryProps { }
+export interface ErrorBoundaryProps { children?: React.ReactNode; }
 interface ErrorBoundaryState { hasError: boolean }
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
