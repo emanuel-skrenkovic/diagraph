@@ -66,8 +66,8 @@ export function Dashboard() {
         {} as Notification
     )
 
-    const [createEvent] = useCreateEventMutation();
-    const [updateEvent] = useUpdateEventMutation();
+    const [createEvent]  = useCreateEventMutation();
+    const [updateEvent]  = useUpdateEventMutation();
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -83,7 +83,7 @@ export function Dashboard() {
 
     function onCreateEvent(event: Event) {
         const command: CreateEventCommand = { event };
-        if (notification) command.notification = { ...notification, parent: taskList };
+        if (notification?.text) command.notification = { ...notification, parent: taskList };
 
         createEvent(command);
     }
@@ -97,8 +97,18 @@ export function Dashboard() {
         dispatch(diagraphApi.endpoints.getEvents.initiate(dateRange, fetchOptions));
     }
 
+    async function onExportEvents() {
+        // TODO: there is, most certainly, a waaaaay better way.
+        window.location.href = 'https://localhost:7053/events/data-export/csv?mergeSequential=true';
+    }
+
     return (
         <Container vertical>
+            <button className="button"
+                    style={{marginLeft:"80%"}}
+                    onClick={onExportEvents}>
+                Export Events
+            </button>
             <Container>
                 <DateRangePicker
                     from={toLocalDate(dateRange.from)}
@@ -108,7 +118,6 @@ export function Dashboard() {
             </Container>
             <Container vertical>
                 <div className="centered">
-                    <h2>Glucose graph</h2>
                     <GlucoseGraph
                         from={toLocalDate(dateRange.from)}
                         to={toLocalDate(dateRange.to)}
