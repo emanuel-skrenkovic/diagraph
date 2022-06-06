@@ -25,7 +25,7 @@ public class ExportEventsEndpoint : EndpointWithoutRequest
         _exportContext = exportContext;
     }
     
-    public override void Configure() => Post("events/data-export/csv");
+    public override void Configure() => Get("events/data-export/csv");
 
     public override async Task HandleAsync(CancellationToken ct)
     {
@@ -53,7 +53,7 @@ public class ExportEventsEndpoint : EndpointWithoutRequest
         await SendBytesAsync
         (
             await strategy.ExportAsync(events), 
-            fileName:    "file",
+            fileName:     $"diagraph_events_{DateTime.UtcNow:yyyy-M-d}.csv",
             cancellation: ct
         );
     }

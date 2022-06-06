@@ -32,7 +32,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv", null);
+            .GetAsync("events/data-export/csv");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -58,7 +58,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv", null);
+            .GetAsync("events/data-export/csv");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -89,7 +89,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv?mergeSequential=false", null);
+            .GetAsync("events/data-export/csv?mergeSequential=false");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -141,7 +141,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv?mergeSequential=true", null);
+            .GetAsync("events/data-export/csv?mergeSequential=true");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -196,7 +196,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv?mergeSequential=true", null);
+            .GetAsync("events/data-export/csv?mergeSequential=true");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -245,7 +245,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv?mergeSequential=true", null);
+            .GetAsync("events/data-export/csv?mergeSequential=true");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -296,7 +296,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv?mergeSequential=true", null);
+            .GetAsync("events/data-export/csv?mergeSequential=true");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -348,7 +348,7 @@ public class EventsDataExportTests
         // Act
         HttpResponseMessage response = await _fixture
             .Client
-            .PostAsync("events/data-export/csv?mergeSequential=true", null);
+            .GetAsync("events/data-export/csv?mergeSequential=true");
          
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
