@@ -1,0 +1,17 @@
+version: '2.4'
+services:
+  dg-api:
+    build:
+      context: src/api
+      dockerfile: Diagraph.Api/Dockerfile.local
+    container_name: dg.api
+    env_file:
+      - .env.local
+    volumes:
+      - ./src/api/:/app
+    ports:
+      - "7053:7053"
+    depends_on:
+      - dg-postgres
+    networks:
+      - dg-network

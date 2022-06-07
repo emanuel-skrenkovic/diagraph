@@ -6,6 +6,8 @@
         <Nullable>disable</Nullable>
         <AssemblyName>Diagraph.Modules.Identity.Api</AssemblyName>
         <RootNamespace>Diagraph.Modules.Identity.Api</RootNamespace>
+        <Configurations>Debug;Release;Docker</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,6 +25,9 @@
 
     <ItemGroup>
       <None Update="module.identity.development.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="module.identity.docker.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

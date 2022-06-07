@@ -7,6 +7,10 @@
         <IsPackable>false</IsPackable>
 
         <OutputType>Library</OutputType>
+
+        <Configurations>Debug;Release;Docker</Configurations>
+
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

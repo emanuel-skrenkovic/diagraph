@@ -6,6 +6,8 @@
         <Nullable>disable</Nullable>
         <AssemblyName>Diagraph.Modules.GlucoseData.Api</AssemblyName>
         <RootNamespace>Diagraph.Modules.GlucoseData.Api</RootNamespace>
+        <Configurations>Debug;Release;Docker</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,6 +22,9 @@
 
     <ItemGroup>
       <None Update="module.glucose-data.development.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="module.glucose-data.docker.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

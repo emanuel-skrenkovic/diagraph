@@ -6,6 +6,8 @@
         <Nullable>disable</Nullable>
         <RootNamespace>Diagraph.Modules.Events</RootNamespace>
         <AssemblyName>Diagraph.Modules.Events</AssemblyName>
+        <Configurations>Debug;Release;Docker</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,0 +1,21 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "DatabaseConfiguration": {
+    "ConnectionString": "User ID=postgres;Password=postgres;Server=dg-postgres;Port=5432;Database=diagraph;Integrated Security=true;Pooling=true;",
+    "MigrationsAssembly": "Diagraph.Modules.Identity"
+  },
+  "Mailhog": {
+    "From": "noreply@diagraph.com",
+    "Host": "dg-mailhog",
+    "Port": 1025
+  },
+  "Google": {
+    "AuthUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+    "TokenUrl": "https://oauth2.googleapis.com/token"
+  }
+}

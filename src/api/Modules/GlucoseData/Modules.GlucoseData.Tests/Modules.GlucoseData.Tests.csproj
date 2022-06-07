@@ -9,6 +9,10 @@
         <AssemblyName>Diagraph.Modules.GlucoseData.Tests</AssemblyName>
 
         <RootNamespace>Diagraph.Modules.GlucoseData.Tests</RootNamespace>
+
+        <Configurations>Debug;Release;Docker</Configurations>
+
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

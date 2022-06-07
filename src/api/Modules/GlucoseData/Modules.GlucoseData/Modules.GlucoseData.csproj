@@ -6,6 +6,8 @@
         <Nullable>disable</Nullable>
         <AssemblyName>Diagraph.Modules.GlucoseData</AssemblyName>
         <RootNamespace>Diagraph.Modules.GlucoseData</RootNamespace>
+        <Configurations>Debug;Release;Docker</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

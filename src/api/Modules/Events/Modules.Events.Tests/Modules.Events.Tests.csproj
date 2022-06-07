@@ -9,6 +9,10 @@
         <RootNamespace>Diagraph.Modules.Events.Tests</RootNamespace>
 
         <AssemblyName>Diagraph.Modules.Events.Tests</AssemblyName>
+
+        <Configurations>Debug;Release;Docker</Configurations>
+
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

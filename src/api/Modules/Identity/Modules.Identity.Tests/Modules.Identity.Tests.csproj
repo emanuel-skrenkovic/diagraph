@@ -9,6 +9,10 @@
         <AssemblyName>Diagraph.Modules.Identity.Tests</AssemblyName>
 
         <RootNamespace>Diagraph.Modules.Identity.Tests</RootNamespace>
+
+        <Configurations>Debug;Release;Docker</Configurations>
+
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

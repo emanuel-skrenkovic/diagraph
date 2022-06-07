@@ -6,6 +6,8 @@
         <Nullable>disable</Nullable>
         <AssemblyName>Diagraph.Modules.Identity</AssemblyName>
         <RootNamespace>Diagraph.Modules.Identity</RootNamespace>
+        <Configurations>Debug;Release;Docker</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
