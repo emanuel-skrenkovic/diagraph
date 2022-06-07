@@ -5,23 +5,25 @@ import { useNavigate, Link } from 'react-router-dom';
 import { RootState } from 'store';
 import { Loader } from 'modules/common';
 import { LoginForm } from 'modules/auth';
-import { useLoginMutation } from 'services';
+import { useGetSessionQuery, useLoginMutation } from 'services';
 
 import 'App.css';
 
 export const Login = () => {
-    const navigate = useNavigate();
     const authenticated = useSelector((state: RootState) => state.auth.authenticated);
 
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (authenticated) navigate('/');
+    }, [authenticated]);
+
+    const { isLoading: isSessionLoading } = useGetSessionQuery(undefined);
     const [login, { isLoading, isError }] = useLoginMutation();
 
     const onClickLogin = (email: string, password: string) => login({email, password});
 
-    useEffect(() => {
-        if (authenticated) navigate(-1);
-    }, [authenticated, navigate]);
-
-    if (isLoading) return <Loader />;
+    if (authenticated) navigate('/');
+    if (isLoading || isSessionLoading) return <Loader />;
 
     return (
         <div className="container vertical">

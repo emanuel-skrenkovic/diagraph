@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 import { RootState } from 'store';
-import { useGetSessionQuery, useLogoutMutation } from 'services';
+import { useLogoutMutation } from 'services';
 
 import { Import } from 'modules/import';
 import { Dashboard } from 'modules/graph';
@@ -18,10 +18,8 @@ import 'App.css';
 function App() {
     const authenticated = useSelector((state: RootState) => state.auth.authenticated);
 
-    const { data, isLoading: isSessionLoading }    = useGetSessionQuery(undefined);
     const [logout, { isLoading: isLogoutLoading }] = useLogoutMutation(undefined);
-
-    if (isSessionLoading || isLogoutLoading) return <Loader />;
+    if (isLogoutLoading) return <Loader />;
 
     return (
         <div className="container wide">
@@ -43,7 +41,7 @@ function App() {
                                                 onClick={logout}>
                                             Log out
                                         </button>
-                                        <span>Hello, {data?.userName}</span>
+                                        {/*<span>Hello, {data?.userName}</span>*/}
                                     </div>
                                     <div className="container wide item">
                                         <Link className="item" to="/">Dashboard</Link>
@@ -87,9 +85,9 @@ function App() {
                                 </ProtectedRoute>
                             } />
                             <Route path="integrations/google/confirm" element={
-                                <ProtectedRoute condition={authenticated} fallback="/login">
-                                    <GoogleIntegrationConfirm />
-                                </ProtectedRoute>
+                                <GoogleIntegrationConfirm />
+                                // <ProtectedRoute condition={authenticated} fallback="/login">
+                                // </ProtectedRoute>
                             } />
                         </Routes>
                     </div>

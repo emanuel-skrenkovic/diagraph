@@ -15,19 +15,17 @@ export const GoogleIntegrationConfirm: React.FC = () => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        if (isSuccess) {
-            navigate('/');
-            return;
-        }
+        if (isLoading || isSuccess) return;
 
         googleIntegrationConfirm({
             code: authorizationCode,
             redirectUri: 'http://localhost:3000/integrations/google/confirm',
-            scopes: ['asdf', 'fdsa'] // WTF is this?
+            scopes: ['asdf', 'fdsa'], // WTF is this?
         });
-    }, [profile, isSuccess]);
+    }, []);
 
     if (profile.googleIntegration) navigate('/');
+    if (isSuccess)                 navigate('/');
     if (!authorizationCode)        return <span>Invalid URL: no authorization code.</span>
     if (isLoading)                 return <Loader />;
 

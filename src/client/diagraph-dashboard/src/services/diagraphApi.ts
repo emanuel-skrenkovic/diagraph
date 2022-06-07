@@ -205,7 +205,7 @@ export const diagraphApi = createApi({
 
         googleIntegration: builder.query<any, string>({
             query: redirect => ({
-                url: `/auth/external-access/google/scopes/request?redirectUri=${redirect}`
+                url: `/auth/external-access/google/tasks/scopes/required?redirectUri=${redirect}`
             })
         }),
         googleIntegrationConfirm: builder.mutation<any, any>({

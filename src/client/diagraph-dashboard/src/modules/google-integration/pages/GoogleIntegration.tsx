@@ -3,15 +3,17 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from 'store';
 import { Container, handleQuery, Loader } from 'modules/common';
-import { useGoogleIntegrationQuery, useUpdateProfileMutation } from 'services';
+import { useGetProfileQuery, useGoogleIntegrationQuery, useUpdateProfileMutation } from 'services';
 
 export const GoogleIntegration: React.FC = () => {
     const profile = useSelector ((state: RootState) => state.profile.profile);
     const { googleIntegration, googleTaskList } = profile;
 
+    const { isSuccess, isLoading: profileLoading } = useGetProfileQuery(undefined);
+
     useEffect(() => {
         setTaskList(googleTaskList);
-    }, [googleIntegration, googleTaskList]);
+    }, [isSuccess, googleIntegration, googleTaskList]);
 
     const [taskList, setTaskList]                         = useState(googleTaskList);
     const [requestedIntegration, setRequestedIntegration] = useState(false)
@@ -27,7 +29,8 @@ export const GoogleIntegration: React.FC = () => {
         ({redirectUri}) => requestedIntegration && window.location.replace(redirectUri)
     );
 
-    if (queryLoading) return <Loader />;
+    if (queryLoading)   return <Loader />;
+    if (profileLoading) return <Loader />;
 
     function renderNotIntegrated() {
         return (
@@ -54,5 +57,9 @@ export const GoogleIntegration: React.FC = () => {
         );
     }
 
-    return googleIntegration ? renderIntegrated() : renderNotIntegrated();
+    return (
+        <div className="centered">
+            {googleIntegration ? renderIntegrated() : renderNotIntegrated()}
+        </div>
+    );
 };
