@@ -1,10 +1,4 @@
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
   "DatabaseConfiguration": {
     "ConnectionString": "User ID=postgres;Password=postgres;Server=localhost;Port=54322;Database=diagraph;Integrated Security=true;Pooling=true;",
     "MigrationsAssembly": "Diagraph.Modules.GlucoseData"

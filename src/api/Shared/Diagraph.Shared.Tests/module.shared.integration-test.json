@@ -1,0 +1,5 @@
+{
+  "RedisConfiguration": {
+    "ConnectionString": "localhost:6379"
+  }
+}

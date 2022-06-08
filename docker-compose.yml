@@ -15,6 +15,17 @@ services:
     networks:
       - dg-network
 
+  dg-redis:
+    container_name: dg.redis
+    image: redis:7.0.0-alpine
+    command: ["redis-server"]
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    networks:
+      - dg-network
+
   dg-mailhog:
     container_name: dg.mailhog
     image: mailhog/mailhog
