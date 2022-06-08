@@ -11,18 +11,14 @@ public class RedisModuleFixture : IAsyncLifetime
 {
     public readonly RedisContainer Redis;
 
-    public ICache Cache => new RedisCache
-    (
-        new RedisConfiguration { Database = 1 }, 
-        Redis.Multiplexer
-    );
+    public ICache Cache => new RedisCache(Redis.Multiplexer);
 
     public RedisModuleFixture(string moduleName)
     {
         IConfiguration configuration = new ConfigurationManager()
             .AddJsonFile($"module.{moduleName}.integration-test.json")
             .Build();
-        
+
         Redis = new RedisContainer(configuration["RedisConfiguration:ConnectionString"]);
     }
 

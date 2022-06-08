@@ -5,16 +5,12 @@ namespace Diagraph.Infrastructure.Cache.Redis;
 
 public class RedisCache : ICache
 {
-    private readonly RedisConfiguration    _configuration;
     private readonly ConnectionMultiplexer _multiplexer;
 
-    public RedisCache(RedisConfiguration configuration, ConnectionMultiplexer multiplexer)
-    {
-        _configuration = configuration;
-        _multiplexer   = multiplexer;
-    }
+    public RedisCache(ConnectionMultiplexer multiplexer)
+        => _multiplexer = multiplexer;
 
-    private IDatabase Database => _multiplexer.GetDatabase(_configuration.Database);
+    private IDatabase Database => _multiplexer.GetDatabase();
     
     public T Get<T, TKey>(TKey key)
     {
@@ -60,13 +56,13 @@ public class RedisCache : ICache
         RedisKey redisKey = Key(key);
 
         bool   lockTaken = false;
-        string lockKey   = $"{redisKey}_lock";
+        string lockName  = LockName(key);
         string lockValue = Guid.NewGuid().ToString();
         
         IDatabase db = Database;
         try
         {
-            lockTaken = db.LockTake(lockKey, lockValue, TimeSpan.FromSeconds(5)); // TODO
+            lockTaken = db.LockTake(lockName, lockValue, TimeSpan.FromSeconds(5)); // TODO
             if (!lockTaken)
                 throw new InvalidOperationException($"Failed to acquire lock on key '{redisKey}'.");
             
@@ -78,7 +74,7 @@ public class RedisCache : ICache
         }
         finally
         {
-            if (lockTaken) db.LockRelease(lockKey, lockValue);
+            if (lockTaken) db.LockRelease(lockName, lockValue);
         }
     }
 
@@ -89,13 +85,13 @@ public class RedisCache : ICache
         RedisKey redisKey = Key(key);
 
         bool   lockTaken = false;
-        string lockKey   = $"{redisKey}_lock";
+        string lockName  = LockName(key);
         string lockValue = Guid.NewGuid().ToString();       
 
         IDatabase db = Database;
         try
         {
-            lockTaken = await db.LockTakeAsync(lockKey, lockValue, TimeSpan.FromSeconds(5)); // TODO
+            lockTaken = await db.LockTakeAsync(lockName, lockValue, TimeSpan.FromSeconds(5)); // TODO
             if (!lockTaken)
                 throw new InvalidOperationException($"Failed to acquire lock on key '{redisKey}'.");
             
@@ -107,7 +103,7 @@ public class RedisCache : ICache
         }
         finally
         {
-            if (lockTaken) await db.LockReleaseAsync(lockKey, lockValue);
+            if (lockTaken) await db.LockReleaseAsync(lockName, lockValue);
         }
     }
 
@@ -119,4 +115,6 @@ public class RedisCache : ICache
         => key is string stringKey 
             ? new RedisKey(stringKey) 
             : new RedisKey(JsonSerializer.Serialize(key));
+    
+    private string LockName<TKey>(TKey key) => $"{Key(key)}_lock";
 }
