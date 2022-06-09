@@ -26,6 +26,8 @@ public class ImportTemplateConfiguration : IEntityTypeConfiguration<ImportTempla
             .HasColumnName("updated_at_utc")
             .HasColumnType("timestamptz");
 
+
+        builder.Property(t => t.UserId).HasColumnName("user_id");
         builder.Property(t => t.Name).HasColumnName("name");
         builder
             .Property(t => t.Data)

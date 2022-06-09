@@ -1,10 +1,11 @@
 using Diagraph.Infrastructure;
+using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Dynamic;
 using Diagraph.Infrastructure.Integrations;
 
 namespace Diagraph.Modules.Identity.ExternalIntegrations;
 
-public class External : IUserRelated, IDynamicDataContainer
+public class External : DbEntity, IUserRelated, IDynamicDataContainer
 {
     public int Id { get; set; }
     
