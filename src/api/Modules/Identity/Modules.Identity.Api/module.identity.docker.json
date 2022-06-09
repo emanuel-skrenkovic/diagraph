@@ -9,6 +9,9 @@
     "ConnectionString": "User ID=postgres;Password=postgres;Server=dg-postgres;Port=5432;Database=diagraph;Integrated Security=true;Pooling=true;",
     "MigrationsAssembly": "Diagraph.Modules.Identity"
   },
+  "RedisConfiguration": {
+    "ConnectionString": "dg-redis:6379"
+  },
   "Mailhog": {
     "From": "noreply@diagraph.com",
     "Host": "dg-mailhog",

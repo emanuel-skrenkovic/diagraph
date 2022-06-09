@@ -12,10 +12,7 @@ public class GoogleScopes
 {
     private readonly GoogleConfiguration _configuration;
 
-    public GoogleScopes(GoogleConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    public GoogleScopes(GoogleConfiguration configuration) => _configuration = configuration;
     
     public async Task<IEnumerable<string>> RequestRequiredAsync(string api, string version) 
     {
@@ -29,7 +26,12 @@ public class GoogleScopes
         return description.Auth.Oauth2.Scopes.Keys;
     }
 
-    public string GenerateRequestsScopesUrl(IEnumerable<string> scopes, string redirectUri)
+    public string GenerateRequestsScopesUrl
+    (
+        IEnumerable<string> scopes, 
+        string redirectUri, 
+        string state = null
+    )
     {
         UriBuilder builder = new(_configuration.AuthUrl);
         
@@ -39,6 +41,11 @@ public class GoogleScopes
         query.Add(OAuth2Constants.RedirectUri, redirectUri);
         query.Add(OAuth2Constants.ResponseType, OAuth2Constants.ResponseTypes.Code);
         query.Add("access_type", "offline"); // TODO: constant
+
+        if (state is not null)
+        {
+            query.Add(OAuth2Constants.State, state); // TODO: constant 
+        }
         
         builder.Query = query.ToString()!;
         

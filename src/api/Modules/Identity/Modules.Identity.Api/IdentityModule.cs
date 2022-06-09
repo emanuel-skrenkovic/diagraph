@@ -1,3 +1,5 @@
+using Diagraph.Infrastructure.Cache.Redis;
+using Diagraph.Infrastructure.Cache.Redis.Extensions;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Infrastructure.Hashing;
@@ -29,6 +31,13 @@ public class IdentityModule : Module
             configuration
                 .GetSection(DatabaseConfiguration.SectionName)
                 .Get<DatabaseConfiguration>()
+        );
+
+        services.AddRedis
+        (
+            configuration
+                .GetSection(RedisConfiguration.SectionName)
+                .Get<RedisConfiguration>()
         );
         
         services.AddSingleton(new EmailServerConfiguration

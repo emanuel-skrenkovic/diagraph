@@ -5,6 +5,18 @@ namespace Diagraph.Infrastructure.Api.Extensions;
 
 public static class EndpointExtensions
 {
+    public static Task SendWithoutContentAsync<TRequest, TResponse>
+    (
+        this Endpoint<TRequest, TResponse> endpoint,
+        int                                statusCode,
+        CancellationToken                  cancellation = default
+    ) where TRequest : notnull, new() where TResponse : notnull, new()
+    {
+        HttpResponse response = endpoint.HttpContext.Response;
+        response.StatusCode = statusCode;
+        return response.StartAsync(cancellation);  
+    }
+    
     public static Task SendCreated<TRequest, TResponse>
     (
         this Endpoint<TRequest, TResponse> endpoint, 

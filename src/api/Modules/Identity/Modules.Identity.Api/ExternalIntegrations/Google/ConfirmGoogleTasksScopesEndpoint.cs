@@ -1,3 +1,4 @@
+using Diagraph.Infrastructure.Api;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Auth.OAuth2;
 using Diagraph.Infrastructure.Database.Extensions;
@@ -7,11 +8,10 @@ using Diagraph.Infrastructure.Integrations.Google;
 using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
-using FastEndpoints;
 
 namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google;
 
-public class ConfirmGoogleTasksScopesEndpoint : Endpoint<ConfirmGoogleTasksScopesCommand>
+public class ConfirmGoogleTasksScopesEndpoint : IdempotentEndpoint<ConfirmGoogleTasksScopesCommand>
 {
     private readonly IdentityDbContext _context;
     private readonly IUserContext      _userContext;
@@ -20,26 +20,29 @@ public class ConfirmGoogleTasksScopesEndpoint : Endpoint<ConfirmGoogleTasksScope
     public ConfirmGoogleTasksScopesEndpoint
     (
         IdentityDbContext context, 
-        IUserContext userContext, 
-        GoogleAuthorizer authorizer
+        IUserContext      userContext, 
+        GoogleAuthorizer  authorizer
     )
     {
         _context     = context;
         _userContext = userContext;
         _authorizer  = authorizer;
     }
-    
+
     public override void Configure()
-        => Put("auth/external-access/google/scopes/confirm");
+    {
+        base.Configure();
+        Put("auth/external-access/google/scopes/confirm");
+    }
 
     public override async Task HandleAsync(ConfirmGoogleTasksScopesCommand req, CancellationToken ct)
     {
         OAuth2TokenResponse tokenResponse = await _authorizer.AuthFlow.ExecuteAsync
         (
-            req.Code, 
+            req.Code,
             req.RedirectUri
         );
-        
+
         External external = await _context.GetOrAddAsync
         (
             e => e.UserId == _userContext.UserId && e.Provider == ExternalProvider.Google,
@@ -57,7 +60,7 @@ public class ConfirmGoogleTasksScopesEndpoint : Endpoint<ConfirmGoogleTasksScope
 
         UserProfile profile = await _context.GetOrAddAsync
         (
-            p => p.UserId == _userContext.UserId, 
+            p => p.UserId == _userContext.UserId,
             UserProfile.Create(_userContext.UserId)
         );
         profile.AddOrUpdateData<UserProfile, Dictionary<string, object>>

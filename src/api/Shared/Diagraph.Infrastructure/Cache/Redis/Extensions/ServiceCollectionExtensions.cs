@@ -12,6 +12,8 @@ public static class ServiceCollectionExtensions
         RedisConfiguration configuration
     )
     {
+        if (configuration is null) return services;
+        
         services.TryAddSingleton
         (
             ConnectionMultiplexer.Connect

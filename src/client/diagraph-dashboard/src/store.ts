@@ -9,13 +9,15 @@ import { graphReducer } from 'modules/graph';
 import { sharedReducer } from 'modules/common';
 import { profileReducer } from 'modules/profile';
 import { authReducer, logoutActionType } from 'modules/auth';
+import { googleIntegrationReducer } from 'modules/google-integration';
 
 const reducer = {
     [diagraphApi.reducerPath]: diagraphApi.reducer,
     graph: graphReducer,
     auth: authReducer,
     profile: profileReducer,
-    shared: sharedReducer
+    shared: sharedReducer,
+    googleIntegration: googleIntegrationReducer
 };
 
 export type RootState = ReturnType<typeof combinedReducer>;

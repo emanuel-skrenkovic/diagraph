@@ -203,16 +203,16 @@ export const diagraphApi = createApi({
             })
         }),
 
-        googleIntegration: builder.query<any, string>({
-            query: redirect => ({
-                url: `/auth/external-access/google/tasks/scopes/required?redirectUri=${redirect}`
+        googleIntegration: builder.query<any, { redirect: string, state?: string }>({
+            query: ({redirect, state}) => ({
+                url: `/auth/external-access/google/tasks/scopes/required?redirectUri=${redirect}${state && `&state=${state}`}`
             })
         }),
         googleIntegrationConfirm: builder.mutation<any, any>({
             query: request => ({
                 url: '/auth/external-access/google/scopes/confirm',
                 method: 'PUT',
-                body: request
+                body: request,
             })
         })
     })

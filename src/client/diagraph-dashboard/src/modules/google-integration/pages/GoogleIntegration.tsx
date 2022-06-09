@@ -1,36 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { RootState } from 'store';
+import { setKey } from 'modules/google-integration';
 import { Container, handleQuery, Loader } from 'modules/common';
 import { useGetProfileQuery, useGoogleIntegrationQuery, useUpdateProfileMutation } from 'services';
 
 export const GoogleIntegration: React.FC = () => {
-    const profile = useSelector ((state: RootState) => state.profile.profile);
+    const profile        = useSelector((state: RootState) => state.profile.profile);
+    const idempotencyKey = useSelector((state: RootState) => state.googleIntegration.idempotencyKey);
+
     const { googleIntegration, googleTaskList } = profile;
-
-    const { isSuccess, isLoading: profileLoading } = useGetProfileQuery(undefined);
-
-    useEffect(() => {
-        setTaskList(googleTaskList);
-    }, [isSuccess, googleIntegration, googleTaskList]);
 
     const [taskList, setTaskList]                         = useState(googleTaskList);
     const [requestedIntegration, setRequestedIntegration] = useState(false)
 
+    const { isSuccess, isLoading: profileLoading } = useGetProfileQuery(undefined);
     const [updateProfile] = useUpdateProfileMutation();
-    const integrationQuery = useGoogleIntegrationQuery(
-        encodeURIComponent('http://localhost:3000/integrations/google/confirm'), // TODO: url from where?
+    const integrationQuery = useGoogleIntegrationQuery({
+            redirect: encodeURIComponent('http://localhost:3000/integrations/google/confirm'), // TODO: url from where?
+            state: idempotencyKey
+        },
         { skip: !requestedIntegration }
     );
 
-    const queryLoading = handleQuery(
-        integrationQuery,
-        ({redirectUri}) => requestedIntegration && window.location.replace(redirectUri)
-    );
+    const dispatch = useDispatch();
+    useEffect(() => {
+        if (!googleIntegration && !idempotencyKey) {
+            dispatch(setKey(window.crypto.randomUUID()));
+        }
 
-    if (queryLoading)   return <Loader />;
-    if (profileLoading) return <Loader />;
+        setTaskList(googleTaskList);
+    }, [isSuccess]);
 
     function renderNotIntegrated() {
         return (
@@ -39,6 +40,13 @@ export const GoogleIntegration: React.FC = () => {
             </button>
         );
     }
+
+    const queryLoading = handleQuery(
+        integrationQuery,
+        ({redirectUri}) => requestedIntegration && window.location.replace(redirectUri)
+    );
+    if (queryLoading)   return <Loader />;
+    if (profileLoading) return <Loader />;
 
     function renderIntegrated() {
         return (

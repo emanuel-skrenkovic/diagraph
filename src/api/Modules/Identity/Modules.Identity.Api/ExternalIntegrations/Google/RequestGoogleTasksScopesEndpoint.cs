@@ -1,3 +1,4 @@
+using Diagraph.Infrastructure.Auth.OAuth2;
 using Diagraph.Infrastructure.Integrations.Google;
 using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
 using FastEndpoints;
@@ -23,7 +24,8 @@ public class RequestGoogleTasksScopesEndpoint : EndpointWithoutRequest
                 RedirectUri = _authorizer.Scopes.GenerateRequestsScopesUrl
                 (
                     await _authorizer.Scopes.RequestRequiredAsync("tasks", "v1"),
-                    Query<string>("redirectUri")
+                    Query<string>("redirectUri"),
+                    Query<string>(OAuth2Constants.State, isRequired: false)
                 )
             },
             ct
