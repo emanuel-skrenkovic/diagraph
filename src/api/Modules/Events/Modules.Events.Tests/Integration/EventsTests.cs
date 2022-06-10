@@ -87,4 +87,60 @@ public class EventsTests
             }
         });
     }
+    
+     [Theory, CustomizedAutoData]
+     public async Task Deletes_Event(CreateEventCommand eventCreate)
+     {
+         // Arrange
+         await _fixture.Postgres.CleanAsync();
+         HttpResponseMessage insertResponse = await _fixture
+             .Client
+             .PostAsJsonAsync("/events", eventCreate);
+        
+            int id = insertResponse.Headers.Location.AsId<int>();
+        
+         // Act
+         HttpResponseMessage response = await _fixture
+             .Client
+             .DeleteAsync($"/events/{id}");
+
+         // Assert
+         response.IsSuccessStatusCode.Should().BeTrue();
+         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+         { 
+             (await context.Events.AnyAsync()).Should().BeFalse();
+         }); 
+     }
+     
+     [Theory, CustomizedAutoData]
+     public async Task Delete_Event_Succeeds_After_Event_Deleted(CreateEventCommand eventCreate)
+     {
+         // Arrange
+         await _fixture.Postgres.CleanAsync();
+         HttpResponseMessage insertResponse = await _fixture
+             .Client
+             .PostAsJsonAsync("/events", eventCreate);
+        
+         int id = insertResponse.Headers.Location.AsId<int>();
+         
+         await _fixture
+             .Client
+             .DeleteAsync($"/events/{id}");
+        
+         // Act
+         HttpResponseMessage response = await _fixture
+             .Client
+             .DeleteAsync($"/events/{id}");
+
+         // Assert
+         response.IsSuccessStatusCode.Should().BeFalse();
+         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+         { 
+             (await context.Events.AnyAsync()).Should().BeFalse();
+         }); 
+     }
 }
