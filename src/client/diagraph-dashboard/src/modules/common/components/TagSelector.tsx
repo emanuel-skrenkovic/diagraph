@@ -85,7 +85,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
     return (
         <Container vertical>
             <label>Available Tags</label>
-            <div className="item" style={{width:"200px"}}>
+            <div className="item" style={{width:"inherit"}}>
                 <MultiSelectForm options={availableTags}
                                  keySelector={(t: EventTag) => t.name}
                                  onAdd={tags => addNewTags(tags)} />
@@ -94,15 +94,17 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
                 <label>Selected Tags</label>
                 <For each={selectedTags} onEach={(tag, index) => (
                     <div className="container" key={index}>
-                        <Tag value={tag.name} onChange={newValue => onTagChanged(newValue, index)} disabled />
-                        <button className="button blue" onClick={e => removeTag(e, index)}>
+                        <Tag value={tag.name}
+                             onChange={newValue => onTagChanged(newValue, index)}
+                             disabled />
+                        <button className="button red" onClick={e => removeTag(e, index)}>
                             X
                         </button>
                     </div>
                 )} />
             </Item>
             <button className="button blue item" onClick={newTagForm}>
-                +
+                Add
             </button>
         </Container>
     );

@@ -28,7 +28,7 @@ html * {
 }
 
 .box {
-    background: #fafafa;
+    background: #fdfdfd;
     border: solid 1px rgba(63, 61, 65, 0.24);
     border-radius: 4px;
     margin-outside: 15px;
@@ -39,6 +39,8 @@ html * {
     border: 1px;
     border-radius: 3px;
     padding: 0.15em !important;
+    padding-left: 0.5em !important;
+    padding-right: 0.5em !important;
     width: fit-content;
 }
 
@@ -48,6 +50,12 @@ html * {
 
 .button.blue {
     background-color: rgba(0,111,218,0.58);
+    padding: 2px;
+    color: white !important;
+}
+
+.button.red {
+    background-color: #cb4b49;
     padding: 2px;
     color: white !important;
 }

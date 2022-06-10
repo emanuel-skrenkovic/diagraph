@@ -169,7 +169,14 @@ export function Dashboard() {
                         </Container>
                         </Item>
                     ) : (
-                        <Container>
+                        <Container vertical>
+                            <Item>
+                                <EventForm
+                                    value={EMPTY_EVENT}
+                                    onSubmit={onCreateEvent}
+                                    tagOptions={tagsData ?? []}
+                                    submitButtonText="Create Event" />
+                            </Item>
                             {integration && (
                                 <Item>
                                     <label htmlFor="eventCreateTask">Create task</label>
@@ -181,13 +188,6 @@ export function Dashboard() {
                                     {createTask && notificationError && <span>{notificationError}</span>}
                                 </Item>
                             )}
-                            <Item>
-                                <EventForm
-                                    value={EMPTY_EVENT}
-                                    onSubmit={onCreateEvent}
-                                    tagOptions={tagsData ?? []}
-                                    submitButtonText="Create Event" />
-                            </Item>
                         </Container>
                     )}
                 </Item>

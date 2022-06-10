@@ -13,7 +13,7 @@ export interface EventFormProps {
     disabled?: boolean,
 }
 
-const eventTextAreaStyle = { height:"125px", width:"300px" };
+const eventTextAreaStyle = {  };
 
 function hoursFormat(date: Date) {
     const hours   = new Date(date).getUTCHours().toString().padStart(2, '0');
@@ -28,7 +28,7 @@ export const EventForm = (props: EventFormProps) => {
             : [true, ''],
         props.value
     );
-    useEffect(() => setEvent(props.value), [props]);
+    useEffect(() => setEvent(props.value), [props, setEvent]);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
@@ -60,7 +60,7 @@ export const EventForm = (props: EventFormProps) => {
                 }
                 <Item>
                     <Container vertical>
-                        <label className="centered" htmlFor="eventText">Text</label>
+                        <label htmlFor="eventText">Text</label>
                         <textarea className={`centered input ${error && 'invalid'}`}
                                   style={eventTextAreaStyle}
                                   disabled={disabled}
@@ -71,7 +71,7 @@ export const EventForm = (props: EventFormProps) => {
                     </Container>
                 </Item>
                 <Item>
-                    <label htmlFor="eventOccurredAt">Occurred at</label>
+                    <label htmlFor="eventOccurredAt">Occurred at </label>
                     <input id="eventOccurredAt"
                            type="time"
                            disabled={disabled}

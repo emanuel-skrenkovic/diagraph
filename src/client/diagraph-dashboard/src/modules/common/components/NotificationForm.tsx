@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { Notification } from 'types';
-import { Container } from 'modules/common/index';
+import { Container } from 'modules/common';
 
 export interface NotificationFormProps {
     value?: Notification;

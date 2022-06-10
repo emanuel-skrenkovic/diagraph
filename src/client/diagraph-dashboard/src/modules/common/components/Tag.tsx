@@ -22,10 +22,9 @@ export const Tag: React.FC<TagProps> = ({ value, disabled, onChange }) => {
                        style={{width:"100%"}}
                        value={value}
                        disabled={!isEditing}
-                       placeholder="..."
                        onChange={e => onChange && onChange(e.currentTarget.value)}/>
                 <button className="button blue" onClick={onEdit}>
-                    E
+                    Edit
                 </button>
         </span>
     )
