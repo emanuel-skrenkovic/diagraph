@@ -6,6 +6,7 @@ import {
     diagraphApi,
     useCreateEventMutation,
     useUpdateEventMutation,
+    useDeleteEventMutation,
     useGetEventsQuery,
     useGetDataQuery,
     useGetProfileQuery,
@@ -66,8 +67,9 @@ export function Dashboard() {
         {} as Notification
     )
 
-    const [createEvent]  = useCreateEventMutation();
-    const [updateEvent]  = useUpdateEventMutation();
+    const [createEvent] = useCreateEventMutation();
+    const [updateEvent] = useUpdateEventMutation();
+    const [deleteEvent] = useDeleteEventMutation();
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -147,15 +149,24 @@ export function Dashboard() {
                         <Item>
                         <Container vertical>
                         <Box>
-                            <button className="button centered" onClick={() => {
-                                setSelectedEvent(undefined);
-                                if (editing) setEditing(false);
-                            }}>
-                                Close
-                            </button>
-                            <button className="button centered" onClick={() => setEditing(!editing)}>
-                                Edit
-                            </button>
+                            <Container>
+                                <button className="button centered item" onClick={() => {
+                                    setSelectedEvent(undefined);
+                                    if (editing) setEditing(false);
+                                }}>
+                                    Close
+                                </button>
+                                <button className="button centered item" onClick={() => setEditing(!editing)}>
+                                    Edit
+                                </button>
+                                <button className="button red centered item" onClick={() => {
+                                    setSelectedEvent(undefined);
+                                    setEditing(false);
+                                    deleteEvent(selectedEvent.id!);
+                                }}>
+                                    Delete
+                                </button>
+                            </Container>
                             <EventForm
                                 value={selectedEvent}
                                 onSubmit={e => {

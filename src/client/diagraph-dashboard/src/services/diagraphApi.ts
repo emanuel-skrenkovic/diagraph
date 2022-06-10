@@ -42,6 +42,13 @@ export const diagraphApi = createApi({
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: 'Events' as const, id }]
         }),
+        deleteEvent: builder.mutation<any, number>({
+            query: id => ({
+                url: `events/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: (_result, _error, id) => [{ type: 'Events' as const, id }]
+        }),
 
         getTags: builder.query<EventTag[], any>({
             query: () => ({ url: 'events/tags' }),
@@ -223,6 +230,7 @@ export const {
     useGetEventsQuery,
     useCreateEventMutation,
     useUpdateEventMutation,
+    useDeleteEventMutation,
     useGetTagsQuery,
     useImportEventsMutation,
     useImportEventsDryRunMutation,
