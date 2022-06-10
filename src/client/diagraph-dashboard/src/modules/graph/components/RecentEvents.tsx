@@ -8,9 +8,10 @@ import './RecentEvents.css';
 
 export interface RecentEventsProps {
     events: Event[];
+    onEdit?: (e: Event) => void
 }
 
-export const RecentEvents: React.FC<RecentEventsProps> = ({ events }) => {
+export const RecentEvents: React.FC<RecentEventsProps> = ({ events, onEdit }) => {
     return (
         <Box>
             <h3>Recent events:</h3>
@@ -19,6 +20,7 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events }) => {
                 <tr>
                     {events.length > 0 && (
                         <>
+                            <td></td>
                             <td></td>
                             <td></td>
                         </>
@@ -35,6 +37,14 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events }) => {
                             <ScrollBar heightPx={125} widthPx={300}>
                                 {e.text}
                             </ScrollBar>
+                        </td>
+                        <td>
+                            {onEdit && (
+                                <button className="button blue"
+                                        onClick={() => onEdit(e)}>
+                                    Edit
+                                </button>
+                            )}
                         </td>
                     </tr>
                 )}

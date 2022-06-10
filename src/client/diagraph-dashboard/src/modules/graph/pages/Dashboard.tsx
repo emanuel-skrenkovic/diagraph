@@ -192,7 +192,7 @@ export function Dashboard() {
                     )}
                 </Item>
                 <Item>
-                    <RecentEvents events={events} />
+                    <RecentEvents events={events} onEdit={setSelectedEvent} />
                 </Item>
             </Container>
         </Container>

@@ -1,4 +1,4 @@
-import React, { useEffect, FormEvent } from 'react';
+import React, { FormEvent } from 'react';
 
 import { Event, EventTag } from 'types';
 import { Item, Box, Container, useValidation, TagSelector } from 'modules/common';
@@ -28,7 +28,6 @@ export const EventForm = (props: EventFormProps) => {
             : [true, ''],
         props.value
     );
-    useEffect(() => setEvent(props.value), [props, setEvent]);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
