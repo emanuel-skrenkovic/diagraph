@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 
 import { RootState } from 'store';
 import { Loader } from 'modules/common';
@@ -12,17 +12,12 @@ import 'App.css';
 export const Login = () => {
     const authenticated = useSelector((state: RootState) => state.auth.authenticated);
 
-    const navigate = useNavigate();
-    useEffect(() => {
-        if (authenticated) navigate('/');
-    }, [authenticated]);
-
     const { isLoading: isSessionLoading } = useGetSessionQuery(undefined);
     const [login, { isLoading, isError }] = useLoginMutation();
 
     const onClickLogin = (email: string, password: string) => login({email, password});
 
-    if (authenticated) navigate('/');
+    if (authenticated)                 return <Navigate to="/" />;
     if (isLoading || isSessionLoading) return <Loader />;
 
     return (
