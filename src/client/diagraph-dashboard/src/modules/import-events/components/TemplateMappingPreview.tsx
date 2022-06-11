@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 
+import { ScrollBar } from 'styles';
 import { Event } from 'types';
 import { CsvPreview } from 'modules/import-events';
-import { Item, For, ScrollBar, Loader } from 'modules/common';
+import { For, Loader } from 'modules/common';
 import { useImportEventsDryRunMutation } from 'services';
 
 export interface TemplateMappingPreviewProps {
@@ -33,13 +34,13 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
     return (
         <>
             {csvFile && events.length > 0 && (
-                <Item>
+                <>
                     <h3>Csv data</h3>
-                    <CsvPreview csvFile={csvFile}/>
-                </Item>
+                    <CsvPreview csvFile={csvFile}/>)
+                </>
             )}
             {csvFile && events.length > 0 && (
-                <Item>
+                <>
                     <h3>Mapped events</h3>
                     <ScrollBar heightPx={500}>
                         <table>
@@ -57,15 +58,15 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
                                     <td>{e.text}</td>
                                     <td>
                                         [<For each={e.tags ?? []} onEach={(t, i) => (
-                                            <span key={i}>{`${t.name} `}</span>
-                                        )} />]
+                                        <span key={i}>{`${t.name} `}</span>
+                                    )} />]
                                     </td>
                                 </tr>
                             )}/>
                             </tbody>
                         </table>
                     </ScrollBar>
-                </Item>
+                </>
             )}
         </>
     );

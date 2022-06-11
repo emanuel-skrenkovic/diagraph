@@ -1,5 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 
+import { BlueButton, Container, Input } from 'styles';
 import { Rule } from 'types';
 
 export interface RuleFormProps {
@@ -32,7 +33,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
 
     return (
         <>
-            <div className="container" style={{width:"fit-content"}}>
+            <Container style={{width:"fit-content"}}>
                 <select value={field}
                         onChange={e => setField(e.currentTarget.value)}
                         disabled={disabled ?? false}>
@@ -41,17 +42,16 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
                     <option>text</option>
                 </select>
                 <span>=</span>
-                <input type="text"
+                <Input type="text"
                        value={expression}
                        onChange={e => setExpression(e.currentTarget.value)}
                        disabled={disabled ?? false} />
-            </div>
+            </Container>
             {!disabled &&
-                <button className="button blue"
-                        onClick={onClickSubmit}
+                <BlueButton onClick={onClickSubmit}
                         disabled={disabled ?? false}>
                     {buttonText ?? 'Add'}
-                </button>
+                </BlueButton>
             }
         </>
     );

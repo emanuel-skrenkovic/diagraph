@@ -1,5 +1,6 @@
 import React, { useState, useRef, DragEvent, ChangeEvent, FormEvent } from 'react';
 
+import { Box, BlueButton, Centered, Container, Input, Item } from 'styles';
 import './FileUploadForm.css';
 
 export interface FileUploadProps {
@@ -47,30 +48,29 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }
     }
 
     return (
-        <div className="container vertical box"
-             onDragOver={e => e.preventDefault()}
-             onDrop={handleDrop}>
-            <form className="container vertical box item"
-                  onClick={() => fileUploadInput.current!.click()}>
-                <label onClick={e => e.stopPropagation()}
-                       htmlFor="fileUploadInput">
+        <Container onDragOver={e => e.preventDefault()} onDrop={handleDrop}>
+            <Box>
+                <form onClick={() => fileUploadInput.current!.click()}>
+                    <label onClick={e => e.stopPropagation()}
+                           htmlFor="fileUploadInput">
                         {!!selectedFile
                             ? selectedFile.name
                             : 'Drop file or click to upload'}
-                </label>
-                <input id="fileUploadInput"
-                       type="file"
-                       hidden
-                       ref={fileUploadInput}
-                       style={{display: "none"}}
-                       onChange={onSelectFile}/>
-            </form>
-            <button className="button blue item centered"
-                    type="submit"
-                    onClick={onClickSubmit}>
-                Upload
-            </button>
-            <span>{error}</span>
-        </div>
+                    </label>
+                    <Input id="fileUploadInput"
+                           type="file"
+                           hidden
+                           ref={fileUploadInput}
+                           style={{display: "none"}}
+                           onChange={onSelectFile}/>
+                </form>
+                <Item>
+                    <Centered as={BlueButton} type="submit" onClick={onClickSubmit}>
+                        Upload
+                    </Centered>
+                    <span>{error}</span>
+                </Item>
+            </Box>
+        </Container>
     );
 };

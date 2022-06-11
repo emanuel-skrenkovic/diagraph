@@ -3,11 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { useProfile } from 'modules/profile';
 
+import { Button, Container, Input } from 'styles';
 import { TimeChart } from 'services';
 import { Event, GlucoseMeasurement } from 'types';
-import { Container, useWindowDimensions } from 'modules/common';
-
-import "App.css";
+import { useWindowDimensions } from 'modules/common';
 
 export interface GlucoseGraphProps {
     from: Date,
@@ -97,21 +96,21 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
 
     return (
         <>
-            <button className="button" onClick={() => setShowOptions(!showOptions)}>
+            <Button onClick={() => setShowOptions(!showOptions)}>
                 {showOptions ? 'Close Options' : 'Show Options'}
-            </button>
+            </Button>
             {showOptions && (
                 <Container>
                     <label>High limit line</label>
-                    <input type="checkbox"
+                    <Input type="checkbox"
                            defaultChecked={profile.showHighLimit}
                            onChange={() => setProfile({...profile, showHighLimit: !showHighLimit})} />
                     <label>Low limit line</label>
-                    <input type="checkbox"
+                    <Input type="checkbox"
                            defaultChecked={profile.showLowLimit}
                            onChange={() => setProfile({...profile, showLowLimit: !showLowLimit})} />
                     <label>Average</label>
-                    <input type="checkbox"
+                    <Input type="checkbox"
                            defaultChecked={profile.showAverage}
                            onChange={() => setProfile({...profile, showAverage: !showAverage})} />
                 </Container>

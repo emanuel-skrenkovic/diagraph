@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { Container, Input } from 'styles';
 import { Notification } from 'types';
-import { Container } from 'modules/common';
 
 export interface NotificationFormProps {
     value?: Notification;
@@ -32,13 +32,13 @@ export const NotificationForm: React.FC<NotificationFormProps> = ({ value, onCha
 
     return (
         <Container>
-            <input type="text"
+            <Input type="text"
                    value={notification.text}
                    onChange={e => updateNotification({
                        ...notification,
                        text: e.currentTarget.value
                    })} />
-            <input type="time"
+            <Input type="time"
                    value={hoursFormat(notification.notifyAtUtc)}
                    onChange={e => updateNotification({
                        ...notification,

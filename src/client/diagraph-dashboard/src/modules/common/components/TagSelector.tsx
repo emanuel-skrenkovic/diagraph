@@ -3,10 +3,11 @@
 import React, { useState, useEffect, MouseEvent } from 'react';
 import { useSelector } from 'react-redux';
 
+import { BlueButton, RedButton, Container, Item } from 'styles';
 import { EventTag } from 'types';
 import { RootState } from 'store';
 import { useGetTagsQuery} from 'services';
-import { Container, Item, For, Loader, MultiSelectForm, Tag } from 'modules/common';
+import { For, Loader, MultiSelectForm, Tag } from 'modules/common';
 
 export interface TagSelectorProps {
     initialSelectedTags: EventTag[];
@@ -85,27 +86,25 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
     return (
         <Container vertical>
             <label>Available Tags</label>
-            <div className="item" style={{width:"inherit"}}>
+            <div style={{width:"inherit"}}>
                 <MultiSelectForm options={availableTags}
                                  keySelector={(t: EventTag) => t.name}
                                  onAdd={tags => addNewTags(tags)} />
             </div>
+            <label>Selected Tags</label>
+            <For each={selectedTags} onEach={(tag, index) => (
+                <Container key={index}>
+                    <Tag value={tag.name}
+                         onChange={newValue => onTagChanged(newValue, index)}
+                         disabled />
+                    <RedButton onClick={e => removeTag(e, index)}>
+                        X
+                    </RedButton>
+                </Container>
+            )} />
             <Item>
-                <label>Selected Tags</label>
-                <For each={selectedTags} onEach={(tag, index) => (
-                    <div className="container" key={index}>
-                        <Tag value={tag.name}
-                             onChange={newValue => onTagChanged(newValue, index)}
-                             disabled />
-                        <button className="button red" onClick={e => removeTag(e, index)}>
-                            X
-                        </button>
-                    </div>
-                )} />
+                <BlueButton onClick={newTagForm}>Add</BlueButton>
             </Item>
-            <button className="button blue item" onClick={newTagForm}>
-                Add
-            </button>
         </Container>
     );
 };

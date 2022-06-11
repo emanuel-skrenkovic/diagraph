@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Container } from 'modules/common';
+import { Container } from 'styles';
 
 export interface NavigationBarProps {
     children?: React.ReactNode;

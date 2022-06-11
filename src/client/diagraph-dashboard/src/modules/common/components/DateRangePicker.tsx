@@ -1,8 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 
-import { toLocalISODateString, Container } from 'modules/common';
-
-import 'App.css';
+import { Button, Centered, Container, Input } from 'styles';
+import { toLocalISODateString } from 'modules/common';
 
 export interface DateRangePickerProps {
     from :Date;
@@ -42,36 +41,32 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
     return (
         <Container vertical>
             <Container>
-                <button
-                    className="button"
-                    onClick={() => moveDateRange(-1)}>
+                <Button onClick={() => moveDateRange(-1)}>
                     &lt;
-                </button>
+                </Button>
                 <Container>
                     <Container vertical>
                         <label htmlFor="from">From</label>
-                        <input id="from"
+                        <Input id="from"
                                type="date"
                                value={dateRange.from}
                                onChange={e => setDateRange({...dateRange, from: e.currentTarget.value})}/>
                     </Container>
                     <Container vertical>
                         <label htmlFor="to">To</label>
-                        <input id="to"
+                        <Input id="to"
                                type="date"
                                value={dateRange.to}
                                onChange={e => setDateRange({...dateRange, to: e.currentTarget.value})} />
                     </Container>
                 </Container>
-                <button
-                    className="button"
-                    onClick={() => moveDateRange(1)}>
+                <Button onClick={() => moveDateRange(1)}>
                     &gt;
-                </button>
+                </Button>
             </Container>
-            <button className="button item centered" onClick={onClickSubmit}>
+            <Centered as={Button} onClick={onClickSubmit}>
                 {submitButtonText ?? 'Submit'}
-            </button>
+            </Centered>
         </Container>
 );
 };

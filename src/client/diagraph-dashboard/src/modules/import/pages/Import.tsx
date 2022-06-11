@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Loader } from 'modules/common';
 import { useImportDataMutation } from 'services';
-import { Container, FileUploadForm } from 'modules/common';
+import { FileUploadForm } from 'modules/common';
 
 export const Import = () => {
     const [importData, { isLoading }] = useImportDataMutation(undefined);
@@ -10,8 +10,6 @@ export const Import = () => {
     if (isLoading) return <Loader />
 
     return (
-        <Container>
-            <FileUploadForm onSubmit={importData} />
-        </Container>
+        <FileUploadForm onSubmit={importData} />
     );
 };

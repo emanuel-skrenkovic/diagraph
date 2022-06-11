@@ -1,9 +1,8 @@
 import React, { FormEvent } from 'react';
 
+import { BlueButton, Box, Centered, Container, Input } from 'styles';
 import { Event, EventTag } from 'types';
-import { Item, Box, Container, useValidation, TagSelector } from 'modules/common';
-
-import 'App.css';
+import { useValidation, TagSelector } from 'modules/common';
 
 export interface EventFormProps {
     value: Event;
@@ -53,34 +52,30 @@ export const EventForm = (props: EventFormProps) => {
         <Container vertical>
             <Box>
                 {!disabled &&
-                    <button className="submit button blue centered" onClick={onClickSubmit} type="submit">
+                    <Centered as={BlueButton} onClick={onClickSubmit} type="submit">
                         {props.submitButtonText ?? 'Submit'}
-                    </button>
+                    </Centered>
                 }
-                <Item>
-                    <Container vertical>
-                        <label htmlFor="eventText">Text</label>
-                        <textarea className={`centered input ${error && 'invalid'}`}
-                                  style={eventTextAreaStyle}
-                                  disabled={disabled}
-                                  id="eventText"
-                                  value={event!.text}
-                                  onChange={e => setEvent({ ...event, text: e.currentTarget.value } as Event)} />
+                <Container vertical>
+                    <label htmlFor="eventText">Text</label>
+                    <Centered>
+                    <textarea className={`input ${error && 'invalid'}`}
+                              style={eventTextAreaStyle}
+                              disabled={disabled}
+                              id="eventText"
+                              value={event!.text}
+                              onChange={e => setEvent({ ...event, text: e.currentTarget.value } as Event)} />
                         {error && <span className="input label">{error}</span>}
-                    </Container>
-                </Item>
-                <Item>
-                    <label htmlFor="eventOccurredAt">Occurred at </label>
-                    <input id="eventOccurredAt"
-                           type="time"
-                           disabled={disabled}
-                           value={hoursFormat(event!.occurredAtUtc)}
-                           onChange={onChangeTime} />
-                </Item>
-                <Item>
-                    <TagSelector initialSelectedTags={event!.tags}
-                                 onChange={tags => setEvent({...event, tags} as Event)} />
-                </Item>
+                    </Centered>
+                </Container>
+                <label htmlFor="eventOccurredAt">Occurred at </label>
+                <Input id="eventOccurredAt"
+                       type="time"
+                       disabled={disabled}
+                       value={hoursFormat(event!.occurredAtUtc)}
+                       onChange={onChangeTime} />
+                <TagSelector initialSelectedTags={event!.tags}
+                             onChange={tags => setEvent({...event, tags} as Event)} />
             </Box>
         </Container>
     )

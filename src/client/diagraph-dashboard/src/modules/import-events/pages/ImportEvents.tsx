@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+import { BlueButton, Box, Container, Item } from 'styles';
 import { TemplateMappingPreview } from 'modules/import-events';
 import { useImportEventsMutation, useGetImportTemplatesQuery } from 'services';
-import { Box, Container, Item, FileUploadForm,  For, Loader } from 'modules/common';
-
-import 'App.css';
+import { FileUploadForm,  For, Loader } from 'modules/common';
 
 export const ImportEvents = () => {
     const [importEvents]                      = useImportEventsMutation();
@@ -42,11 +41,8 @@ export const ImportEvents = () => {
     return (
         <Container vertical>
             <Container>
-                <Item>
-                    <FileUploadForm onSubmit={onUpload}
-                                    onSelect={setFile} />
-                </Item>
-                <Item>
+                <FileUploadForm onSubmit={onUpload}
+                                onSelect={setFile} />
                 <Container vertical>
                     <label htmlFor="selectTemplate">Templates</label>
                     <select id="selectTemplate"
@@ -60,19 +56,18 @@ export const ImportEvents = () => {
                         )} />
                     </select>
                     <Container>
-                        <button className={`button blue item ${!!selectedTemplate ? '' : 'disabled'}`}
+                        <Item as={BlueButton} disabled={!!selectedTemplate}
                                 onClick={onEditTemplate}>
                             Edit Template
-                        </button>
-                        <button className="button blue item" onClick={onNewTemplate}>
+                        </Item>
+                        <Item as={BlueButton} onClick={onNewTemplate}>
                             New Template
-                        </button>
+                        </Item>
                     </Container>
-                    <button className="button blue item" onClick={onCheckTemplateMapping}>
+                    <Item as={BlueButton} onClick={onCheckTemplateMapping}>
                         Check template mapping
-                    </button>
+                    </Item>
                 </Container>
-                </Item>
             </Container>
             {showPreview && file && selectedTemplate && (
                 <Box>

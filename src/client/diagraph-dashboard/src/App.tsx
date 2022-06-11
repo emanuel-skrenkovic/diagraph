@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
+import { RedButton, Container, Item } from 'styles';
 import { RootState } from 'store';
 import { useLogoutMutation } from 'services';
 
@@ -13,8 +14,6 @@ import { ErrorBoundary, Loader, ProtectedRoute } from 'modules/common';
 import { ImportEvents, Templates, EditTemplate } from 'modules/import-events';
 import { GoogleIntegration, GoogleIntegrationConfirm } from 'modules/google-integration';
 
-import 'App.css';
-
 function App() {
     const authenticated = useSelector((state: RootState) => state.auth.authenticated);
 
@@ -22,40 +21,29 @@ function App() {
     if (isLogoutLoading) return <Loader />;
 
     return (
-        <div className="container wide">
+        <Container wide>
             <ErrorBoundary>
                 <BrowserRouter>
-                    <div className="container vertical wide">
+                    <Container vertical wide>
                         {authenticated &&
-                            <NavigationBar>
-                                <div className="container vertical wide">
-                                    <div className="item">
-                                        <span><b>Diagraph</b></span>
-                                        <button className="button red"
-                                                style={{
-                                                    width: "fit-content",
-                                                    padding: "5px 10px 5px 10px",
-                                                    float: "right",
-                                                    marginLeft: "70%"
-                                                }}
-                                                onClick={logout}>
-                                            Log out
-                                        </button>
-                                        {/*<span>Hello, {data?.userName}</span>*/}
-                                    </div>
-                                    <div className="container wide item">
-                                        <Link className="item" to="/">Dashboard</Link>
-                                        <Link className="item" to="/import">Import</Link>
-                                        <Link className="item" to="/import-events">Import Events</Link>
-                                        <Link className="item" to="/integrations/google">Google integration</Link>
-                                    </div>
-                                </div>
-                            </NavigationBar>
+                            <>
+                                <RedButton style={{marginLeft:"90%", whiteSpace:"nowrap"}} onClick={logout}>
+                                    Log out
+                                </RedButton>
+                                <NavigationBar>
+                                    <span><b>Diagraph</b></span>
+                                    <Container wide>
+                                        <Item as={Link} to="/">Dashboard</Item>
+                                        <Item as={Link} to="/import">Import</Item>
+                                        <Item as={Link} to="/import-events">Import Events</Item>
+                                        <Item as={Link} to="/integrations/google">Google integration</Item>
+                                    </Container>
+                                </NavigationBar>
+                            </>
                         }
                         <Routes>
                             <Route path="login" element={<Login />} />
                             <Route path="register" element={<Register />} />
-
                             <Route index element={
                                 <ProtectedRoute condition={authenticated} fallback="/login">
                                     <Dashboard />
@@ -85,15 +73,15 @@ function App() {
                                 </ProtectedRoute>
                             } />
                             <Route path="integrations/google/confirm" element={
-                                <GoogleIntegrationConfirm />
-                                // <ProtectedRoute condition={authenticated} fallback="/login">
-                                // </ProtectedRoute>
+                                <ProtectedRoute condition={authenticated} fallback="/login">
+                                    <GoogleIntegrationConfirm />
+                                </ProtectedRoute>
                             } />
                         </Routes>
-                    </div>
+                    </Container>
                 </BrowserRouter>
             </ErrorBoundary>
-        </div>
+        </Container>
     );
 }
 

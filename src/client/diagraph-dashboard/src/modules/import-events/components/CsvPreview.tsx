@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import * as Papa from 'papaparse';
 
-import { For, ScrollBar, Loader } from 'modules/common';
+import { ScrollBar } from 'styles';
+import { For } from 'modules/common';
 
 import './CsvPreview.css';
 
@@ -21,7 +22,7 @@ export const CsvPreview: React.FC<CsvPreviewProps> = ({ csvFile }) => {
         })();
     }, [csvFile])
 
-    if (csvData.length == 0) return null;
+    if (csvData.length === 0) return null;
 
     return (
         <ScrollBar heightPx={500}>

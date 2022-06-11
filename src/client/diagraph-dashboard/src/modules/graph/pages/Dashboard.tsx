@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { Box, Button, RedButton, Centered, Container, Input, Item } from 'styles';
 import { RootState, AppDispatch } from 'store';
 import {
     diagraphApi,
@@ -14,18 +15,12 @@ import {
 import {
     NotificationForm,
     handleQuery,
-    Box,
-    Container,
-    Item,
     Loader,
     DateRangePicker,
     toLocalISODateString,
     useValidation } from 'modules/common';
 import { Notification, CreateEventCommand, Event, EventTag, GlucoseMeasurement } from 'types';
 import { GlucoseGraph, EventForm, RecentEvents, setDateRange } from 'modules/graph';
-
-
-import 'App.css';
 
 const EMPTY_EVENT = {
     occurredAtUtc: new Date(),
@@ -106,11 +101,10 @@ export function Dashboard() {
 
     return (
         <Container vertical>
-            <button className="button"
-                    style={{marginLeft:"80%"}}
+            <Button style={{marginLeft:"80%"}}
                     onClick={onExportEvents}>
                 Export Events
-            </button>
+            </Button>
             <Container>
                 <DateRangePicker
                     from={toLocalDate(dateRange.from)}
@@ -119,7 +113,7 @@ export function Dashboard() {
                     submitButtonText="Apply dates" />
             </Container>
             <Container vertical>
-                <div className="centered">
+                <Centered>
                     <GlucoseGraph
                         from={toLocalDate(dateRange.from)}
                         to={toLocalDate(dateRange.to)}
@@ -127,84 +121,77 @@ export function Dashboard() {
                         events={events}
                         onClickEvent={setSelectedEvent}
                         onClickMeasurement={setSelectedMeasurement} />
-                </div>
+                </Centered>
             </Container>
             <Container>
-                <Item>
                     {selectedMeasurement && (
                         <Box>
                         <Container vertical>
-                            <button className="button"
-                                    onClick={() => setSelectedMeasurement(undefined)}>
+                            <Button onClick={() => setSelectedMeasurement(undefined)}>
                                 x
-                            </button>
+                            </Button>
                             <label>Date: </label>
-                            <input disabled value={selectedMeasurement!.takenAt.toLocaleString()} />
+                            <Input disabled value={selectedMeasurement!.takenAt.toLocaleString()} />
                             <label>Glucose mmol/L</label>
-                            <input disabled value={selectedMeasurement!.level} />
+                            <Input disabled value={selectedMeasurement!.level} />
                         </Container>
                         </Box>
                     )}
                     {selectedEvent ? (
-                        <Item>
-                        <Container vertical>
-                        <Box>
-                            <Container>
-                                <button className="button centered item" onClick={() => {
+                    <Container vertical>
+                    <Box>
+                        <Container>
+                            <Centered>
+                                <Item as={Button} onClick={() => {
                                     setSelectedEvent(undefined);
                                     if (editing) setEditing(false);
                                 }}>
                                     Close
-                                </button>
-                                <button className="button centered item" onClick={() => setEditing(!editing)}>
+                                </Item>
+                                <Item as={Button} onClick={() => setEditing(!editing)}>
                                     Edit
-                                </button>
-                                <button className="button red centered item" onClick={() => {
+                                </Item>
+                                <Item as={RedButton} onClick={() => {
                                     setSelectedEvent(undefined);
                                     setEditing(false);
                                     deleteEvent(selectedEvent.id!);
                                 }}>
                                     Delete
-                                </button>
-                            </Container>
-                            <EventForm
-                                value={selectedEvent}
-                                onSubmit={e => {
-                                    updateEvent(e);
-                                    setEditing(false);
-                                }}
-                                tagOptions={tagsData ?? []}
-                                submitButtonText="Save"
-                                disabled={!editing} />
-                        </Box>
+                                </Item>
+                            </Centered>
                         </Container>
-                        </Item>
+                        <EventForm
+                            value={selectedEvent}
+                            onSubmit={e => {
+                                updateEvent(e);
+                                setEditing(false);
+                            }}
+                            tagOptions={tagsData ?? []}
+                            submitButtonText="Save"
+                            disabled={!editing} />
+                    </Box>
+                    </Container>
                     ) : (
                         <Container vertical>
-                            <Item>
                                 <EventForm
                                     value={EMPTY_EVENT}
                                     onSubmit={onCreateEvent}
                                     tagOptions={tagsData ?? []}
                                     submitButtonText="Create Event" />
-                            </Item>
-                            {integration && (
-                                <Item>
-                                    <label htmlFor="eventCreateTask">Create task</label>
-                                    <input id="eventCreateTask"
-                                           type="checkbox"
-                                           checked={createTask}
-                                           onChange={() => setCreateTask(!createTask)}/>
-                                    {createTask && <NotificationForm onChange={n => setNotification(n)} />}
-                                    {createTask && notificationError && <span>{notificationError}</span>}
-                                </Item>
-                            )}
+                        {integration && (
+                            <>
+                                <label htmlFor="eventCreateTask">Create task</label>
+                                <Input id="eventCreateTask"
+                                       type="checkbox"
+                                       checked={createTask}
+                                       onChange={() => setCreateTask(!createTask)}/>
+                                {createTask && <NotificationForm onChange={n => setNotification(n)} />}
+                                {createTask && notificationError && <span>{notificationError}</span>}
+                            </>
+                        )}
                         </Container>
                     )}
-                </Item>
-                <Item>
-                    <RecentEvents events={events} onEdit={setSelectedEvent} />
-                </Item>
+                <RecentEvents events={events} onEdit={setSelectedEvent} />
             </Container>
         </Container>
     );

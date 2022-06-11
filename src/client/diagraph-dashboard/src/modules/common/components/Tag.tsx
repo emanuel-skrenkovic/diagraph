@@ -1,5 +1,7 @@
 import React, { useState, useEffect, MouseEvent } from 'react';
 
+import { BlueButton, Input } from 'styles';
+
 export interface TagProps {
     value: string;
     disabled?: boolean;
@@ -18,14 +20,14 @@ export const Tag: React.FC<TagProps> = ({ value, disabled, onChange }) => {
 
     return (
         <span className="container button">
-                <input type="text"
+                <Input type="text"
                        style={{width:"100%"}}
                        value={value}
                        disabled={!isEditing}
                        onChange={e => onChange && onChange(e.currentTarget.value)}/>
-                <button className="button blue" onClick={onEdit}>
+                <BlueButton onClick={onEdit}>
                     Edit
-                </button>
+                </BlueButton>
         </span>
     )
 };

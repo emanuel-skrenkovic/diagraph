@@ -1,8 +1,7 @@
 import React, { FormEvent } from 'react';
 
+import { BlueButton, Centered, Container, Input, Item } from 'styles';
 import { useValidation } from 'modules/common';
-
-import 'App.css';
 
 function passwordValidation(password: string | undefined): [boolean, string] {
     if (!password) return [false, 'Password must not be empty.'];
@@ -44,39 +43,40 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
     };
 
     return (
-        <>
-            <form className="container vertical box">
+        <Container vertical>
+            <form>
                 <label htmlFor="emailInput">Email:</label>
-                <div className="item">
-                    <input className={emailError && 'input invalid'}
+                <Item>
+                    <Input className={emailError && 'input invalid'}
                            id="emailInput"
                            type="text"
                            value={email}
                            onChange={e => setEmail(e.currentTarget.value)} />
-                </div>
+                </Item>
                 <span className="input label">{emailError ?? ' '}</span>
                 <label htmlFor="passwordInput">Password:</label>
-                <div className="item">
-                    <input className={passwordError && 'input invalid'}
+                <Item>
+                    <Input className={passwordError && 'input invalid'}
                            id="passwordInput"
                            type="password"
                            value={password}
                            onChange={e => setPassword(e.currentTarget.value)} />
-                </div>
+                </Item>
                 <span className="input label">{confirmPasswordError || passwordError}</span>
                 <label htmlFor="confirmPasswordInput">Confirm password:</label>
-                <div className="item">
-                    <input id="confirmPasswordInput"
+                <Item>
+                    <Input id="confirmPasswordInput"
                            type="password"
                            value={confirmPassword}
                            onChange={e => setConfirmPassword(e.currentTarget.value)} />
-                </div>
-                <button className="button blue centered"
-                        type="submit"
-                        disabled={!!emailError || !!passwordError}
-                        onClick={onClickSubmit}>Register</button>
+                </Item>
+                <Centered as={BlueButton}
+                          type="submit"
+                          disabled={!!emailError || !!passwordError}
+                          onClick={onClickSubmit}>
+                    Register
+                </Centered>
             </form>
-        </>
-
+        </Container>
     )
 };
