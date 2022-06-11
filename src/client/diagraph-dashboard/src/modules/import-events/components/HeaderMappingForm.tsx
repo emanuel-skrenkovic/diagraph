@@ -1,8 +1,9 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 
+import { BlueButton, Box, Container, Input } from 'styles';
 import { RuleForm } from 'modules/import-events';
 import { EventTag, Rule, TemplateHeaderMapping } from 'types';
-import { Box, Container, Item, For, TagSelector } from 'modules/common';
+import { For, TagSelector } from 'modules/common';
 
 export interface HeaderMappingFormProps {
     value?: TemplateHeaderMapping;
@@ -53,45 +54,40 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
         <Container vertical>
         <Box>
             <Container vertical>
-                <Item>
-                    <label htmlFor="headerName">Header</label>
-                    <input id="headerName"
-                           type="text"
-                           value={template.header}
-                           onChange={e => setTemplate({ ...template, header: e.currentTarget.value })}/>
-                </Item>
-                <Item>
-                    <label>Rules</label>
-                    <For each={template.rules} onEach={(rule, index) => (
-                        <div className="container" key={index}>
-                            <RuleForm value={rule}
-                                      onSubmit={newValue => onSaveRule(newValue, index)}
-                                      disabled={editingRuleId !== index}
-                                      buttonText="Save" />
-                            <button className="button blue" onClick={e => {
-                                e.preventDefault();
-                                setEditingRuleId(editingRuleId === index ? -1 : index);
-                            }}>
-                                {editingRuleId === index ? 'Close' : 'Edit'}
-                            </button>
-                            <button className="button blue"
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        const updated = [...template.rules];
-                                        updated.splice(index, 1);
+                <label htmlFor="headerName">Header</label>
+                <Input id="headerName"
+                       type="text"
+                       value={template.header}
+                       onChange={e => setTemplate({ ...template, header: e.currentTarget.value })}/>
+                <label>Rules</label>
+                <For each={template.rules} onEach={(rule, index) => (
+                    <Container key={index}>
+                        <RuleForm value={rule}
+                                  onSubmit={newValue => onSaveRule(newValue, index)}
+                                  disabled={editingRuleId !== index}
+                                  buttonText="Save" />
+                        <BlueButton onClick={e => {
+                            e.preventDefault();
+                            setEditingRuleId(editingRuleId === index ? -1 : index);
+                        }}>
+                            {editingRuleId === index ? 'Close' : 'Edit'}
+                        </BlueButton>
+                        <BlueButton onClick={e => {
+                            e.preventDefault();
+                            const updated = [...template.rules];
+                            updated.splice(index, 1);
 
-                                        setTemplateRules(updated);
-                                    }}>
-                                Remove
-                            </button>
-                        </div>
-                    )} />
-                    {editingRuleId !== -1 && <button className="button blue">New</button>}
-                    {editingRuleId === -1 && <RuleForm key={-1} onSubmit={onAddRule} />}
-                </Item>
+                            setTemplateRules(updated);
+                        }}>
+                            Remove
+                        </BlueButton>
+                    </Container>
+                )} />
+                {editingRuleId !== -1 && <BlueButton>New</BlueButton>}
+                {editingRuleId === -1 && <RuleForm key={-1} onSubmit={onAddRule} />}
                 <TagSelector initialSelectedTags={template.tags} onChange={setTemplateTags} />
             </Container>
-            <button className="button blue" onClick={onClickSubmit}>Save Mapping</button>
+            <BlueButton onClick={onClickSubmit}>Save Mapping</BlueButton>
         </Box>
         </Container>
     )

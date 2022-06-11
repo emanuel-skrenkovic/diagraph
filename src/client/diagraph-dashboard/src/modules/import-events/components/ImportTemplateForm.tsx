@@ -1,6 +1,7 @@
 import React, { useState, MouseEvent } from 'react';
 
-import { Container, Item, For } from 'modules/common';
+import { BlueButton, Container, Input, Item } from 'styles';
+import { For } from 'modules/common';
 import { HeaderMappingForm } from 'modules/import-events';
 import { EventTag, ImportTemplate, TemplateHeaderMapping } from 'types';
 
@@ -76,32 +77,28 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
     return (
         <Container vertical>
             <Container>
-                <Item>
-                    <label htmlFor="templateNameInput">Template Name</label>
-                    <input id="templateNameInput"
-                           type="text"
-                           value={template.name}
-                           onChange={e => setTemplateName(e.currentTarget.value)} />
-                </Item>
-                <button className="button blue"
-                        type="submit"
-                        onClick={onClickSubmit}>
+                <label htmlFor="templateNameInput">Template Name</label>
+                <Input id="templateNameInput"
+                       type="text"
+                       value={template.name}
+                       onChange={e => setTemplateName(e.currentTarget.value)} />
+                <BlueButton type="submit"
+                            onClick={onClickSubmit}>
                     Save Template
-                </button>
+                </BlueButton>
             </Container>
             <div style={{width:"10%", float:"right"}}>
-                <button className="button blue"
-                        style={{width: "max-content", paddingLeft: "2em", paddingRight: "2em"}}
+                <BlueButton style={{width: "max-content", paddingLeft: "2em", paddingRight: "2em"}}
                         onClick={() => setEditingHeaderMapping(
                             !!editingHeaderMapping
                                 ? undefined
                                 : DEFAULT_MAPPING
                         )}>
                     {!!editingHeaderMapping ? 'Close' : 'New Mapping'}
-                </button>
+                </BlueButton>
             </div>
             <Container>
-                <div className="item" style={{width:"100%"}}>
+                <Item style={{width:"100%"}}>
                     <h3>Mappings</h3>
                     <table>
                         <thead>
@@ -115,25 +112,24 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                             <tr key={index}>
                                 <td>{mapping.header}</td>
                                 <td>
-                                    <button className="button blue" onClick={() => {setEditingHeaderMapping(mapping)}}>
+                                    <BlueButton onClick={() => {setEditingHeaderMapping(mapping)}}>
                                         Edit
-                                    </button>
-                                    <button className="button red" onClick={() => removeHeaderMapping(mapping)}>
+                                    </BlueButton>
+                                    <BlueButton onClick={() => removeHeaderMapping(mapping)}>
                                         Remove
-                                    </button>
+                                    </BlueButton>
                                 </td>
                             </tr>
                         )} />
                         </tbody>
                     </table>
-                </div>
-                <div className="item" style={{width:"100"}}>
-                    {editingHeaderMapping &&
-                        <HeaderMappingForm value={editingHeaderMapping}
-                                           onSubmit={onSaveMapping}
-                                           tags={tags ?? []} />
-                    }
-                </div>
+                </Item>
+                {editingHeaderMapping &&
+                    <Item as={HeaderMappingForm}
+                          value={editingHeaderMapping}
+                          onSubmit={onSaveMapping}
+                          tags={tags ?? []} />
+                }
             </Container>
         </Container>
     );

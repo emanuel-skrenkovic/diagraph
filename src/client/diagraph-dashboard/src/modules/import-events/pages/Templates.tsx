@@ -5,8 +5,6 @@ import { Loader } from 'modules/common';
 import { ImportTemplateForm } from 'modules/import-events';
 import { useCreateImportTemplateMutation, useGetTagsQuery } from 'services';
 
-import 'App.css';
-
 export const Templates = () => {
     const [createImportTemplate, { data: templateId, isSuccess }] = useCreateImportTemplateMutation();
     const { data, isLoading, isError, error }                     = useGetTagsQuery(undefined);

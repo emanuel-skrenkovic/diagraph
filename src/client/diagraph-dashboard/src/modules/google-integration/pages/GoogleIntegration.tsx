@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { Button, Centered, Container, Input } from 'styles';
 import { RootState } from 'store';
 import { setKey } from 'modules/google-integration';
-import { Container, handleQuery, Loader } from 'modules/common';
+import { handleQuery, Loader } from 'modules/common';
 import { useGetProfileQuery, useGoogleIntegrationQuery, useUpdateProfileMutation } from 'services';
 
 export const GoogleIntegration: React.FC = () => {
@@ -35,9 +36,9 @@ export const GoogleIntegration: React.FC = () => {
 
     function renderNotIntegrated() {
         return (
-            <button className="button" onClick={() => setRequestedIntegration(true)}>
+            <Button onClick={() => setRequestedIntegration(true)}>
                 Add Google integration
-            </button>
+            </Button>
         );
     }
 
@@ -52,22 +53,21 @@ export const GoogleIntegration: React.FC = () => {
         return (
             <Container>
                 <label htmlFor="googleTaskListName">Google task list name:</label>
-                <input id="googleTaskListName"
+                <Input id="googleTaskListName"
                        type="text"
                        value={taskList}
                        onChange={e => setTaskList(e.currentTarget.value)}/>
-                <button className="button"
-                        type="submit"
+                <Button type="submit"
                         onClick={() => updateProfile({...profile, googleTaskList: taskList})}>
                     Save
-                </button>
+                </Button>
             </Container>
         );
     }
 
     return (
-        <div className="centered">
+        <Centered>
             {googleIntegration ? renderIntegrated() : renderNotIntegrated()}
-        </div>
+        </Centered>
     );
 };

@@ -2,12 +2,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Link } from 'react-router-dom';
 
+import { Container } from 'styles';
 import { RootState } from 'store';
 import { Loader } from 'modules/common';
 import { LoginForm } from 'modules/auth';
 import { useGetSessionQuery, useLoginMutation } from 'services';
-
-import 'App.css';
 
 export const Login = () => {
     const authenticated = useSelector((state: RootState) => state.auth.authenticated);
@@ -21,15 +20,12 @@ export const Login = () => {
     if (isLoading || isSessionLoading) return <Loader />;
 
     return (
-        <div className="container vertical">
-            <div className="container" style={{marginTop: "5%"}}>
-                <LoginForm onSubmit={onClickLogin} />
-            </div>
-            <div className="container item">
-                <span>Don't have an account</span>
-                <Link to="/register">Register</Link>
-            </div>
+        <Container vertical>
+            <LoginForm onSubmit={onClickLogin} />
+            <span>Don't have an account?</span>
+            <Link to="/register">Register</Link>
             {isError && <span>Login failed</span>}
-        </div>
+        </Container>
+
     );
 };

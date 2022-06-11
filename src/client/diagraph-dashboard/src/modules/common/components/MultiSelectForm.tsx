@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
 
-import { For, Container } from 'modules/common';
+import { BlueButton, Container, Item } from 'styles';
+import { For } from 'modules/common';
 
 export interface MultiSelectFormProps<T> {
     options: T[];
@@ -32,16 +33,16 @@ export const MultiSelectForm = <T extends object>({ options, keySelector, onAdd 
 
     return (
         <Container vertical>
-            <select className="item" multiple onChange={onChange}>
+            <Item as="select" multiple onChange={onChange}>
                <For each={options} onEach={(option, index) => (
                     <option key={index}>
                         {keySelector(option)}
                     </option>
                 )} />
-            </select>
-            <button className="button blue item" onClick={onClickAdd}>
+            </Item>
+            <BlueButton onClick={onClickAdd}>
                 Select
-            </button>
+            </BlueButton>
         </Container>
     );
 };
