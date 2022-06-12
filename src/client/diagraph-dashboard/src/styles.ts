@@ -23,7 +23,7 @@ export const Global = createGlobalStyle`
 
 export const Item = styled.div`
   flex-basis: auto;
-  margin: 5px;
+  margin: 2.5px;
 `;
 
 export const Container = styled.div`
@@ -48,8 +48,8 @@ export const Box = styled.div`
   background: #fdfdfd;
   border: solid 1px rgba(63, 61, 65, 0.24);
   border-radius: 4px;
-  margin-outside: 15px;
-  padding: 5px;
+  margin-outside: 10px;
+  padding: 2.5px;
 `;
 
 export const Button = styled.button`
