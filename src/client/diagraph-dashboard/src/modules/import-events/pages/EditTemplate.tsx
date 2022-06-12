@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { Container } from 'styles';
 import { handleQuery, Loader } from 'modules/common';
 import { ImportTemplateForm } from 'modules/import-events';
 import { useGetImportTemplateQuery, useUpdateImportTemplateMutation, useGetTagsQuery } from 'services';
@@ -18,7 +19,11 @@ export const EditTemplate: React.FC = () => {
     if (handleQuery(getTags))           return <Loader />
     if (handleQuery(getImportTemplate)) return <Loader />
 
-    return <ImportTemplateForm initial={getImportTemplate.data}
-                               onSubmit={template => updateImportTemplate({template, id})}
-                               tags={getTags?.data ?? []} />
+    return (
+        <Container>
+            <ImportTemplateForm initial={getImportTemplate.data}
+                                onSubmit={template => updateImportTemplate({template, id})}
+                                tags={getTags?.data ?? []} />
+        </Container>
+    )
 };

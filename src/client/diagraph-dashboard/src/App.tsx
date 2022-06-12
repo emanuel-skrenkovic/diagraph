@@ -21,7 +21,6 @@ function App() {
     if (isLogoutLoading) return <Loader />;
 
     return (
-        <Container wide>
             <ErrorBoundary>
                 <BrowserRouter>
                     <Container vertical wide>
@@ -81,7 +80,6 @@ function App() {
                     </Container>
                 </BrowserRouter>
             </ErrorBoundary>
-        </Container>
     );
 }
 

@@ -12,8 +12,6 @@ export interface EventFormProps {
     disabled?: boolean,
 }
 
-const eventTextAreaStyle = {  };
-
 function hoursFormat(date: Date) {
     const hours   = new Date(date).getUTCHours().toString().padStart(2, '0');
     const minutes = new Date(date).getUTCMinutes().toString().padStart(2, '0');
@@ -60,7 +58,6 @@ export const EventForm = (props: EventFormProps) => {
                     <label htmlFor="eventText">Text</label>
                     <Centered>
                     <textarea className={`input ${error && 'invalid'}`}
-                              style={eventTextAreaStyle}
                               disabled={disabled}
                               id="eventText"
                               value={event!.text}

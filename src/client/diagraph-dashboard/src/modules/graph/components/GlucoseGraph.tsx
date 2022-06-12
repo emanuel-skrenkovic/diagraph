@@ -97,7 +97,7 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
     return (
         <>
             <Button onClick={() => setShowOptions(!showOptions)}>
-                {showOptions ? 'Close Options' : 'Show Options'}
+                {showOptions ? 'Hide Options' : 'Show Options'}
             </Button>
             {showOptions && (
                 <Container>

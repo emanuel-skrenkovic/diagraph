@@ -56,7 +56,7 @@ export const ImportEvents = () => {
                         )} />
                     </select>
                     <Container>
-                        <Item as={BlueButton} disabled={!!selectedTemplate}
+                        <Item as={BlueButton} disabled={!selectedTemplate}
                                 onClick={onEditTemplate}>
                             Edit Template
                         </Item>

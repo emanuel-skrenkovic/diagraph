@@ -1,6 +1,6 @@
 import React, { useState, MouseEvent } from 'react';
 
-import { BlueButton, Container, Input, Item } from 'styles';
+import { Button, BlueButton, RedButton, Box, Container, Input, Item } from 'styles';
 import { For } from 'modules/common';
 import { HeaderMappingForm } from 'modules/import-events';
 import { EventTag, ImportTemplate, TemplateHeaderMapping } from 'types';
@@ -89,12 +89,9 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
             </Container>
             <div style={{width:"10%", float:"right"}}>
                 <BlueButton style={{width: "max-content", paddingLeft: "2em", paddingRight: "2em"}}
-                        onClick={() => setEditingHeaderMapping(
-                            !!editingHeaderMapping
-                                ? undefined
-                                : DEFAULT_MAPPING
-                        )}>
-                    {!!editingHeaderMapping ? 'Close' : 'New Mapping'}
+                            onClick={() => setEditingHeaderMapping(DEFAULT_MAPPING)}
+                            disabled={!!editingHeaderMapping}>
+                    New Mapping
                 </BlueButton>
             </div>
             <Container>
@@ -108,27 +105,33 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                         </tr>
                         </thead>
                         <tbody>
-                        <For each={template.data.headerMappings} onEach={(mapping, index) => (
-                            <tr key={index}>
-                                <td>{mapping.header}</td>
-                                <td>
-                                    <BlueButton onClick={() => {setEditingHeaderMapping(mapping)}}>
-                                        Edit
-                                    </BlueButton>
-                                    <BlueButton onClick={() => removeHeaderMapping(mapping)}>
-                                        Remove
-                                    </BlueButton>
-                                </td>
-                            </tr>
-                        )} />
+                            <For each={template.data.headerMappings} onEach={(mapping, index) => (
+                                <tr key={index}>
+                                    <td>{mapping.header}</td>
+                                    <td>
+                                        <Container>
+                                            <Item as={BlueButton}
+                                                  onClick={() => {setEditingHeaderMapping(mapping)}}>
+                                                Edit
+                                            </Item>
+                                            <Item as={RedButton}
+                                                  onClick={() => removeHeaderMapping(mapping)}>
+                                                Remove
+                                            </Item>
+                                        </Container>
+                                    </td>
+                                </tr>
+                            )} />
                         </tbody>
                     </table>
                 </Item>
                 {editingHeaderMapping &&
-                    <Item as={HeaderMappingForm}
-                          value={editingHeaderMapping}
-                          onSubmit={onSaveMapping}
-                          tags={tags ?? []} />
+                    <Item as={Box}>
+                        <Button onClick={() => setEditingHeaderMapping(undefined)}>Close</Button>
+                        <HeaderMappingForm value={editingHeaderMapping}
+                                           onSubmit={onSaveMapping}
+                                           tags={tags ?? []} />
+                    </Item>
                 }
             </Container>
         </Container>

@@ -102,9 +102,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
                     </RedButton>
                 </Container>
             )} />
-            <Item>
-                <BlueButton onClick={newTagForm}>Add</BlueButton>
-            </Item>
+            <Item as={BlueButton} onClick={newTagForm}>Add</Item>
         </Container>
     );
 };

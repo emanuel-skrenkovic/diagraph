@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { BlueButton, Box, ScrollBar } from 'styles';
+import { BlueButton, Box, Container, Item, ScrollBar } from 'styles';
 import { Event } from 'types';
 import { For, LocalTime } from 'modules/common';
 
@@ -21,7 +21,6 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events, onEdit }) =>
                         <>
                             <td></td>
                             <td></td>
-                            <td></td>
                         </>
                     )}
                 </tr>
@@ -31,19 +30,19 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events, onEdit }) =>
                     <For each={events} onEach={e => (
                         <tr key={e.id.toString()}>
                             <td className="box">
-                                <LocalTime date={e.occurredAtUtc} />
+                                <Container vertical>
+                                    <Item as={LocalTime} date={e.occurredAtUtc} />
+                                    {onEdit && (
+                                        <Item as={BlueButton} onClick={() => onEdit(e)}>
+                                            Edit
+                                        </Item>
+                                    )}
+                                </Container>
                             </td>
                             <td className="block" style={{whiteSpace:"pre-line"}}>
                                 <ScrollBar heightPx={125} widthPx={300}>
                                     {e.text}
                                 </ScrollBar>
-                            </td>
-                            <td>
-                                {onEdit && (
-                                    <BlueButton onClick={() => onEdit(e)}>
-                                        Edit
-                                    </BlueButton>
-                                )}
                             </td>
                         </tr>
                     )} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, MouseEvent } from 'react';
 
-import { BlueButton, Input } from 'styles';
+import { BlueButton, Container, Input } from 'styles';
 
 export interface TagProps {
     value: string;
@@ -19,15 +19,15 @@ export const Tag: React.FC<TagProps> = ({ value, disabled, onChange }) => {
     }
 
     return (
-        <span className="container button">
-                <Input type="text"
-                       style={{width:"100%"}}
-                       value={value}
-                       disabled={!isEditing}
-                       onChange={e => onChange && onChange(e.currentTarget.value)}/>
-                <BlueButton onClick={onEdit}>
-                    Edit
-                </BlueButton>
-        </span>
+        <Container>
+           <Input type="text"
+                  style={{width:"100%"}}
+                  value={value}
+                  disabled={!isEditing}
+                  onChange={e => onChange && onChange(e.currentTarget.value)}/>
+            <BlueButton onClick={onEdit}>
+                {isEditing ? 'Save' : 'Edit'}
+            </BlueButton>
+        </Container>
     )
 };

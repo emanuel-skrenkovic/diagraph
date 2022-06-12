@@ -6,6 +6,10 @@ export interface ContainerProps {
 }
 
 export const Global = createGlobalStyle`
+  html {
+    overflow-y: overlay;
+  }
+  
   html * {
     font-size: 1em !important;
     color: #000 !important;
@@ -32,8 +36,9 @@ export const Container = styled.div`
       }
       if (props.wide) {
         return css`
-          flex-basis: 90%;
-          width: 100%;
+          flex-basis: 70%;
+          width: 60%;
+          min-width: 60%;
         `;
       }
   }}

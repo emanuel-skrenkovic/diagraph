@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 
 import { BlueButton, Container, Input } from 'styles';
 import { Rule } from 'types';
@@ -22,6 +22,11 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
 
     const [field, setField]           = useState<string | undefined>(initialField);
     const [expression, setExpression] = useState<string | undefined>(initialExpression);
+
+    useEffect(() => {
+        setField(initialField);
+        setExpression(initialExpression);
+    }, [value]);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
@@ -50,7 +55,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
             {!disabled &&
                 <BlueButton onClick={onClickSubmit}
                         disabled={disabled ?? false}>
-                    {buttonText ?? 'Add'}
+                    {buttonText ?? 'Save'}
                 </BlueButton>
             }
         </>

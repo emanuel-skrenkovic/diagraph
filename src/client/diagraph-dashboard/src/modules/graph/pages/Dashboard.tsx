@@ -124,6 +124,7 @@ export function Dashboard() {
                 </Centered>
             </Container>
             <Container>
+                <Item>
                     {selectedMeasurement && (
                         <Box>
                         <Container vertical>
@@ -138,28 +139,25 @@ export function Dashboard() {
                         </Box>
                     )}
                     {selectedEvent ? (
-                    <Container vertical>
                     <Box>
-                        <Container>
-                            <Centered>
-                                <Item as={Button} onClick={() => {
-                                    setSelectedEvent(undefined);
-                                    if (editing) setEditing(false);
-                                }}>
-                                    Close
-                                </Item>
-                                <Item as={Button} onClick={() => setEditing(!editing)}>
-                                    Edit
-                                </Item>
-                                <Item as={RedButton} onClick={() => {
+                        <Centered>
+                            <Item as={Button} onClick={() => {
+                                setSelectedEvent(undefined);
+                                if (editing) setEditing(false);
+                            }}>
+                                Close
+                            </Item>
+                            <Item as={Button} onClick={() => setEditing(!editing)}>
+                                Edit
+                            </Item>
+                            <Item as={RedButton} onClick={() => {
                                     setSelectedEvent(undefined);
                                     setEditing(false);
                                     deleteEvent(selectedEvent.id!);
                                 }}>
-                                    Delete
-                                </Item>
-                            </Centered>
-                        </Container>
+                                Delete
+                            </Item>
+                        </Centered>
                         <EventForm
                             value={selectedEvent}
                             onSubmit={e => {
@@ -170,7 +168,6 @@ export function Dashboard() {
                             submitButtonText="Save"
                             disabled={!editing} />
                     </Box>
-                    </Container>
                     ) : (
                         <Container vertical>
                                 <EventForm
@@ -191,7 +188,8 @@ export function Dashboard() {
                         )}
                         </Container>
                     )}
-                <RecentEvents events={events} onEdit={setSelectedEvent} />
+                </Item>
+                <Item as={RecentEvents} events={events} onEdit={setSelectedEvent} />
             </Container>
         </Container>
     );
