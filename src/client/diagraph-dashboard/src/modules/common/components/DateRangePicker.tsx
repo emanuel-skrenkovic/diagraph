@@ -29,8 +29,8 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
     }
 
     useEffect(() => setDateRange({
-            from: toLocalISODateString(from),
-            to:   toLocalISODateString(to)
+        from: toLocalISODateString(from),
+        to:   toLocalISODateString(to)
     }), [from, to]);
 
     const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
@@ -38,8 +38,24 @@ export const DateRangePicker = ({from, to, onSubmit, submitButtonText}: DateRang
         onSubmit(new Date(dateRange.from), new Date(dateRange.to));
     }
 
+    const onClickToday = (e: FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+
+        onSubmit(today, tomorrow);
+    };
+
     return (
         <Container vertical>
+            <Centered as={Button} onClick={onClickToday}>
+                Today
+            </Centered>
             <Container>
                 <Button onClick={() => moveDateRange(-1)}>
                     &lt;

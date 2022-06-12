@@ -87,7 +87,6 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
                 {editingRuleId !== -1 && <BlueButton>New</BlueButton>}
                 {editingRuleId === -1 && <RuleForm key={-1} onSubmit={onAddRule} />}
             </Item>
-
             <TagSelector initialSelectedTags={template.tags} onChange={setTemplateTags} />
             <Centered>
                 <BlueButton onClick={onClickSubmit}>Save Mapping</BlueButton>

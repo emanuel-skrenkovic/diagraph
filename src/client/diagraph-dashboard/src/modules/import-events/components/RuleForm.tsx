@@ -26,7 +26,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
     useEffect(() => {
         setField(initialField);
         setExpression(initialExpression);
-    }, [value]);
+    }, [initialField, initialExpression]);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
