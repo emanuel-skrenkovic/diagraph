@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
-import { RedButton, Container, Item } from 'styles';
+import { RedButton, Container, Item, Title, Divider } from 'styles';
 import { RootState } from 'store';
 import { useLogoutMutation } from 'services';
 
@@ -24,7 +24,8 @@ function App() {
             <ErrorBoundary>
                 <BrowserRouter>
                     <Container vertical wide>
-                        <span><b>Diagraph</b></span>
+                        <Title>Diagraph</Title>
+                        <Divider style={{margin:"initial",width:"6em"}}/>
                         {authenticated &&
                             <>
                                 <RedButton style={{marginLeft:"90%", whiteSpace:"nowrap"}} onClick={logout}>

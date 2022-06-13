@@ -13,7 +13,7 @@ export const Global = createGlobalStyle`
   html * {
     font-size: 1em !important;
     color: #000 !important;
-    font-family: Arial, serif !important;
+    font-family: Helvetica, serif !important;
   }
 
   * {
@@ -112,4 +112,18 @@ export const Centered = styled.div`
 
 export const ScrollBar = styled.div`
   overflow: scroll;
+`;
+
+export const Title = styled.h3`
+  font-weight: bold;
+  font-size: 1.15em !important;
+  font-stretch: extra-condensed;
+  padding: 0;
+  margin: 0;
+`;
+
+export const Divider = styled.span`
+  border-top: 1.5px solid #bbb;
+  width: 90%;
+  margin: auto;
 `;

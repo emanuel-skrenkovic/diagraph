@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { Box, Button, RedButton, Centered, Container, Input, Item } from 'styles';
+import { Box, Button, RedButton, Centered, Container, Input, Item, Title } from 'styles';
 import { RootState, AppDispatch } from 'store';
 import {
     diagraphApi,
@@ -194,7 +194,7 @@ export function Dashboard() {
                     {selectedEvent ? renderEditEventForm() : renderNewEventForm()}
                 </Item>
                 <Item style={{width:"50%"}}>
-                    <h3>Recent events:</h3>
+                    <Title>Recent events:</Title>
                     {events.length > 0 && <RecentEvents events={events} onEdit={setSelectedEvent} />}
                 </Item>
             </Container>

@@ -1,6 +1,6 @@
 import React, { useState, MouseEvent } from 'react';
 
-import { Button, BlueButton, RedButton, Box, Container, Input, Item } from 'styles';
+import { Button, BlueButton, RedButton, Box, Container, Input, Item, Title } from 'styles';
 import { For } from 'modules/common';
 import { HeaderMappingForm } from 'modules/import-events';
 import { EventTag, ImportTemplate, TemplateHeaderMapping } from 'types';
@@ -96,7 +96,7 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
             </div>
             <Container>
                 <Item style={{width:"100%"}}>
-                    <h3>Mappings</h3>
+                    <Title>Mappings</Title>
                     <table>
                         <thead>
                         <tr>

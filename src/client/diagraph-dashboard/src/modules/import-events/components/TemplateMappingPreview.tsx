@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { ScrollBar } from 'styles';
+import { Divider, ScrollBar, Title } from 'styles';
 import { Event } from 'types';
 import { CsvPreview } from 'modules/import-events';
 import { For, Loader } from 'modules/common';
@@ -34,9 +34,10 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
 
     return (
         <>
-            <h3>Csv data</h3>
+            <Title>Csv data</Title>
             <CsvPreview csvFile={csvFile}/>
-            <h3>Mapped events</h3>
+            <Title>Mapped events</Title>
+            <Divider style={{width:"100%"}} />
             <ScrollBar style={{maxHeight:"500px"}}>
                 <table>
                     <thead>
