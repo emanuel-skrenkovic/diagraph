@@ -110,13 +110,6 @@ export const Centered = styled.div`
   margin: 0 auto;
 `;
 
-export interface ScrollBarProps {
-    heightPx?: number;
-    widthPx?: number;
-}
-
 export const ScrollBar = styled.div`
   overflow: scroll;
-  max-height: ${(props: ScrollBarProps) => props.heightPx};
-  max-width: ${(props: ScrollBarProps) => props.widthPx};
 `;

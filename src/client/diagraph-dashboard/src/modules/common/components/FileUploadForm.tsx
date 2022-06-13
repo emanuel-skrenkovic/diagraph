@@ -1,6 +1,6 @@
 import React, { useState, useRef, DragEvent, ChangeEvent, FormEvent } from 'react';
 
-import { Box, BlueButton, Centered, Container, Input, Item } from 'styles';
+import { Box, BlueButton, Container, Input, Item } from 'styles';
 import './FileUploadForm.css';
 
 export interface FileUploadProps {
@@ -22,8 +22,7 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }
         }
 
         setSelectedFile(file);
-        if (error) setError('');
-
+        if (error)    setError('');
         if (onSelect) onSelect(file);
     };
 
@@ -48,29 +47,34 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }
     }
 
     return (
-        <Container onDragOver={e => e.preventDefault()} onDrop={handleDrop}>
-            <Box>
-                <form onClick={() => fileUploadInput.current!.click()}>
-                    <label onClick={e => e.stopPropagation()}
-                           htmlFor="fileUploadInput">
-                        {!!selectedFile
-                            ? selectedFile.name
-                            : 'Drop file or click to upload'}
-                    </label>
-                    <Input id="fileUploadInput"
-                           type="file"
-                           hidden
-                           ref={fileUploadInput}
-                           style={{display: "none"}}
-                           onChange={onSelectFile}/>
-                </form>
-                <Item>
-                    <Centered as={BlueButton} type="submit" onClick={onClickSubmit}>
+        <Box style={{padding:"0.5em"}}>
+            <Container vertical onDragOver={e => e.preventDefault()} onDrop={handleDrop}>
+                <Box>
+                    <form onClick={() => fileUploadInput.current!.click()}>
+                        <Item style={{padding:"1em"}}>
+                            <label htmlFor="fileUploadInput" onClick={e => e.stopPropagation()}>
+                                {!!selectedFile
+                                    ? selectedFile.name
+                                    : 'Drop file or click to upload'}
+                            </label>
+                            <Input id="fileUploadInput"
+                                   type="file"
+                                   hidden
+                                   ref={fileUploadInput}
+                                   style={{display: "none"}}
+                                   onChange={onSelectFile}/>
+                        </Item>
+                    </form>
+
+                </Box>
+                <Item as={Container} style={{margin:"0.5em"}}>
+                    <BlueButton type="submit" onClick={onClickSubmit}>
                         Upload
-                    </Centered>
+                    </BlueButton>
                     <span>{error}</span>
                 </Item>
-            </Box>
-        </Container>
+            </Container>
+        </Box>
+
     );
 };

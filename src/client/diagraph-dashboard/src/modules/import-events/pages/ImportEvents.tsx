@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { BlueButton, Box, Container, Item } from 'styles';
+import { BlueButton, Container, Item } from 'styles';
 import { TemplateMappingPreview } from 'modules/import-events';
 import { useImportEventsMutation, useGetImportTemplatesQuery } from 'services';
 import { FileUploadForm,  For, Loader } from 'modules/common';
@@ -39,44 +39,47 @@ export const ImportEvents = () => {
     if (isError) console.error(error); // TODO
 
     return (
-        <Container vertical>
-            <Container>
-                <FileUploadForm onSubmit={onUpload}
-                                onSelect={setFile} />
-                <Container vertical>
-                    <label htmlFor="selectTemplate">Templates</label>
-                    <select id="selectTemplate"
-                            value={selectedTemplate}
-                            onChange={e => setSelectedTemplate(e.currentTarget.value)}>
-                        <option key={undefined}></option>
-                        <For each={data ?? []} onEach={({ name, id }) => (
-                            <option key={id}>
-                                {name}
-                            </option>
-                        )} />
-                    </select>
-                    <Container>
-                        <Item as={BlueButton} disabled={!selectedTemplate}
-                                onClick={onEditTemplate}>
-                            Edit Template
-                        </Item>
-                        <Item as={BlueButton} onClick={onNewTemplate}>
-                            New Template
+        <Container>
+            <Container vertical>
+                <Container>
+                    <Item>
+                        <FileUploadForm onSubmit={onUpload}
+                                        onSelect={setFile} />
+                    </Item>
+                    <Container as={Item} vertical>
+                        <label htmlFor="selectTemplate">Templates</label>
+                        <select id="selectTemplate"
+                                value={selectedTemplate}
+                                onChange={e => setSelectedTemplate(e.currentTarget.value)}>
+                            <option key={undefined}></option>
+                            <For each={data ?? []} onEach={({ name, id }) => (
+                                <option key={id}>
+                                    {name}
+                                </option>
+                            )} />
+                        </select>
+                        <Container>
+                            <Item as={BlueButton} disabled={!selectedTemplate}
+                                  onClick={onEditTemplate}>
+                                Edit Template
+                            </Item>
+                            <Item as={BlueButton} onClick={onNewTemplate}>
+                                New Template
+                            </Item>
+                        </Container>
+                        <Item as={BlueButton} onClick={onCheckTemplateMapping}>
+                            Check template mapping
                         </Item>
                     </Container>
-                    <Item as={BlueButton} onClick={onCheckTemplateMapping}>
-                        Check template mapping
-                    </Item>
                 </Container>
+                {showPreview && file && selectedTemplate && (
+                    <Container vertical style={{marginLeft:"10%",marginRight:"10%"}}>
+                        <TemplateMappingPreview
+                            csvFile={file}
+                            template={selectedTemplate} />
+                    </Container>
+                )}
             </Container>
-            {showPreview && file && selectedTemplate && (
-                <Box>
-                    <TemplateMappingPreview
-                        csvFile={file}
-                        template={selectedTemplate}
-                    />
-                </Box>
-            )}
         </Container>
     )
 }

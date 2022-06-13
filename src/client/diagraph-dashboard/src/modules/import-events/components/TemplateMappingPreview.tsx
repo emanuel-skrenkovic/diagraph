@@ -29,45 +29,38 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
         setFulfilledAt(fulfilledTimeStamp);
     }
 
-    if (isLoading) return <Loader />;
+    if (isLoading)                       return <Loader />;
+    if (!csvFile || events.length === 0) return null;
 
     return (
         <>
-            {csvFile && events.length > 0 && (
-                <>
-                    <h3>Csv data</h3>
-                    <CsvPreview csvFile={csvFile}/>)
-                </>
-            )}
-            {csvFile && events.length > 0 && (
-                <>
-                    <h3>Mapped events</h3>
-                    <ScrollBar heightPx={500}>
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>Occurred At</th>
-                                <th>Text</th>
-                                <th>Tags</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <For each={events.slice(0, 100)} onEach={(e, i) => (
-                                <tr key={i}>
-                                    <td>{e.occurredAtUtc.toString()}</td>
-                                    <td>{e.text}</td>
-                                    <td>
-                                        [<For each={e.tags ?? []} onEach={(t, i) => (
-                                        <span key={i}>{`${t.name} `}</span>
-                                    )} />]
-                                    </td>
-                                </tr>
-                            )}/>
-                            </tbody>
-                        </table>
-                    </ScrollBar>
-                </>
-            )}
+            <h3>Csv data</h3>
+            <CsvPreview csvFile={csvFile}/>
+            <h3>Mapped events</h3>
+            <ScrollBar style={{maxHeight:"500px"}}>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Occurred At</th>
+                        <th>Text</th>
+                        <th>Tags</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <For each={events.slice(0, 100)} onEach={(event, eventIndex) => (
+                        <tr key={eventIndex}>
+                            <td>{event.occurredAtUtc.toString()}</td>
+                            <td>{event.text}</td>
+                            <td>
+                                [<For each={event.tags ?? []} onEach={(tag, tagIndex) => (
+                                <span key={tagIndex}>{`${tag.name} `}</span>
+                            )} />]
+                            </td>
+                        </tr>
+                    )}/>
+                    </tbody>
+                </table>
+            </ScrollBar>
         </>
     );
 };

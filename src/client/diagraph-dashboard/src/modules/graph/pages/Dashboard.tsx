@@ -94,24 +94,77 @@ export function Dashboard() {
         dispatch(diagraphApi.endpoints.getEvents.initiate(dateRange, fetchOptions));
     }
 
-    async function onExportEvents() {
+    function onExportEvents() {
         // TODO: there is, most certainly, a waaaaay better way.
         window.location.href = 'https://localhost:7053/events/data-export/csv?mergeSequential=true';
     }
 
+    function renderNewEventForm() {
+        return <Container vertical>
+            <EventForm
+                value={EMPTY_EVENT}
+                onSubmit={onCreateEvent}
+                tagOptions={tagsData ?? []}
+                submitButtonText="Create Event" />
+            {integration && (
+                <>
+                    <label htmlFor="eventCreateTask">Create task</label>
+                    <Input id="eventCreateTask"
+                           type="checkbox"
+                           checked={createTask}
+                           onChange={() => setCreateTask(!createTask)}/>
+                    {createTask && (
+                        <>
+                            <NotificationForm onChange={n => setNotification(n)} />
+                            {notificationError && <span>{notificationError}</span>}
+                        </>
+                    )}
+                </>
+            )}
+        </Container>
+    }
+
+    function renderEditEventForm() {
+        return <Box>
+            <Centered>
+                <Item as={Button} onClick={() => {
+                    setSelectedEvent(undefined);
+                    if (editing) setEditing(false);
+                }}>
+                    Close
+                </Item>
+                <Item as={Button} onClick={() => setEditing(!editing)}>
+                    Edit
+                </Item>
+                <Item as={RedButton} onClick={() => {
+                    setSelectedEvent(undefined);
+                    setEditing(false);
+                    deleteEvent(selectedEvent!.id!);
+                }}>
+                    Delete
+                </Item>
+            </Centered>
+            <EventForm
+                value={selectedEvent!}
+                onSubmit={e => {
+                    updateEvent(e);
+                    setEditing(false);
+                }}
+                tagOptions={tagsData ?? []}
+                submitButtonText="Save"
+                disabled={!editing} />
+        </Box>
+    }
+
     return (
         <Container vertical>
-            <Button style={{marginLeft:"80%"}}
-                    onClick={onExportEvents}>
+            <Button onClick={onExportEvents} style={{marginLeft:"90%",whiteSpace:"nowrap"}}>
                 Export Events
             </Button>
-            <Container>
-                <DateRangePicker
-                    from={toLocalDate(dateRange.from)}
-                    to={toLocalDate(dateRange.to)}
-                    onSubmit={onChangeDateRange}
-                    submitButtonText="Apply dates" />
-            </Container>
+            <Item as={DateRangePicker} from={toLocalDate(dateRange.from)}
+                             to={toLocalDate(dateRange.to)}
+                             onSubmit={onChangeDateRange}
+                             submitButtonText="Apply dates" />
             <Container vertical>
                 <Centered>
                     <GlucoseGraph
@@ -138,58 +191,12 @@ export function Dashboard() {
                         </Container>
                         </Box>
                     )}
-                    {selectedEvent ? (
-                    <Box>
-                        <Centered>
-                            <Item as={Button} onClick={() => {
-                                setSelectedEvent(undefined);
-                                if (editing) setEditing(false);
-                            }}>
-                                Close
-                            </Item>
-                            <Item as={Button} onClick={() => setEditing(!editing)}>
-                                Edit
-                            </Item>
-                            <Item as={RedButton} onClick={() => {
-                                    setSelectedEvent(undefined);
-                                    setEditing(false);
-                                    deleteEvent(selectedEvent.id!);
-                                }}>
-                                Delete
-                            </Item>
-                        </Centered>
-                        <EventForm
-                            value={selectedEvent}
-                            onSubmit={e => {
-                                updateEvent(e);
-                                setEditing(false);
-                            }}
-                            tagOptions={tagsData ?? []}
-                            submitButtonText="Save"
-                            disabled={!editing} />
-                    </Box>
-                    ) : (
-                        <Container vertical>
-                                <EventForm
-                                    value={EMPTY_EVENT}
-                                    onSubmit={onCreateEvent}
-                                    tagOptions={tagsData ?? []}
-                                    submitButtonText="Create Event" />
-                        {integration && (
-                            <>
-                                <label htmlFor="eventCreateTask">Create task</label>
-                                <Input id="eventCreateTask"
-                                       type="checkbox"
-                                       checked={createTask}
-                                       onChange={() => setCreateTask(!createTask)}/>
-                                {createTask && <NotificationForm onChange={n => setNotification(n)} />}
-                                {createTask && notificationError && <span>{notificationError}</span>}
-                            </>
-                        )}
-                        </Container>
-                    )}
+                    {selectedEvent ? renderEditEventForm() : renderNewEventForm()}
                 </Item>
-                <Item as={RecentEvents} events={events} onEdit={setSelectedEvent} />
+                <Item style={{width:"50%"}}>
+                    <h3>Recent events:</h3>
+                    {events.length > 0 && <RecentEvents events={events} onEdit={setSelectedEvent} />}
+                </Item>
             </Container>
         </Container>
     );

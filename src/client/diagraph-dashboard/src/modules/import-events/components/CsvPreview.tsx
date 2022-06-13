@@ -25,7 +25,7 @@ export const CsvPreview: React.FC<CsvPreviewProps> = ({ csvFile }) => {
     if (csvData.length === 0) return null;
 
     return (
-        <ScrollBar heightPx={500}>
+        <ScrollBar style={{height:"500px"}}>
             <table className="csv-table">
                 <thead>
                 <tr>
