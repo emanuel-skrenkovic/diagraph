@@ -20,7 +20,7 @@ import {
     toLocalISODateString,
     useValidation } from 'modules/common';
 import { Notification, CreateEventCommand, Event, EventTag, GlucoseMeasurement } from 'types';
-import { GlucoseGraph, EventForm, RecentEvents, setDateRange } from 'modules/graph';
+import { Statistics, GlucoseGraph, EventForm, RecentEvents, setDateRange } from 'modules/graph';
 
 const EMPTY_EVENT = {
     occurredAtUtc: new Date(),
@@ -169,8 +169,8 @@ export function Dashboard() {
                              to={toLocalDate(dateRange.to)}
                              onSubmit={onChangeDateRange}
                              submitButtonText="Apply dates" />
-            <Container vertical>
-                <Centered>
+            <Container>
+                <Item as={Centered}>
                     <GlucoseGraph
                         from={toLocalDate(dateRange.from)}
                         to={toLocalDate(dateRange.to)}
@@ -178,7 +178,10 @@ export function Dashboard() {
                         events={events}
                         onClickEvent={setSelectedEvent}
                         onClickMeasurement={setSelectedMeasurement} />
-                </Centered>
+                </Item>
+                <Item as={Centered} style={{marginTop:"10%"}}>
+                    <Statistics measurements={measurements} />
+                </Item>
             </Container>
             <Container>
                 <Item>
