@@ -100,32 +100,35 @@ export function Dashboard() {
     }
 
     function renderNewEventForm() {
-        return <Container vertical>
-            <EventForm
-                value={EMPTY_EVENT}
-                onSubmit={onCreateEvent}
-                tagOptions={tagsData ?? []}
-                submitButtonText="Create Event" />
-            {integration && (
-                <>
-                    <label htmlFor="eventCreateTask">Create task</label>
-                    <Input id="eventCreateTask"
-                           type="checkbox"
-                           checked={createTask}
-                           onChange={() => setCreateTask(!createTask)}/>
-                    {createTask && (
-                        <>
-                            <NotificationForm onChange={n => setNotification(n)} />
-                            {notificationError && <span>{notificationError}</span>}
-                        </>
-                    )}
-                </>
-            )}
-        </Container>
+        return (
+            <Container vertical>
+                <EventForm
+                    value={EMPTY_EVENT}
+                    onSubmit={onCreateEvent}
+                    tagOptions={tagsData ?? []}
+                    submitButtonText="Create Event" />
+                {integration && (
+                    <>
+                        <label htmlFor="eventCreateTask">Create task</label>
+                        <Input id="eventCreateTask"
+                               type="checkbox"
+                               checked={createTask}
+                               onChange={() => setCreateTask(!createTask)}/>
+                        {createTask && (
+                            <>
+                                <NotificationForm onChange={n => setNotification(n)} />
+                                {notificationError && <span>{notificationError}</span>}
+                            </>
+                        )}
+                    </>
+                )}
+            </Container>
+        )
     }
 
     function renderEditEventForm() {
-        return <Box>
+        return (
+            <Box>
             <Centered>
                 <Item as={Button} onClick={() => {
                     setSelectedEvent(undefined);
@@ -153,7 +156,8 @@ export function Dashboard() {
                 tagOptions={tagsData ?? []}
                 submitButtonText="Save"
                 disabled={!editing} />
-        </Box>
+            </Box>
+        )
     }
 
     return (
@@ -191,6 +195,8 @@ export function Dashboard() {
                         </Container>
                         </Box>
                     )}
+                </Item>
+                <Item style={{width:"50%"}}>
                     {selectedEvent ? renderEditEventForm() : renderNewEventForm()}
                 </Item>
                 <Item style={{width:"50%"}}>

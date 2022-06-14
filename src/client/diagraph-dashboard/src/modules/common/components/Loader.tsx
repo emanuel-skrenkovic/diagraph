@@ -15,7 +15,7 @@ export function Loader() {
                          dur="1.2s"
                          repeatCount="indefinite" />
             </rect>
-            <rect x="20" y="0" width="12" height="100" fill="#006fdad9" fillOpacity="0.58">
+            <rect x="20" y="0" width="12" height="100" fill="#cb4b49">
                 <animate attributeName="height"
                          values="100;10;100"
                          begin="0.2s"

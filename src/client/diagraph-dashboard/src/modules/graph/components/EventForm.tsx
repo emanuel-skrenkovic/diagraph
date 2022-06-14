@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react';
+import React, { ChangeEvent, FormEvent } from 'react';
 
 import { BlueButton, Box, Centered, Container, Input } from 'styles';
 import { Event, EventTag } from 'types';
@@ -44,6 +44,10 @@ export const EventForm = (props: EventFormProps) => {
         setEvent({ ...event, occurredAtUtc: newOccurredAtUtc } as Event);
     }
 
+    function onChangeEventText(e: ChangeEvent<HTMLTextAreaElement>) {
+        setEvent({ ...event, text: e.currentTarget.value } as Event)
+    }
+
     const { disabled } = props;
 
     return (
@@ -56,14 +60,13 @@ export const EventForm = (props: EventFormProps) => {
                 }
                 <Container vertical>
                     <label htmlFor="eventText">Text</label>
-                    <Centered>
-                    <textarea className={`input ${error && 'invalid'}`}
+                    <Centered as="textarea" className={`input ${error && 'invalid'}`}
+                              style={{width:"90%",minHeight:"150px"}}
                               disabled={disabled}
                               id="eventText"
                               value={event!.text}
-                              onChange={e => setEvent({ ...event, text: e.currentTarget.value } as Event)} />
-                        {error && <span className="input label">{error}</span>}
-                    </Centered>
+                              onChange={onChangeEventText} />
+                    {error && <span className="input label">{error}</span>}
                 </Container>
                 <label htmlFor="eventOccurredAt">Occurred at </label>
                 <Input id="eventOccurredAt"
