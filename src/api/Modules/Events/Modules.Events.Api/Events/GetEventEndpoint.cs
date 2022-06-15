@@ -33,6 +33,7 @@ public class GetEventEndpoint : EndpointWithoutRequest
         Event @event = await _context
             .Events
             .WithUser(_userContext.UserId)
+            .Include(nameof(Event.Tags))
             .FirstOrDefaultAsync(e => e.Id == id, ct);
         
         await 

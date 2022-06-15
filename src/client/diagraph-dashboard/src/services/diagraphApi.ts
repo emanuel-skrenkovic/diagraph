@@ -24,7 +24,7 @@ export const diagraphApi = createApi({
                 ? [...result.map(r => ({ type: 'Events' as const, id: r.id }))]
                 : [{ type: 'Events' as const, id: 'NONE' }]
         }),
-        getEvent: builder.query<any, any>({
+        getEvent: builder.query<Event, number>({
             query: id => ({ url: `events/${id}` })
         }),
         createEvent: builder.mutation<void, CreateEventCommand>({
@@ -226,7 +226,7 @@ export const diagraphApi = createApi({
 });
 
 export const {
-    // useGetEventQuery,
+    useGetEventQuery,
     useGetEventsQuery,
     useCreateEventMutation,
     useUpdateEventMutation,

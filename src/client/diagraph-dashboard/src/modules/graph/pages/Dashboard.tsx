@@ -8,6 +8,7 @@ import {
     useCreateEventMutation,
     useUpdateEventMutation,
     useDeleteEventMutation,
+    useGetEventQuery,
     useGetEventsQuery,
     useGetDataQuery,
     useGetProfileQuery,
@@ -20,7 +21,7 @@ import {
     toLocalISODateString,
     useValidation } from 'modules/common';
 import { Notification, CreateEventCommand, Event, EventTag, GlucoseMeasurement } from 'types';
-import { Statistics, GlucoseGraph, EventForm, RecentEvents, setDateRange } from 'modules/graph';
+import { Statistics, GlucoseGraph, EventForm, RecentEvents, setDateRange, setSelectedEventId } from 'modules/graph';
 
 const EMPTY_EVENT = {
     occurredAtUtc: new Date(),
@@ -43,14 +44,14 @@ function notificationValidation(notification: Notification | undefined): [boolea
 }
 
 export function Dashboard() {
-    const events       = useSelector((state: RootState) => state.graph.events);
-    const measurements = useSelector((state: RootState) => state.graph.data);
-    const dateRange    = useSelector((state: RootState) => state.graph.dateRange);
-    const tagsData     = useSelector((state: RootState) => state.shared.tags);
-    const taskList     = useSelector((state: RootState) => state.profile.profile.googleTaskList);
-    const integration  = useSelector((state: RootState) => state.profile.profile.googleIntegration);
+    const selectedEventId = useSelector((state: RootState) => state.graph.selectedEventId);
+    const events          = useSelector((state: RootState) => state.graph.events);
+    const measurements    = useSelector((state: RootState) => state.graph.data);
+    const dateRange       = useSelector((state: RootState) => state.graph.dateRange);
+    const tagsData        = useSelector((state: RootState) => state.shared.tags);
+    const taskList        = useSelector((state: RootState) => state.profile.profile.googleTaskList);
+    const integration     = useSelector((state: RootState) => state.profile.profile.googleIntegration);
 
-    useEffect(() => {}, [dateRange, events, measurements]);
 
     const [createTask, setCreateTask]                   = useState(false);
     const [editing, setEditing]                         = useState(false);
@@ -68,10 +69,18 @@ export function Dashboard() {
 
     const dispatch = useDispatch<AppDispatch>();
 
+    const { data: eventData, isLoading: isEventLoading } = useGetEventQuery(
+        selectedEventId!,
+        { skip: selectedEventId === selectedEvent?.id || selectedEventId === undefined }
+    );
     const getData    = useGetDataQuery({ from: dateRange.from, to: dateRange.to });
     const getEvents  = useGetEventsQuery({ from: dateRange.from,to: dateRange.to });
     const getTags    = useGetTagsQuery(undefined);
     const getProfile = useGetProfileQuery(undefined);
+
+    useEffect(() => {
+        if (selectedEventId && eventData) setSelectedEvent(eventData);
+    }, [dateRange, selectedEventId, eventData, events, measurements]);
 
     if (handleQuery(getProfile)) return <Loader />
     if (handleQuery(getData))    return <Loader />
@@ -97,6 +106,16 @@ export function Dashboard() {
     function onExportEvents() {
         // TODO: there is, most certainly, a waaaaay better way.
         window.location.href = 'https://localhost:7053/events/data-export/csv?mergeSequential=true';
+    }
+
+    function selectEvent(event: Event) {
+        dispatch(setSelectedEventId(event.id));
+    }
+
+    function deselectEvent() {
+        setSelectedEvent(undefined);
+        dispatch(setSelectedEventId(undefined));
+        if (editing) setEditing(false);
     }
 
     function renderNewEventForm() {
@@ -130,18 +149,14 @@ export function Dashboard() {
         return (
             <Box>
             <Centered>
-                <Item as={Button} onClick={() => {
-                    setSelectedEvent(undefined);
-                    if (editing) setEditing(false);
-                }}>
+                <Item as={Button} onClick={deselectEvent}>
                     Close
                 </Item>
                 <Item as={Button} onClick={() => setEditing(!editing)}>
                     Edit
                 </Item>
                 <Item as={RedButton} onClick={() => {
-                    setSelectedEvent(undefined);
-                    setEditing(false);
+                    deselectEvent();
                     deleteEvent(selectedEvent!.id!);
                 }}>
                     Delete
@@ -176,7 +191,7 @@ export function Dashboard() {
                         to={toLocalDate(dateRange.to)}
                         points={measurements}
                         events={events}
-                        onClickEvent={setSelectedEvent}
+                        onClickEvent={selectEvent}
                         onClickMeasurement={setSelectedMeasurement} />
                 </Item>
                 <Item as={Centered} style={{marginTop:"10%"}}>
@@ -200,11 +215,15 @@ export function Dashboard() {
                     )}
                 </Item>
                 <Item style={{width:"50%"}}>
-                    {selectedEvent ? renderEditEventForm() : renderNewEventForm()}
+                    {isEventLoading
+                        ? <Loader />
+                        : (selectedEvent ? renderEditEventForm() : renderNewEventForm())}
                 </Item>
                 <Item style={{width:"50%"}}>
                     <Title>Recent events:</Title>
-                    {events.length > 0 && <RecentEvents events={events} onEdit={setSelectedEvent} />}
+                    {events.length > 0 && (
+                        <RecentEvents events={events} onEdit={selectEvent} />
+                    )}
                 </Item>
             </Container>
         </Container>

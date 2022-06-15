@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from 'react';
+import React, { useEffect, ChangeEvent, FormEvent } from 'react';
 
 import { BlueButton, Box, Centered, Container, Input } from 'styles';
 import { Event, EventTag } from 'types';
@@ -25,6 +25,12 @@ export const EventForm = (props: EventFormProps) => {
             : [true, ''],
         props.value
     );
+
+    const { value } = props;
+
+    useEffect(() => {
+        if (value) setEvent(value);
+    }, [value, setEvent]);
 
     function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();

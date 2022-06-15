@@ -7,6 +7,7 @@ export interface GraphState {
     events: any[];
     data: GlucoseMeasurement[];
     dateRange: { from: string, to: string },
+    selectedEventId: number | undefined;
 }
 
 function graphDateLimits() {
@@ -25,7 +26,8 @@ const { today, tomorrow } = graphDateLimits();
 const initialState: GraphState = {
     events: [],
     data: [],
-    dateRange: { from: toLocalISODateString(today), to: toLocalISODateString(tomorrow) }
+    dateRange: { from: toLocalISODateString(today), to: toLocalISODateString(tomorrow) },
+    selectedEventId: undefined
 };
 
 export const graphSlice = createSlice({
@@ -40,9 +42,12 @@ export const graphSlice = createSlice({
         },
         setDateRange: (state, action: PayloadAction<{ from: string, to: string }>) => {
             state.dateRange = action.payload;
+        },
+        setSelectedEventId: (state, action: PayloadAction<number | undefined>) => {
+            state.selectedEventId = action.payload;
         }
     }
 });
 
-export const { setEvents, setData, setDateRange } = graphSlice.actions;
+export const { setEvents, setData, setDateRange, setSelectedEventId } = graphSlice.actions;
 export const graphReducer = graphSlice.reducer;

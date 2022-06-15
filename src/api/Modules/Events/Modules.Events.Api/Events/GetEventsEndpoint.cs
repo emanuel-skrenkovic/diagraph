@@ -29,7 +29,6 @@ public class GetEventsEndpoint : EndpointWithoutRequest
             await _context
                 .Events
                 .WithUser(_userContext.UserId)
-                .Include(e => e.Tags) // TODO: remove from here, pull event
                 .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
                 .OrderBy(e => e.OccurredAtUtc)
                 .ToListAsync(ct),
