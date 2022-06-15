@@ -181,43 +181,42 @@ export function Dashboard() {
                 Export Events
             </Button>
             <Item as={DateRangePicker} from={toLocalDate(dateRange.from)}
-                             to={toLocalDate(dateRange.to)}
-                             onSubmit={onChangeDateRange}
-                             submitButtonText="Apply dates" />
+                                       to={toLocalDate(dateRange.to)}
+                                       onSubmit={onChangeDateRange}
+                                       submitButtonText="Apply dates" />
             <Container>
-                <Item as={Centered}>
-                    <GlucoseGraph
-                        from={toLocalDate(dateRange.from)}
-                        to={toLocalDate(dateRange.to)}
-                        points={measurements}
-                        events={events}
-                        onClickEvent={selectEvent}
-                        onClickMeasurement={setSelectedMeasurement} />
-                </Item>
-                <Item as={Centered} style={{marginTop:"10%"}}>
+                <Item>
                     <Statistics measurements={measurements} />
+                </Item>
+                <Item>
+                    <GlucoseGraph from={toLocalDate(dateRange.from)}
+                                  to={toLocalDate(dateRange.to)}
+                                  points={measurements}
+                                  events={events}
+                                  onClickEvent={selectEvent}
+                                  onClickMeasurement={setSelectedMeasurement} />
                 </Item>
             </Container>
             <Container>
-                <Item>
-                    {selectedMeasurement && (
-                        <Box>
-                        <Container vertical>
-                            <Button onClick={() => setSelectedMeasurement(undefined)}>
-                                x
-                            </Button>
-                            <label>Date: </label>
-                            <Input disabled value={selectedMeasurement!.takenAt.toLocaleString()} />
-                            <label>Glucose mmol/L</label>
-                            <Input disabled value={selectedMeasurement!.level} />
-                        </Container>
-                        </Box>
-                    )}
-                </Item>
                 <Item style={{width:"50%"}}>
                     {isEventLoading
                         ? <Loader />
                         : (selectedEvent ? renderEditEventForm() : renderNewEventForm())}
+                </Item>
+                <Item style={{width:"35%"}}>
+                    {selectedMeasurement && (
+                        <Box>
+                            <Container vertical>
+                                <Button onClick={() => setSelectedMeasurement(undefined)}>
+                                    Close
+                                </Button>
+                                <label>Date: </label>
+                                <Input disabled value={selectedMeasurement.takenAt.toLocaleString()} />
+                                <label>Glucose mmol/L</label>
+                                <Input disabled value={selectedMeasurement.level} />
+                            </Container>
+                        </Box>
+                    )}
                 </Item>
                 <Item style={{width:"50%"}}>
                     <Title>Recent events:</Title>
