@@ -12,8 +12,7 @@ public class RequestGoogleTasksScopesEndpoint : EndpointWithoutRequest
     public RequestGoogleTasksScopesEndpoint(GoogleAuthorizer authorizer)
         => _authorizer = authorizer;
     
-    public override void Configure()
-        => Get("auth/external-access/google/tasks/scopes/required");
+    public override void Configure() => Get("auth/external-access/google/tasks/scopes/required");
 
     public override async Task HandleAsync(CancellationToken ct)
     {

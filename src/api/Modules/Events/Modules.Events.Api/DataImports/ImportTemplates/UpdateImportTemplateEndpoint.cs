@@ -17,10 +17,7 @@ public class UpdateImportTemplateEndpoint : Endpoint<UpdateImportTemplateCommand
         _context = context;
     }
 
-    public override void Configure()
-    {
-        Put("events/import-templates/{id}");
-    }
+    public override void Configure() => Put("events/import-templates/{id}");
 
     public override async Task HandleAsync(UpdateImportTemplateCommand req, CancellationToken ct)
     {

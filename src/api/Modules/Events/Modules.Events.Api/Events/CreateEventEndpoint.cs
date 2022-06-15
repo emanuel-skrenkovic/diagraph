@@ -37,10 +37,10 @@ public class CreateEventEndpoint : Endpoint<CreateEventCommand>
     public override async Task HandleAsync(CreateEventCommand req, CancellationToken ct)
     {
         Event @event = _mapper.Map<Event>(req.Event);
+        
         @event.UserId        = _userContext.UserId;
         @event.Discriminator = @event.ComputeDiscriminator(_hashTool);
-
-        Event createdEvent = _context.Events.Add(@event).Entity;
+        Event createdEvent   = _context.Events.Add(@event).Entity;
         
         await _context.SaveChangesAsync(ct);
 

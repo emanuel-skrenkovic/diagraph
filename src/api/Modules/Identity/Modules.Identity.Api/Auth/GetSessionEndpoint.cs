@@ -13,8 +13,7 @@ public class GetSessionEndpoint : EndpointWithoutRequest
     public GetSessionEndpoint(IdentityDbContext context)
         => _context = context;
     
-    public override void Configure()
-        => Get("auth/session");
+    public override void Configure() => Get("auth/session");
 
     public override async Task HandleAsync(CancellationToken ct)
     {

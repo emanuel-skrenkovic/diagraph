@@ -12,8 +12,7 @@ public class LogoutEndpoint : EndpointWithoutRequest
     public LogoutEndpoint(SessionManager sessionManager)
         => _sessionManager = sessionManager;
     
-    public override void Configure()
-        => Post("auth/logout");
+    public override void Configure() => Post("auth/logout");
 
     public override async Task HandleAsync(CancellationToken ct)
     {
