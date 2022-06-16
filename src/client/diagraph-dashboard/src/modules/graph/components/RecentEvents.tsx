@@ -32,10 +32,8 @@ export const RecentEvents: React.FC<RecentEventsProps> = ({ events, onEdit }) =>
                                 )}
                             </Container>
                         </td>
-                        <td className="block" style={{whiteSpace:"pre-line"}}>
-                            <ScrollBar style={{maxHeight:"125px",maxWidth:"300px"}}>
-                                {e.text}
-                            </ScrollBar>
+                        <td className="block" style={{whiteSpace:"pre-line",width:"100%"}}>
+                            <ScrollBar style={{maxHeight:"125px"}}>{e.text}</ScrollBar>
                         </td>
                     </tr>
                 )} />

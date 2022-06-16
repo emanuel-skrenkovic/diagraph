@@ -111,7 +111,7 @@ export const Centered = styled.div`
 `;
 
 export const ScrollBar = styled.div`
-  overflow: scroll;
+  overflow: auto;
 `;
 
 export const Title = styled.h3`

@@ -228,9 +228,12 @@ export function Dashboard() {
                 </Item>
                 <Item style={{width:"50%"}}>
                     <Title>Recent events:</Title>
-                    {events.length > 0 && (
-                        <RecentEvents events={events} onEdit={selectEvent} />
-                    )}
+                    <Item style={{width:"100%"}}>
+                        {events.length > 0 && (
+                            <RecentEvents events={events} onEdit={selectEvent} />
+                        )}
+                    </Item>
+
                 </Item>
             </Container>
         </Container>
