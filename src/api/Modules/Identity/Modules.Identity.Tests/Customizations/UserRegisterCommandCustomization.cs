@@ -1,5 +1,5 @@
 using AutoFixture;
-using Diagraph.Modules.Identity.Api.Auth.Commands;
+using Diagraph.Modules.Identity.Api.Auth.Contracts;
 
 namespace Diagraph.Modules.Identity.Tests.Customizations;
 

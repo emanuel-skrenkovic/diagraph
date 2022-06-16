@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Diagraph.Infrastructure.Tests.AutoFixture;
 using Diagraph.Infrastructure.Tests.Extensions;
-using Diagraph.Modules.Identity.Api.Auth.Commands;
+using Diagraph.Modules.Identity.Api.Auth.Contracts;
 using Diagraph.Modules.Identity.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

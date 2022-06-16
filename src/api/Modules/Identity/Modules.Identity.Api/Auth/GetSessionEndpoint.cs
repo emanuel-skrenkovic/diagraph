@@ -1,5 +1,5 @@
 using System.Security.Principal;
-using Diagraph.Modules.Identity.Api.Auth.Commands;
+using Diagraph.Modules.Identity.Api.Auth.Contracts;
 using Diagraph.Modules.Identity.Database;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;

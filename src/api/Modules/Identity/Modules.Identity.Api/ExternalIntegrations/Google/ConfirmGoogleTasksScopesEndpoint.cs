@@ -5,7 +5,7 @@ using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Dynamic.Extensions;
 using Diagraph.Infrastructure.Integrations;
 using Diagraph.Infrastructure.Integrations.Google;
-using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
+using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Contracts;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
 

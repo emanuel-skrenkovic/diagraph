@@ -2,7 +2,7 @@ using AutoMapper;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Notifications;
-using Diagraph.Modules.Events.Api.Events.Commands;
+using Diagraph.Modules.Events.Api.Events.Contracts;
 using Diagraph.Modules.Events.Database;
 using FastEndpoints;
 

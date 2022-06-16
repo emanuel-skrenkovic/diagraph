@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Diagraph.Infrastructure.Api;
 
-namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
+namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Contracts;
 
 public class ConfirmGoogleTasksScopesCommand : IIdempotentRequest
 {

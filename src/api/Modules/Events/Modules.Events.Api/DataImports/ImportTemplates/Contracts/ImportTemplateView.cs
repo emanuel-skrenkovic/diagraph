@@ -1,7 +1,7 @@
 using AutoMapper;
 using Diagraph.Modules.Events.DataImports;
 
-namespace Diagraph.Modules.Events.Api.DataImports.ImportTemplates;
+namespace Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Contracts;
 
 public class ImportTemplateView
 {

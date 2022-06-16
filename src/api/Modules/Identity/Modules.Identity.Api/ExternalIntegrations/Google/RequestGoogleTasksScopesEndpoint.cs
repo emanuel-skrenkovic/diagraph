@@ -1,6 +1,6 @@
 using Diagraph.Infrastructure.Auth.OAuth2;
 using Diagraph.Infrastructure.Integrations.Google;
-using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
+using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Contracts;
 using FastEndpoints;
 
 namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google;

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database.Extensions;
+using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Contracts;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
 using Diagraph.Modules.Events.DataImports.Csv;
@@ -46,10 +47,6 @@ public class GetImportTemplateEndpoint : EndpointWithoutRequest
             return;
         }
         
-        await SendOkAsync
-        (
-            ImportTemplateView.FromTemplate<CsvTemplate>(template, _mapper),
-            ct
-        );
+        await SendOkAsync(ImportTemplateView.FromTemplate<CsvTemplate>(template, _mapper), ct);
     }
 }

@@ -1,13 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Diagraph.Modules.Identity.Api.Auth.Commands;
+namespace Diagraph.Modules.Identity.Api.Auth.Contracts;
 
-public class LoginResult
-{
-    public string Reason { get; set; }
-}
-
-public class LoginCommand
+public class UserRegisterCommand
 {
     [Required] public string Email { get; set; }
     

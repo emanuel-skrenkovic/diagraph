@@ -1,5 +1,5 @@
 using Diagraph.Infrastructure.Emails;
-using Diagraph.Modules.Identity.Api.Auth.Commands;
+using Diagraph.Modules.Identity.Api.Auth.Contracts;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.Registration;
 using Diagraph.Modules.Identity.ValueObjects;

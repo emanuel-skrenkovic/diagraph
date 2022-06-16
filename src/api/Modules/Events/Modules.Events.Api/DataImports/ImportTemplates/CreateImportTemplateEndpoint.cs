@@ -1,6 +1,6 @@
 using AutoMapper;
 using Diagraph.Infrastructure.Auth;
-using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Commands;
+using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Contracts;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
 using FastEndpoints;

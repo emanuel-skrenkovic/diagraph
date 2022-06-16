@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Diagraph.Infrastructure.Dynamic.Extensions;
 using Diagraph.Infrastructure.Integrations.Google;
 using Diagraph.Infrastructure.Tests.AutoFixture;
-using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
+using Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Contracts;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
 using FluentAssertions;

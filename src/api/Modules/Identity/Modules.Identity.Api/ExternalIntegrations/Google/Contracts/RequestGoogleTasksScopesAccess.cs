@@ -1,4 +1,4 @@
-namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Commands;
+namespace Diagraph.Modules.Identity.Api.ExternalIntegrations.Google.Contracts;
 
 public class RequestGoogleTasksScopesAccessResult
 {

@@ -1,6 +1,6 @@
 using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Integrations;
-using Diagraph.Modules.Identity.Api.Auth.Commands;
+using Diagraph.Modules.Identity.Api.Auth.Contracts;
 using Diagraph.Modules.Identity.Api.Extensions;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.ExternalIntegrations;
@@ -70,13 +70,16 @@ public class LoginEndpoint : Endpoint<LoginCommand, LoginResult>
             .WithUser(user.Id)
             .ToListAsync(ct);
 
-        await Task.WhenAll
-        (
-            externals
-                .Select(e => _integration.Get(e.Provider)?.InitializeAsync(e) ?? Task.CompletedTask)
-                .ToList()
-        );
-        
+        if (externals.Any())
+        {
+            await Task.WhenAll
+            (
+                externals
+                    .Select(e => _integration.Get(e.Provider)?.InitializeAsync(e) ?? Task.CompletedTask)
+                    .ToList()
+            );
+        }
+
         await SendOkAsync(ct);
     }
 

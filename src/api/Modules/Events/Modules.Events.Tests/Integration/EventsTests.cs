@@ -6,7 +6,8 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Diagraph.Infrastructure.Tests.AutoFixture;
 using Diagraph.Infrastructure.Tests.Extensions;
-using Diagraph.Modules.Events.Api.Events.Commands;
+using Diagraph.Modules.Events.Api.Contracts;
+using Diagraph.Modules.Events.Api.Events.Contracts;
 using Diagraph.Modules.Events.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -78,7 +79,7 @@ public class EventsTests
             updatedEvent.Should().NotBeNull();
             updatedEvent!.Text.Should().Be(eventUpdate.Text);
 
-            foreach ((EventTag first, EventTag second) in updatedEvent
+            foreach ((EventTag first, EventTagDto second) in updatedEvent
                          .Tags
                          .OrderBy(t => t.Name)
                          .Zip(eventUpdate.Tags.OrderBy(t => t.Name)))
