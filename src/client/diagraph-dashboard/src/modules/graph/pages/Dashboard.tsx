@@ -21,7 +21,13 @@ import {
     toLocalISODateString,
     useValidation } from 'modules/common';
 import { Notification, CreateEventCommand, Event, EventTag, GlucoseMeasurement } from 'types';
-import { Statistics, GlucoseGraph, EventForm, RecentEvents, setDateRange, setSelectedEventId } from 'modules/graph';
+import { GlucoseManagementIndicator,
+    Statistics,
+    GlucoseGraph,
+    EventForm,
+    RecentEvents,
+    setDateRange,
+    setSelectedEventId } from 'modules/graph';
 
 const EMPTY_EVENT = {
     occurredAtUtc: new Date(),
@@ -162,15 +168,14 @@ export function Dashboard() {
                     Delete
                 </Item>
             </Centered>
-            <EventForm
-                value={selectedEvent!}
-                onSubmit={e => {
-                    updateEvent(e);
-                    setEditing(false);
-                }}
-                tagOptions={tagsData ?? []}
-                submitButtonText="Save"
-                disabled={!editing} />
+            <EventForm value={selectedEvent!}
+                       onSubmit={e => {
+                           updateEvent(e);
+                           setEditing(false);
+                       }}
+                       tagOptions={tagsData ?? []}
+                       submitButtonText="Save"
+                       disabled={!editing} />
             </Box>
         )
     }
@@ -186,7 +191,10 @@ export function Dashboard() {
                                        submitButtonText="Apply dates" />
             <Container>
                 <Item>
-                    <Statistics measurements={measurements} />
+                    <Container vertical>
+                        <Statistics measurements={measurements} />
+                        <GlucoseManagementIndicator periodEndDate={new Date(dateRange.to)} />
+                    </Container>
                 </Item>
                 <Item>
                     <GlucoseGraph from={toLocalDate(dateRange.from)}

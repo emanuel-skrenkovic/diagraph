@@ -119,6 +119,9 @@ export const diagraphApi = createApi({
             },
             // invalidatesTags: [{ type: 'Data', id: 'all' }] // TODO
         }),
+        getStatistics: builder.query<any, { from: string, to: string }>({
+            query: ({from, to}) => ({ url: 'data/stats', params: {from, to} })
+        }),
 
         getProfile: builder.query<Profile, undefined>({
             query: () => ({ url: 'my/profile' }),
@@ -236,6 +239,7 @@ export const {
     useImportEventsDryRunMutation,
     useGetDataQuery,
     useImportDataMutation,
+    useGetStatisticsQuery,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useGetImportTemplatesQuery,
