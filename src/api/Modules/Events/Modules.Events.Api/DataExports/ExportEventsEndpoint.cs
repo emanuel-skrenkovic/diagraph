@@ -7,7 +7,7 @@ namespace Diagraph.Modules.Events.Api.DataExports;
 
 public class ExportEventsEndpoint : EndpointWithoutRequest
 {
-    private readonly EventsDbContext       _dbContext;
+    private readonly DbSet<Event>          _events;
     private readonly ExportStrategyContext _exportContext;
 
     public ExportEventsEndpoint
@@ -16,7 +16,7 @@ public class ExportEventsEndpoint : EndpointWithoutRequest
         ExportStrategyContext exportContext 
     )
     {
-        _dbContext     = dbContext;
+        _events        = dbContext.Events;
         _exportContext = exportContext;
     }
     
@@ -26,8 +26,7 @@ public class ExportEventsEndpoint : EndpointWithoutRequest
     {
         bool mergeSequential = Query<bool>("mergeSequential", isRequired: false);
 
-        IEnumerable<Event> events = await _dbContext
-            .Events
+        IEnumerable<Event> events = await _events
             .Include(nameof(Event.Tags))
             .ToListAsync(ct);
 

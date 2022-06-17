@@ -1,4 +1,3 @@
-using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
 using Diagraph.Modules.Identity.ValueObjects;
@@ -42,7 +41,6 @@ public class User : DbEntity
         }
 
         UnsuccessfulLoginAttempts = 0;
-
         return new(true);
     }
 

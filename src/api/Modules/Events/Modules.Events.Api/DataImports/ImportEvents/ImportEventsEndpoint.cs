@@ -1,5 +1,6 @@
 using Diagraph.Infrastructure.Api.Extensions;
 using Diagraph.Infrastructure.Auth;
+using Diagraph.Infrastructure.Dynamic.Extensions;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
@@ -27,7 +28,7 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
         IEventTemplateDataParser dataParser
     )
     {
-        _dbContext     = dbContext;
+        _dbContext   = dbContext;
         _userContext = userContext;
         _hashTool    = hashTool;
         _dataParser  = dataParser;
@@ -63,7 +64,7 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
         }
 
         List<Event> events = _dataParser
-            .Parse(await file.ReadAsync(), template.Get<CsvTemplate>())
+            .Parse(await file.ReadAsync(), template.GetData<CsvTemplate>())
             .Select
             (
                 e =>

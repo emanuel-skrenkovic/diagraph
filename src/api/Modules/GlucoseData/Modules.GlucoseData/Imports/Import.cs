@@ -12,12 +12,4 @@ public class Import : DbEntity, IUserRelated
     public ICollection<GlucoseMeasurement> Measurements { get; set; }
     
     public Guid UserId { get; set; }
-
-    public void WithUser(Guid userId)
-    {
-        UserId = userId;
-
-        foreach (GlucoseMeasurement measurement in Measurements) 
-            measurement.UserId = userId;
-    }
 }

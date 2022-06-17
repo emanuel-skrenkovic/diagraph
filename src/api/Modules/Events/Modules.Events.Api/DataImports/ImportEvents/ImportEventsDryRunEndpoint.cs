@@ -1,4 +1,5 @@
 using Diagraph.Infrastructure.Api.Extensions;
+using Diagraph.Infrastructure.Dynamic.Extensions;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
 using Diagraph.Modules.Events.DataImports.Contracts;
@@ -57,7 +58,7 @@ public class ImportEventsDryRunEndpoint : EndpointWithoutRequest
             _dataParser.Parse
             (
                 await file.ReadAsync(), 
-                template.Get<CsvTemplate>()
+                template.GetData<CsvTemplate>()
             ), 
             ct
         );

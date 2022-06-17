@@ -1,4 +1,5 @@
 using AutoMapper;
+using Diagraph.Infrastructure.Dynamic.Extensions;
 using Diagraph.Modules.Events.DataImports;
 
 namespace Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Contracts;
@@ -18,7 +19,7 @@ public class ImportTemplateView
     public static ImportTemplateView FromTemplate<T>(ImportTemplate template, IMapper mapper)
     {
          ImportTemplateView view = mapper.Map<ImportTemplateView>(template);
-         view.Data = template.Get<T>();
+         view.Data = template.GetData<T>();
 
          return view;
     }

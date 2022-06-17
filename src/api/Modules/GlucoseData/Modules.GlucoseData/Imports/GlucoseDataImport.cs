@@ -5,15 +5,14 @@ namespace Diagraph.Modules.GlucoseData.Imports;
 
 public class GlucoseDataImport
 {
-    private readonly GlucoseDataDbContext _context;
+    private readonly DbSet<GlucoseMeasurement> _measurements;
 
     public GlucoseDataImport(GlucoseDataDbContext context)
-        => _context = context;
+        => _measurements = context.GlucoseMeasurements;
 
     public async Task<Import> CreateAsync(IEnumerable<GlucoseMeasurement> measurementData)
     {
-        GlucoseMeasurement lastMeasurement = await _context
-            .GlucoseMeasurements
+        GlucoseMeasurement lastMeasurement = await _measurements
             .OrderByDescending(m => m.TakenAt)
             .FirstOrDefaultAsync();
         DateTime? lastMeasurementAt = lastMeasurement?.TakenAt;

@@ -1,10 +1,10 @@
-using System.Text.Json;
 using Diagraph.Infrastructure;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Dynamic;
 
 namespace Diagraph.Modules.Events.DataImports;
 
-public class ImportTemplate : DbEntity, IUserRelated
+public class ImportTemplate : DbEntity, IUserRelated, IDynamicDataContainer
 {
     public int Id { get; set; }
     
@@ -13,12 +13,4 @@ public class ImportTemplate : DbEntity, IUserRelated
     public string Name { get; set; }
     
     public string Data { get; set; }
-
-    public T Get<T>() => JsonSerializer.Deserialize<T>
-    (
-        Data, 
-        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-    );
-
-    public void Set<T>(T template) => Data = JsonSerializer.Serialize(template);
 }

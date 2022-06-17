@@ -11,3 +11,6 @@ run: run-api run-client
 
 stop:
 	docker-compose stop
+
+test:
+	dotnet test src/api
