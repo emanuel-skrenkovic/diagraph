@@ -1,5 +1,4 @@
 using AutoMapper;
-using Diagraph.Infrastructure.Auth;
 using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Contracts;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
@@ -10,25 +9,21 @@ namespace Diagraph.Modules.Events.Api.DataImports.ImportTemplates;
 public class CreateImportTemplateEndpoint : Endpoint<CreateImportTemplateCommand>
 {
     private readonly IMapper         _mapper;
-    private readonly EventsDbContext _context;
-    private readonly IUserContext    _userContext;
+    private readonly EventsDbContext _dbContext;
  
-    public CreateImportTemplateEndpoint(IMapper mapper, EventsDbContext context, IUserContext userContext)
+    public CreateImportTemplateEndpoint(IMapper mapper, EventsDbContext dbContext)
     {
-        _mapper      = mapper;
-        _context     = context;
-        _userContext = userContext;
+        _mapper    = mapper;
+        _dbContext = dbContext;
     }
     
     public override void Configure() => Post("events/import-templates");
 
     public override async Task HandleAsync(CreateImportTemplateCommand req, CancellationToken ct)
     {
-        ImportTemplate template = _mapper.Map<ImportTemplate>(req);
-        template.UserId = _userContext.UserId;
-        
-        ImportTemplate newTemplate = _context.Add(template).Entity;
-        await _context.SaveChangesAsync(ct);
+        ImportTemplate template    = _mapper.Map<ImportTemplate>(req);
+        ImportTemplate newTemplate = _dbContext.Add(template).Entity;
+        await _dbContext.SaveChangesAsync(ct);
 
         await SendCreatedAtAsync
         (

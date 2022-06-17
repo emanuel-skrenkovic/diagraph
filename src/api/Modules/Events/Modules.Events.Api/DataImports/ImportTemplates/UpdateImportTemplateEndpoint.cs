@@ -9,12 +9,12 @@ namespace Diagraph.Modules.Events.Api.DataImports.ImportTemplates;
 public class UpdateImportTemplateEndpoint : Endpoint<UpdateImportTemplateCommand>
 {
     private readonly IMapper         _mapper;
-    private readonly EventsDbContext _context;
+    private readonly EventsDbContext _dbContext;
  
-    public UpdateImportTemplateEndpoint(IMapper mapper, EventsDbContext context)
+    public UpdateImportTemplateEndpoint(IMapper mapper, EventsDbContext dbContext)
     {
         _mapper  = mapper;
-        _context = context;
+        _dbContext = dbContext;
     }
 
     public override void Configure() => Put("events/import-templates/{id}");
@@ -23,7 +23,7 @@ public class UpdateImportTemplateEndpoint : Endpoint<UpdateImportTemplateCommand
     {
         int id = Route<int>("id", isRequired: true);
         
-        ImportTemplate template = await _context.FindAsync<ImportTemplate>(id);
+        ImportTemplate template = await _dbContext.FindAsync<ImportTemplate>(id);
         if (template is null)
         {
             await SendNotFoundAsync(ct);
@@ -32,8 +32,8 @@ public class UpdateImportTemplateEndpoint : Endpoint<UpdateImportTemplateCommand
 
         _mapper.Map(req, template);
             
-        _context.Update(template);
-        await _context.SaveChangesAsync(ct);
+        _dbContext.Update(template);
+        await _dbContext.SaveChangesAsync(ct);
 
         await SendOkAsync(ct);
     }

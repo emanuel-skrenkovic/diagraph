@@ -20,6 +20,7 @@ public class DbContextBase : DbContext
             DbEntity entity = (DbEntity) entry.Entity;
             
             entity.UpdatedAtUtc = utcNow;
+            
             if (EntityState.Added == entry.State) entity.CreatedAtUtc = utcNow;
         }
 

@@ -1,5 +1,3 @@
-using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataExports;
 using FastEndpoints;
@@ -9,19 +7,16 @@ namespace Diagraph.Modules.Events.Api.DataExports;
 
 public class ExportEventsEndpoint : EndpointWithoutRequest
 {
-    private readonly EventsDbContext       _context;
-    private readonly IUserContext          _userContext;
+    private readonly EventsDbContext       _dbContext;
     private readonly ExportStrategyContext _exportContext;
 
     public ExportEventsEndpoint
     (
-        EventsDbContext       context, 
-        IUserContext          userContext, 
+        EventsDbContext       dbContext, 
         ExportStrategyContext exportContext 
     )
     {
-        _context       = context;
-        _userContext   = userContext;
+        _dbContext     = dbContext;
         _exportContext = exportContext;
     }
     
@@ -31,9 +26,8 @@ public class ExportEventsEndpoint : EndpointWithoutRequest
     {
         bool mergeSequential = Query<bool>("mergeSequential", isRequired: false);
 
-        IEnumerable<Event> events = await _context
+        IEnumerable<Event> events = await _dbContext
             .Events
-            .WithUser(_userContext.UserId)
             .Include(nameof(Event.Tags))
             .ToListAsync(ct);
 

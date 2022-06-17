@@ -1,6 +1,4 @@
 using AutoMapper;
-using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.GlucoseData.Api.Statistics.Contracts;
 using Diagraph.Modules.GlucoseData.Database;
 using FastEndpoints;
@@ -10,20 +8,17 @@ namespace Diagraph.Modules.GlucoseData.Api.Statistics;
 
 public class GetStatisticsEndpoint : EndpointWithoutRequest<GlucoseStatisticsView>
 {
-    private readonly IMapper              _mapper;
-    private readonly GlucoseDataDbContext _context;
-    private readonly IUserContext         _userContext;
+    private readonly IMapper                   _mapper;
+    private readonly DbSet<GlucoseMeasurement> _measurements;
 
     public GetStatisticsEndpoint
     (
         IMapper              mapper,
-        GlucoseDataDbContext context, 
-        IUserContext         userContext
+        GlucoseDataDbContext context
     )
     {
-        _mapper      = mapper;
-        _context     = context;
-        _userContext = userContext;
+        _mapper       = mapper;
+        _measurements = context.GlucoseMeasurements;
     }
     
     public override void Configure() => Get("data/stats");
@@ -33,18 +28,12 @@ public class GetStatisticsEndpoint : EndpointWithoutRequest<GlucoseStatisticsVie
         var from = Query<DateTime>("from");
         var to   = Query<DateTime>("to");
         
-        List<GlucoseMeasurement> measurements = await _context
-            .GlucoseMeasurements
-            .WithUser(_userContext.UserId)
+        List<GlucoseMeasurement> measurements = await _measurements
             .Where(m => m.TakenAt >= from && m.TakenAt < to && m.Level > 0)
             .OrderBy(m => m.TakenAt)
             .ToListAsync(ct);
+        
         GlucoseStatistics statistics = GlucoseStatistics.Calculate(measurements);
-
-        await SendOkAsync
-        (
-            _mapper.Map<GlucoseStatisticsView>(statistics), 
-            ct
-        );
+        await SendOkAsync(_mapper.Map<GlucoseStatisticsView>(statistics), ct);
     }
 }

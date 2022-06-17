@@ -1,5 +1,3 @@
-using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.Events.Database;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +6,10 @@ namespace Diagraph.Modules.Events.Api.Events;
 
 public class GetEventsEndpoint : EndpointWithoutRequest
 {
-    private readonly EventsDbContext _context;
-    private readonly IUserContext    _userContext;
+    private readonly DbSet<Event> _events;
 
-    public GetEventsEndpoint(EventsDbContext context, IUserContext userContext)
-    {
-        _context     = context;
-        _userContext = userContext;
-    }
+    public GetEventsEndpoint(EventsDbContext dbContext)
+        => _events = dbContext.Events;
     
     public override void Configure() => Get("events");
 
@@ -26,9 +20,7 @@ public class GetEventsEndpoint : EndpointWithoutRequest
         
         await SendOkAsync
         (
-            await _context
-                .Events
-                .WithUser(_userContext.UserId)
+            await _events
                 .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
                 .OrderBy(e => e.OccurredAtUtc)
                 .ToListAsync(ct),

@@ -1,6 +1,5 @@
 using Diagraph.Infrastructure.Api.Extensions;
 using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
@@ -15,20 +14,20 @@ namespace Diagraph.Modules.Events.Api.DataImports.ImportEvents;
 
 public class ImportEventsEndpoint : EndpointWithoutRequest
 {
-    private readonly EventsDbContext          _context;
+    private readonly EventsDbContext          _dbContext;
     private readonly IUserContext             _userContext;
     private readonly IHashTool                _hashTool;
     private readonly IEventTemplateDataParser _dataParser;
 
     public ImportEventsEndpoint
     (
-        EventsDbContext          context, 
+        EventsDbContext          dbContext, 
         IUserContext             userContext,
         IHashTool                hashTool,
         IEventTemplateDataParser dataParser
     )
     {
-        _context     = context;
+        _dbContext     = dbContext;
         _userContext = userContext;
         _hashTool    = hashTool;
         _dataParser  = dataParser;
@@ -53,9 +52,8 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
             return;
         }
 
-        ImportTemplate template = await _context
+        ImportTemplate template = await _dbContext
                 .Templates
-                .WithUser(_userContext.UserId)
                 .FirstOrDefaultAsync(t => t.Name == templateName, ct);
 
         if (template is null)
@@ -65,18 +63,17 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
         }
 
         List<Event> events = _dataParser
-            .Parse
+            .Parse(await file.ReadAsync(), template.Get<CsvTemplate>())
+            .Select
             (
-                await file.ReadAsync(), 
-                template.Get<CsvTemplate>()
-            )
-            .Select(e =>
-            {
-                e.UserId        = _userContext.UserId;
-                e.Discriminator = e.ComputeDiscriminator(_hashTool);
-                
-                return e;
-            }).ToList();
+                e =>
+                {
+                    e.UserId        = _userContext.UserId;
+                    e.Discriminator = e.ComputeDiscriminator(_hashTool);
+                    
+                    return e;
+                }
+            ).ToList();
 
         if (!events.Any())
         {
@@ -88,9 +85,8 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
         DateTime       from  = dates.Min();
         DateTime       to    = dates.Max();
 
-        List<string> discriminators = await _context
+        List<string> discriminators = await _dbContext
             .Events
-            .WithUser(_userContext.UserId)
             .Where(e => e.OccurredAtUtc >= from && e.OccurredAtUtc <= to) // TODO: think about limits
             .Select(e => e.Discriminator)
             .ToListAsync(ct);
@@ -101,8 +97,8 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
 
         if (newEvents.Any())
         {
-            _context.AddRange(newEvents);
-            await _context.SaveChangesAsync(ct); 
+            _dbContext.AddRange(newEvents);
+            await _dbContext.SaveChangesAsync(ct); 
         }
 
         await SendOkAsync(ct);

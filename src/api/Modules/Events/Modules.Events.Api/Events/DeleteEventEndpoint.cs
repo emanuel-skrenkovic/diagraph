@@ -1,5 +1,3 @@
-using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.Events.Database;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +6,10 @@ namespace Diagraph.Modules.Events.Api.Events;
 
 public class DeleteEventEndpoint : EndpointWithoutRequest
 {
-    private readonly EventsDbContext _context;
-    private readonly IUserContext    _userContext;
+    private readonly EventsDbContext _dbContext;
 
-    public DeleteEventEndpoint(EventsDbContext context, IUserContext userContext)
-    {
-        _context     = context;
-        _userContext = userContext;
-    }
+    public DeleteEventEndpoint(EventsDbContext dbContext)
+        => _dbContext = dbContext;
 
     public override void Configure() => Delete("events/{id}");
 
@@ -23,19 +17,18 @@ public class DeleteEventEndpoint : EndpointWithoutRequest
     {
         int id = Route<int>("id");
         
-        Event @event = await _context
+        Event @event = await _dbContext
             .Events
-            .WithUser(_userContext.UserId)
-            .SingleOrDefaultAsync(e => e.Id == id, ct);
-
+            .SingleOrDefaultAsync(e => e.Id == id, cancellationToken: ct);
         if (@event is null)
         {
             await SendNotFoundAsync(ct);
             return;
         }
 
-        _context.Remove(@event);
-        await _context.SaveChangesAsync(ct);
+        _dbContext.Remove(@event);
+        await _dbContext.SaveChangesAsync(ct);
+        
         await SendNoContentAsync(ct);
     }
 }

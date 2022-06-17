@@ -1,4 +1,3 @@
-using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.Events.Database;
 using FastEndpoints;
@@ -8,29 +7,21 @@ namespace Diagraph.Modules.Events.Api.Events;
 
 public class GetEventTagsEndpoint : EndpointWithoutRequest
 {
-    private readonly EventsDbContext _context;
-    private readonly IUserContext    _userContext;
+    private readonly DbSet<Event> _events;
 
-    public GetEventTagsEndpoint(EventsDbContext context, IUserContext userContext)
-    {
-        _context     = context;
-        _userContext = userContext;
-    }
+    public GetEventTagsEndpoint(EventsDbContext dbContext) 
+        => _events = dbContext.Events;
     
     public override void Configure() => Get("events/tags");
 
     public override async Task HandleAsync(CancellationToken ct)
-    {
-        await SendOkAsync
+        => await SendOkAsync
         (
-            await _context
-                .Events
-                .WithUser(_userContext.UserId)
+            await _events
                 .Include(nameof(Event.Tags))
                 .SelectMany(e => e.Tags)
                 .DistinctByField(t => t.Name)
                 .ToListAsync(ct),
             ct
         );
-    }
 }

@@ -1,5 +1,3 @@
-using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.Events.Database;
 using FastEndpoints;
 using Microsoft.AspNetCore.Builder;
@@ -11,14 +9,10 @@ public class GetEventEndpoint : EndpointWithoutRequest
 {
     public const string Name = "GetEvent";
     
-    private readonly EventsDbContext _context;
-    private readonly IUserContext    _userContext;
+    private readonly DbSet<Event> _events;
 
-    public GetEventEndpoint(EventsDbContext context, IUserContext userContext)
-    {
-        _context     = context;
-        _userContext = userContext;
-    }
+    public GetEventEndpoint(EventsDbContext dbContext)
+        => _events = dbContext.Events;
     
     public override void Configure()
     {
@@ -30,9 +24,7 @@ public class GetEventEndpoint : EndpointWithoutRequest
     {
         int id = Route<int>("id");
         
-        Event @event = await _context
-            .Events
-            .WithUser(_userContext.UserId)
+        Event @event = await _events
             .Include(nameof(Event.Tags))
             .FirstOrDefaultAsync(e => e.Id == id, ct);
         

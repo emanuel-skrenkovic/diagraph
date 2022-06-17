@@ -1,6 +1,4 @@
 using AutoMapper;
-using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Contracts;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
@@ -15,15 +13,13 @@ public class GetImportTemplateEndpoint : EndpointWithoutRequest
 {
     public const string Name = "GetImportTemplate";
     
-    private readonly IMapper         _mapper;
-    private readonly EventsDbContext _context;
-    private readonly IUserContext    _userContext;
+    private readonly IMapper               _mapper;
+    private readonly DbSet<ImportTemplate> _templates;
  
-    public GetImportTemplateEndpoint(IMapper mapper, EventsDbContext context, IUserContext userContext)
+    public GetImportTemplateEndpoint(IMapper mapper, EventsDbContext dbContext)
     {
-        _mapper      = mapper;
-        _context     = context;
-        _userContext = userContext;
+        _mapper    = mapper;
+        _templates = dbContext.Templates;
     }
     
     public override void Configure()
@@ -36,11 +32,7 @@ public class GetImportTemplateEndpoint : EndpointWithoutRequest
     {
         int id = Route<int>("id", isRequired: true);
         
-        ImportTemplate template = await _context
-            .Templates
-            .WithUser(_userContext.UserId)
-            .FirstOrDefaultAsync(t => t.Id == id, ct);
-
+        ImportTemplate template = await _templates.FirstOrDefaultAsync(t => t.Id == id, ct);
         if (template is null)
         {
             await SendNotFoundAsync(ct);

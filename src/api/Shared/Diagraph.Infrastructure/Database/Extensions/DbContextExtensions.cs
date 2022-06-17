@@ -29,6 +29,5 @@ public static class DbContextExtensions
         
         context.Add(newValue);
         return newValue;
-
     }
 }

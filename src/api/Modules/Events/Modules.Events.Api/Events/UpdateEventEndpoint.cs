@@ -1,6 +1,4 @@
 using AutoMapper;
-using Diagraph.Infrastructure.Auth;
-using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Modules.Events.Api.Events.Contracts;
 using Diagraph.Modules.Events.Database;
@@ -11,23 +9,20 @@ namespace Diagraph.Modules.Events.Api.Events;
 
 public class UpdateEventEndpoint : Endpoint<UpdateEventCommand>
 {
-    private readonly IUserContext    _userContext;
-    private readonly EventsDbContext _context;
+    private readonly EventsDbContext _dbContext;
     private readonly IMapper         _mapper;
     private readonly IHashTool       _hashTool;
     
     public UpdateEventEndpoint
     (
-        IUserContext    userContext, 
-        EventsDbContext context, 
+        EventsDbContext dbContext, 
         IMapper         mapper,
         IHashTool       hashTool
     )
     {
-        _userContext = userContext;
-        _context     = context;   
-        _mapper      = mapper;
-        _hashTool    = hashTool;
+        _dbContext = dbContext;   
+        _mapper    = mapper;
+        _hashTool  = hashTool;
     }
     
     public override void Configure() => Put("events/{id}");
@@ -36,10 +31,9 @@ public class UpdateEventEndpoint : Endpoint<UpdateEventCommand>
     {
         int id = Route<int>("id");
         
-        Event @event = await _context
+        Event @event = await _dbContext
             .Events
             .Include(nameof(Event.Tags))
-            .WithUser(_userContext.UserId)
             .FirstOrDefaultAsync(e => e.Id == id, ct);
 
         if (@event is null)
@@ -51,8 +45,8 @@ public class UpdateEventEndpoint : Endpoint<UpdateEventCommand>
         _mapper.Map(req, @event);
         @event.Discriminator = @event.ComputeDiscriminator(_hashTool);
 
-        _context.Update(@event);
-        await _context.SaveChangesAsync(ct);
+        _dbContext.Update(@event);
+        await _dbContext.SaveChangesAsync(ct);
 
         await SendOkAsync(ct);        
     }
