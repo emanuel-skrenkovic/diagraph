@@ -42,14 +42,16 @@ public class DatabaseModuleFixture<TContext> : IAsyncLifetime where TContext : D
                          options.DefaultAuthenticateScheme = TestAuthenticationHandler.AuthScheme;
                          options.DefaultChallengeScheme    = TestAuthenticationHandler.AuthScheme;
                      }).AddTestAuth(_ => { });
-
+                     
                      configureServices?.Invoke(services);
                  });
              });
+
          
          Postgres = new PostgreSqlContainer<TContext>
          (
-             configuration["DatabaseConfiguration:ConnectionString"]
+             configuration["DatabaseConfiguration:ConnectionString"],
+             () => _webApplicationFactory.Services.GetRequiredService<TContext>()
          );
      }
      

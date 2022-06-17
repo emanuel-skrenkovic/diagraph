@@ -27,7 +27,7 @@ public class PostgreSqlContainer<TContext> : IAsyncLifetime where TContext : DbC
     
     public TContext Context { get; private set; }
 
-    public PostgreSqlContainer(string connectionString)
+    public PostgreSqlContainer(string connectionString, Func<TContext> contextFactory)
     {
         string portKv = connectionString
             .Split(';')
@@ -37,14 +37,7 @@ public class PostgreSqlContainer<TContext> : IAsyncLifetime where TContext : DbC
         _container = new(ContainerName, ImageName, _env, new() { ["5432"] = port });
         _container.CheckStatus = CheckConnectionAsync;
 
-        _contextFactory = () =>
-        {
-            DbContextOptionsBuilder<TContext> optionsBuilder = new();
-            optionsBuilder
-                .UseNpgsql(connectionString);
-
-            return (TContext) Activator.CreateInstance(typeof(TContext), optionsBuilder.Options);
-        };
+        _contextFactory = contextFactory;
     }
 
     public async Task SeedAsync(Func<TContext, Task> seedAction)
