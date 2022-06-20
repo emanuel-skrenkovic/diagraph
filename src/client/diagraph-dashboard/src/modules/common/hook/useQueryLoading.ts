@@ -5,7 +5,7 @@ type UseQuerySimpleDefinition = {
     error?: any | undefined
 };
 
-export const handleQuery = (query: UseQuerySimpleDefinition, onData?: (data: any) => void): boolean => {
+export const useQueryLoading = (query: UseQuerySimpleDefinition, onData?: (data: any) => void): boolean => {
     const { data, isLoading, isError, error } = query;
 
     if      (isLoading)      return true;

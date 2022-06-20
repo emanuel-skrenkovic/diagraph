@@ -30,9 +30,9 @@ public class GetImportTemplateEndpoint : EndpointWithoutRequest
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        int id = Route<int>("id", isRequired: true);
-        
+        int id = Route<int>("id");
         ImportTemplate template = await _templates.FirstOrDefaultAsync(t => t.Id == id, ct);
+        
         if (template is null)
         {
             await SendNotFoundAsync(ct);

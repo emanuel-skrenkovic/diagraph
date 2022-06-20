@@ -71,7 +71,6 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
                 {
                     e.UserId        = _userContext.UserId;
                     e.Discriminator = e.ComputeDiscriminator(_hashTool);
-                    
                     return e;
                 }
             ).ToList();

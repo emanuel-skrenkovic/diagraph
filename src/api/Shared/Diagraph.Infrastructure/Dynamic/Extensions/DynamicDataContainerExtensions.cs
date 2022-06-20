@@ -1,9 +1,15 @@
 using System.Text.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Diagraph.Infrastructure.Dynamic.Extensions;
 
 public static class DynamicDataContainerExtensions
 {
+    private static readonly JsonSerializerOptions Options = new ()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+    
     public static void UpdateData<T, TData>(this T container, Action<TData> update)
         where T : IDynamicDataContainer
     {
@@ -40,14 +46,14 @@ public static class DynamicDataContainerExtensions
         where T : IDynamicDataContainer
         => container?.Data is null 
             ? default 
-            : JsonSerializer.Deserialize<TData>(container.Data);
+            : JsonSerializer.Deserialize<TData>(container.Data, Options);
     
     public static TData GetData<TData>(this IDynamicDataContainer container) 
         => container?.Data is null 
             ? default 
-            : JsonSerializer.Deserialize<TData>(container.Data);
+            : JsonSerializer.Deserialize<TData>(container.Data, Options);
     
     public static void SetData<T, TData>(this T container, TData data) 
         where T : IDynamicDataContainer
-        => container.Data = JsonSerializer.Serialize(data);
+        => container.Data = JsonSerializer.Serialize(data, Options);
 }

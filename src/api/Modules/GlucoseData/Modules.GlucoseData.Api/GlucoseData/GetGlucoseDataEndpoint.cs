@@ -11,11 +11,7 @@ public class GetGlucoseDataEndpoint : EndpointWithoutRequest<List<GlucoseMeasure
     private readonly IMapper                   _mapper;
     private readonly DbSet<GlucoseMeasurement> _measurements;
 
-    public GetGlucoseDataEndpoint
-    (
-        IMapper              mapper, 
-        GlucoseDataDbContext context
-    )
+    public GetGlucoseDataEndpoint(IMapper mapper, GlucoseDataDbContext context)
     {
         _mapper       = mapper;
         _measurements = context.GlucoseMeasurements;
