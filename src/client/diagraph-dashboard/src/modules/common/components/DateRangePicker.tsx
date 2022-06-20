@@ -3,7 +3,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { Button, Centered, Container, Input } from 'styles';
 import { toLocalISODateString } from 'modules/common';
 
-export interface DateRangePickerProps {
+export type DateRangePickerProps = {
     from :Date;
     to: Date;
     onSubmit: (from: Date, to: Date) => void;

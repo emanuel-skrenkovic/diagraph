@@ -1,63 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { Box, Button, RedButton, Centered, Container, Input, Item, Title } from 'styles';
-import { RootState, AppDispatch } from 'store';
-import {
-    diagraphApi,
-    useCreateEventMutation,
-    useUpdateEventMutation,
-    useDeleteEventMutation,
-    useGetEventQuery,
-    useGetEventsQuery,
-    useGetDataQuery,
-    useGetProfileQuery,
-    useGetTagsQuery } from 'services';
-import {
-    NotificationForm,
-    handleQuery,
-    Loader,
-    DateRangePicker,
-    toLocalISODateString,
-    useValidation } from 'modules/common';
-import { Notification, CreateEventCommand, Event, EventTag, GlucoseMeasurement } from 'types';
-import { GlucoseManagementIndicator,
-    Statistics,
-    GlucoseGraph,
-    EventForm,
-    RecentEvents,
-    setDateRange,
-    setSelectedEventId } from 'modules/graph';
+import { Box, Button, DangerButton, Centered, Container, Input, Item, Title } from 'styles';
+import { AppDispatch } from 'store';
+import { diagraphApi, useCreateEventMutation, useUpdateEventMutation, useDeleteEventMutation,
+    useGetEventQuery, useGetEventsQuery, useGetDataQuery, useGetProfileQuery, useGetTagsQuery
+} from 'services';
+import { NotificationForm, Loader, DateRangePicker, toLocalISODateString, useValidation,
+    useAppSelector, withLoading } from 'modules/common';
+import { Notification, CreateEventCommand, Event, GlucoseMeasurement } from 'types';
+import { GlucoseManagementIndicator, Statistics, GlucoseGraph, EventForm, RecentEvents, setDateRange,
+    setSelectedEventId, GlucoseMeasurementView } from 'modules/graph';
 
-const EMPTY_EVENT = {
-    occurredAtUtc: new Date(),
-    text: '',
-    tags: [] as EventTag[]
-} as Event;
-
-function toLocalDate(dateString: string): Date {
-    const date = new Date(dateString);
-    date.setHours(0, 0, 0, 0);
-    return date;
-}
-
-function notificationValidation(notification: Notification | undefined): [boolean, string] {
-    if (!notification)                         return [false, ''];
-    if (notification.notifyAtUtc < new Date()) return [false, ''];
-    if (!notification.text)                    return [false, ''];
-
-    return [true, ''];
-}
-
-export function Dashboard() {
-    const selectedEventId = useSelector((state: RootState) => state.graph.selectedEventId);
-    const events          = useSelector((state: RootState) => state.graph.events);
-    const measurements    = useSelector((state: RootState) => state.graph.data);
-    const dateRange       = useSelector((state: RootState) => state.graph.dateRange);
-    const tagsData        = useSelector((state: RootState) => state.shared.tags);
-    const taskList        = useSelector((state: RootState) => state.profile.profile.googleTaskList);
-    const integration     = useSelector((state: RootState) => state.profile.profile.googleIntegration);
-
+export const Dashboard = () => {
+    const { selectedEventId, events, measurements, dateRange } = useAppSelector(state => state.graph);
+    const { googleTaskList, googleIntegration } = useAppSelector (state => state.profile.profile);
 
     const [createTask, setCreateTask]                   = useState(false);
     const [editing, setEditing]                         = useState(false);
@@ -67,40 +24,44 @@ export function Dashboard() {
     const [notification, setNotification, notificationError] = useValidation(
         notificationValidation,
         {} as Notification
-    )
+    );
 
-    const [createEvent] = useCreateEventMutation();
-    const [updateEvent] = useUpdateEventMutation();
-    const [deleteEvent] = useDeleteEventMutation();
+    const [createEvent, { isLoading: isCreateEventLoading }] = useCreateEventMutation();
+    const [updateEvent, { isLoading: isUpdateEventLoading }] = useUpdateEventMutation();
+    const [deleteEvent, { isLoading: isDeleteEventLoading }] = useDeleteEventMutation();
 
     const dispatch = useDispatch<AppDispatch>();
-
     const { data: eventData, isLoading: isEventLoading } = useGetEventQuery(
         selectedEventId!,
         { skip: selectedEventId === selectedEvent?.id || selectedEventId === undefined }
     );
-    const getData    = useGetDataQuery({ from: dateRange.from, to: dateRange.to });
-    const getEvents  = useGetEventsQuery({ from: dateRange.from,to: dateRange.to });
-    const getTags    = useGetTagsQuery(undefined);
-    const getProfile = useGetProfileQuery(undefined);
+    useEffect(
+        () => { if (selectedEventId && eventData) setSelectedEvent(eventData) },
+        [dateRange, selectedEventId, eventData, events, measurements]
+    );
 
-    useEffect(() => {
-        if (selectedEventId && eventData) setSelectedEvent(eventData);
-    }, [dateRange, selectedEventId, eventData, events, measurements]);
+    const range = { from: dateRange.from, to: dateRange.to };
+    const { isLoading: isDataLoading }    = useGetDataQuery(range);
+    const { isLoading: isEventsLoading }  = useGetEventsQuery(range);
+    const { isLoading: isTagsLoading }    = useGetTagsQuery(undefined);
+    const { isLoading: isProfileLoading } = useGetProfileQuery(undefined);
 
-    if (handleQuery(getProfile)) return <Loader />
-    if (handleQuery(getData))    return <Loader />
-    if (handleQuery(getEvents))  return <Loader />
-    if (handleQuery(getTags))    return <Loader />
+    if (isDataLoading
+        || isEventsLoading
+        || isTagsLoading
+        || isProfileLoading
+        || isCreateEventLoading
+        || isUpdateEventLoading
+        || isDeleteEventLoading) return <Loader />
 
-    function onCreateEvent(event: Event) {
+    const onCreateEvent = (event: Event) => {
         const command: CreateEventCommand = { event };
-        if (notification?.text) command.notification = { ...notification, parent: taskList };
+        if (notification?.text) command.notification = { ...notification, parent: googleTaskList };
 
         createEvent(command);
     }
 
-    function onChangeDateRange(from: Date, to: Date) {
+    const onChangeDateRange = (from: Date, to: Date) => {
         const dateRange = {from: toLocalISODateString(from), to: toLocalISODateString(to)};
         dispatch(setDateRange(dateRange));
 
@@ -109,86 +70,75 @@ export function Dashboard() {
         dispatch(diagraphApi.endpoints.getEvents.initiate(dateRange, fetchOptions));
     }
 
-    function onExportEvents() {
-        // TODO: there is, most certainly, a waaaaay better way.
+    const onExportEvents = () => {
+        // TODO: there is, most certainly, a way better way.
         window.location.href = 'https://localhost:7053/events/data-export/csv?mergeSequential=true';
     }
 
-    function selectEvent(event: Event) {
-        dispatch(setSelectedEventId(event.id));
-    }
+    const selectEvent = (event: Event) => dispatch(setSelectedEventId(event.id));
 
-    function deselectEvent() {
+    const deselectEvent = () => {
         setSelectedEvent(undefined);
         dispatch(setSelectedEventId(undefined));
         if (editing) setEditing(false);
     }
 
-    function renderNewEventForm() {
-        return (
-            <Container vertical>
-                <EventForm
-                    value={EMPTY_EVENT}
-                    onSubmit={onCreateEvent}
-                    tagOptions={tagsData ?? []}
-                    submitButtonText="Create Event" />
-                {integration && (
-                    <>
-                        <label htmlFor="eventCreateTask">Create task</label>
-                        <Input id="eventCreateTask"
-                               type="checkbox"
-                               checked={createTask}
-                               onChange={() => setCreateTask(!createTask)}/>
-                        {createTask && (
-                            <>
-                                <NotificationForm onChange={n => setNotification(n)} />
-                                {notificationError && <span>{notificationError}</span>}
-                            </>
-                        )}
-                    </>
-                )}
-            </Container>
-        )
+    const deleteSelectedEvent = () => {
+        deselectEvent();
+        deleteEvent(selectedEvent!.id!);
     }
 
-    function renderEditEventForm() {
-        return (
-            <Box>
+    const updateSelectedEvent = (e: Event) => {
+        updateEvent(e);
+        setEditing(false);
+    }
+
+    const NewEventForm = () => (
+        <Container vertical>
+            <EventForm onSubmit={onCreateEvent}
+                       submitButtonText="Create Event" />
+            {googleIntegration && (
+                <>
+                    <label htmlFor="eventCreateTask">Create task</label>
+                    <Input id="eventCreateTask"
+                           type="checkbox"
+                           checked={createTask}
+                           onChange={() => setCreateTask(!createTask)}/>
+                    {createTask && (
+                        <>
+                            <NotificationForm onChange={n => setNotification(n)} />
+                            {notificationError && <span>{notificationError}</span>}
+                        </>
+                    )}
+                </>
+            )}
+        </Container>
+    );
+
+    const EditEventFormWithLoading = withLoading(() => (
+        <Box>
             <Centered>
-                <Item as={Button} onClick={deselectEvent}>
-                    Close
-                </Item>
-                <Item as={Button} onClick={() => setEditing(!editing)}>
-                    Edit
-                </Item>
-                <Item as={RedButton} onClick={() => {
-                    deselectEvent();
-                    deleteEvent(selectedEvent!.id!);
-                }}>
-                    Delete
-                </Item>
+                <Item as={Button} onClick={deselectEvent}>Close</Item>
+                <Item as={Button} onClick={() => setEditing(!editing)}>Edit</Item>
+                <Item as={DangerButton} onClick={deleteSelectedEvent}>Delete</Item>
             </Centered>
             <EventForm value={selectedEvent!}
-                       onSubmit={e => {
-                           updateEvent(e);
-                           setEditing(false);
-                       }}
-                       tagOptions={tagsData ?? []}
+                       onSubmit={updateSelectedEvent}
                        submitButtonText="Save"
                        disabled={!editing} />
-            </Box>
-        )
-    }
+        </Box>
+    ));
 
     return (
         <Container vertical>
             <Button onClick={onExportEvents} style={{marginLeft:"90%",whiteSpace:"nowrap"}}>
                 Export Events
             </Button>
-            <Item as={DateRangePicker} from={toLocalDate(dateRange.from)}
-                                       to={toLocalDate(dateRange.to)}
-                                       onSubmit={onChangeDateRange}
-                                       submitButtonText="Apply dates" />
+            <Item as={DateRangePicker}
+                  from={toLocalDate(dateRange.from)}
+                  to={toLocalDate(dateRange.to)}
+                  onSubmit={onChangeDateRange}
+                  submitButtonText="Apply dates" />
             <Container>
                 <Item>
                     <Container vertical>
@@ -207,22 +157,17 @@ export function Dashboard() {
             </Container>
             <Container>
                 <Item style={{width:"50%"}}>
-                    {isEventLoading
-                        ? <Loader />
-                        : (selectedEvent ? renderEditEventForm() : renderNewEventForm())}
+                    {selectedEvent
+                        ? <EditEventFormWithLoading isLoading={isEventLoading} />
+                        : <NewEventForm />}
                 </Item>
                 <Item style={{width:"35%"}}>
                     {selectedMeasurement && (
-                        <Box>
-                            <Container vertical>
-                                <Button onClick={() => setSelectedMeasurement(undefined)}>
-                                    Close
-                                </Button>
-                                <label>Date: </label>
-                                <Input disabled value={selectedMeasurement.takenAt.toLocaleString()} />
-                                <label>Glucose mmol/L</label>
-                                <Input disabled value={selectedMeasurement.level} />
-                            </Container>
+                        <Box as={Container} vertical>
+                            <Button onClick={() => setSelectedMeasurement(undefined)}>
+                                Close
+                            </Button>
+                            <GlucoseMeasurementView value={selectedMeasurement} />
                         </Box>
                     )}
                 </Item>
@@ -230,12 +175,27 @@ export function Dashboard() {
                     <Title>Recent events:</Title>
                     <Item style={{width:"100%"}}>
                         {events.length > 0 && (
-                            <RecentEvents events={events} onEdit={selectEvent} />
+                            <RecentEvents events={events}
+                                          onEdit={selectEvent}
+                                          onDelete={e => deleteEvent(e.id)} />
                         )}
                     </Item>
-
                 </Item>
             </Container>
         </Container>
     );
+}
+
+function toLocalDate(dateString: string): Date {
+    const date = new Date(dateString);
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+
+function notificationValidation(notification: Notification | undefined): [boolean, string] {
+    if (!notification)                         return [false, ''];
+    if (notification.notifyAtUtc < new Date()) return [false, ''];
+    if (!notification.text)                    return [false, ''];
+
+    return [true, ''];
 }

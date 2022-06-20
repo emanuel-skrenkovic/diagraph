@@ -1,19 +1,19 @@
 import React, { useState, useEffect, MouseEvent } from 'react';
 
-import { BlueButton, Container, Input } from 'styles';
+import { PrimaryButton, Container, Input } from 'styles';
 
-export interface TagProps {
+export type TagProps = {
     value: string;
     disabled?: boolean;
     onChange?: (value: string) => void;
 }
 
-export const Tag: React.FC<TagProps> = ({ value, disabled, onChange }) => {
+export const Tag = ({ value, disabled, onChange }: TagProps) => {
     const [isEditing, setIsEditing] = useState(!disabled ?? false);
 
     useEffect(() => setIsEditing(!disabled ?? false), [disabled])
 
-    function onEdit(e: MouseEvent<HTMLButtonElement>) {
+    const onEdit = (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setIsEditing(!isEditing);
     }
@@ -25,9 +25,9 @@ export const Tag: React.FC<TagProps> = ({ value, disabled, onChange }) => {
                   value={value}
                   disabled={!isEditing}
                   onChange={e => onChange && onChange(e.currentTarget.value)}/>
-            <BlueButton onClick={onEdit}>
+            <PrimaryButton onClick={onEdit}>
                 {isEditing ? 'Save' : 'Edit'}
-            </BlueButton>
+            </PrimaryButton>
         </Container>
     )
 };

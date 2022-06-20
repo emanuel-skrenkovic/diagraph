@@ -1,21 +1,19 @@
 // noinspection JSDeprecatedSymbols
 
 import React, { useState, useEffect, MouseEvent } from 'react';
-import { useSelector } from 'react-redux';
 
-import { BlueButton, RedButton, Container, Item } from 'styles';
+import { PrimaryButton, DangerButton, Container, Item } from 'styles';
 import { EventTag } from 'types';
-import { RootState } from 'store';
 import { useGetTagsQuery} from 'services';
-import { For, Loader, MultiSelectForm, Tag } from 'modules/common';
+import { For, Loader, MultiSelectForm, Tag, useAppSelector } from 'modules/common';
 
-export interface TagSelectorProps {
+export type TagSelectorProps = {
     initialSelectedTags: EventTag[];
     onChange: (selectedTags: EventTag[]) => void;
 }
 
-export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, onChange }) => {
-    const tags = useSelector((state: RootState) => state.shared.tags);
+export const TagSelector = ({ initialSelectedTags, onChange }: TagSelectorProps) => {
+    const tags = useAppSelector(state => state.shared.tags);
 
     const [availableTags, setAvailableTags] = useState<EventTag[]>([]);
     const [selectedTags, setSelectedTags]   = useState<EventTag[]>(initialSelectedTags);
@@ -76,12 +74,8 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
         onChange(updated);
     }
 
-    {
-        const { isLoading, isError, error } = useGetTagsQuery(undefined);
-
-        if (isError)   console.error(error);
-        if (isLoading) return <Loader/>;
-    }
+    const { isLoading } = useGetTagsQuery(undefined);
+    if (isLoading) return <Loader/>;
 
     return (
         <Container vertical>
@@ -97,12 +91,12 @@ export const TagSelector: React.FC<TagSelectorProps> = ({ initialSelectedTags, o
                     <Tag value={tag.name}
                          onChange={newValue => onTagChanged(newValue, index)}
                          disabled />
-                    <RedButton onClick={e => removeTag(e, index)}>
+                    <DangerButton onClick={e => removeTag(e, index)}>
                         X
-                    </RedButton>
+                    </DangerButton>
                 </Container>
             )} />
-            <Item as={BlueButton} onClick={newTagForm}>Add</Item>
+            <Item as={PrimaryButton} onClick={newTagForm}>Add</Item>
         </Container>
     );
 };

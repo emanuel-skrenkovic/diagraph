@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Input } from 'styles';
 import { Notification } from 'types';
 
-export interface NotificationFormProps {
+export type NotificationFormProps = {
     value?: Notification;
     onChange: (notification: Notification) => void;
 }
@@ -20,12 +20,12 @@ function hoursFormat(date: Date) {
     return `${hours}:${minutes}`;
 }
 
-export const NotificationForm: React.FC<NotificationFormProps> = ({ value, onChange }) => {
+export const NotificationForm = ({ value, onChange }: NotificationFormProps) => {
     const [notification, setNotification] = useState<Notification>(value ?? EMPTY_NOTIFICATION);
 
     useEffect(() => value && setNotification(value), [value])
 
-    function updateNotification(newNotification: Notification) {
+    const updateNotification = (newNotification: Notification) => {
         setNotification(newNotification);
         onChange(newNotification);
     }

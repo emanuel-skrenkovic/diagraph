@@ -1,11 +1,10 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, useEffect, MouseEvent } from 'react';
 
-import { Button, BlueButton, RedButton, Box, Container, Input, Item, Title } from 'styles';
-import { For } from 'modules/common';
-import { HeaderMappingForm } from 'modules/import-events';
+import { Button, PrimaryButton, Box, Container, Input, Item, Title } from 'styles';
 import { EventTag, ImportTemplate, TemplateHeaderMapping } from 'types';
+import { HeaderMappingForm, HeaderMappingsTable } from 'modules/import-events';
 
-export interface ImportTemplateFormProps {
+export type ImportTemplateFormProps = {
     initial? : ImportTemplate;
     onSubmit: (t: ImportTemplate) => void;
     tags?: EventTag[];
@@ -19,59 +18,56 @@ const DEFAULT_MAPPING = {
 
 const DEFAULT_TEMPLATE = {
     name: '',
-    data: {
-        headerMappings: [] as TemplateHeaderMapping[]
-    }
+    data: { headerMappings: [] as TemplateHeaderMapping[] }
 } as ImportTemplate;
 
-export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial, onSubmit, tags }) => {
-    const [template, setTemplate]                         = useState(initial ?? DEFAULT_TEMPLATE);
-    const [editingHeaderMapping, setEditingHeaderMapping] = useState<TemplateHeaderMapping | undefined>();
+export const ImportTemplateForm = ({ initial, onSubmit, tags }: ImportTemplateFormProps) => {
+    const [template, setTemplate]             = useState(initial ?? DEFAULT_TEMPLATE);
+    const [editingMapping, setEditingMapping] = useState<TemplateHeaderMapping | undefined>();
 
-    function onClickSubmit(e: MouseEvent<HTMLButtonElement>) {
+    useEffect(() => setTemplate(initial ?? DEFAULT_TEMPLATE), [initial]);
+
+    const onClickSubmit = (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         onSubmit(template);
     }
 
-    function setTemplateName(name: string) {
-        setTemplate({
-            ...template,
-            name
-        });
-    }
+    const setTemplateName = (name: string) => setTemplate({ ...template, name });
 
-    function onSaveMapping(t: TemplateHeaderMapping) {
-        const index = editingHeaderMapping ?
-            template.data.headerMappings.indexOf(editingHeaderMapping)
+    const onSaveMapping = (t: TemplateHeaderMapping) => {
+        const index = editingMapping && template.data.headerMappings
+            ? template.data.headerMappings.indexOf(editingMapping)
             : -1;
 
-        const newMappings = [...template.data.headerMappings];
+        const initialMappings = template.data.headerMappings ?? [];
+        const newMappings = [...initialMappings];
         if (index > -1) {
             newMappings[index] = t;
         } else {
             newMappings.push(t);
         }
 
+        setTemplateMappings(newMappings);
+        setEditingMapping(undefined);
+    }
+
+    const removeMapping = (mapping: TemplateHeaderMapping) => {
+        setTemplateMappings(
+            template
+                .data
+                .headerMappings
+                .filter(m => m !== mapping)
+        );
+    }
+
+    const setTemplateMappings = (newMappings: TemplateHeaderMapping[]) => {
         setTemplate({
             ...template,
             data: {
                 ...template.data,
                 headerMappings: newMappings
-            }});
-        setEditingHeaderMapping(undefined);
-    }
-
-    function removeHeaderMapping(mapping: TemplateHeaderMapping) {
-        setTemplate({
-            ...template,
-            data: {
-                ...template.data,
-                headerMappings: template
-                    .data
-                    .headerMappings
-                    .filter(m => m !== mapping)
-            }
-        });
+            }}
+        );
     }
 
     return (
@@ -82,53 +78,25 @@ export const ImportTemplateForm: React.FC<ImportTemplateFormProps> = ({ initial,
                        type="text"
                        value={template.name}
                        onChange={e => setTemplateName(e.currentTarget.value)} />
-                <BlueButton type="submit"
-                            onClick={onClickSubmit}>
-                    Save Template
-                </BlueButton>
+                <PrimaryButton type="submit" onClick={onClickSubmit}>Save Template</PrimaryButton>
             </Container>
             <div style={{width:"10%", float:"right"}}>
-                <BlueButton style={{width: "max-content", paddingLeft: "2em", paddingRight: "2em"}}
-                            onClick={() => setEditingHeaderMapping(DEFAULT_MAPPING)}
-                            disabled={!!editingHeaderMapping}>
+                <PrimaryButton onClick={() => setEditingMapping(DEFAULT_MAPPING)}
+                               disabled={!!editingMapping}>
                     New Mapping
-                </BlueButton>
+                </PrimaryButton>
             </div>
             <Container>
                 <Item style={{width:"100%"}}>
                     <Title>Mappings</Title>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Header</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <For each={template.data.headerMappings} onEach={(mapping, index) => (
-                                <tr key={index}>
-                                    <td>{mapping.header}</td>
-                                    <td>
-                                        <Container>
-                                            <Item as={BlueButton}
-                                                  onClick={() => {setEditingHeaderMapping(mapping)}}>
-                                                Edit
-                                            </Item>
-                                            <Item as={RedButton}
-                                                  onClick={() => removeHeaderMapping(mapping)}>
-                                                Remove
-                                            </Item>
-                                        </Container>
-                                    </td>
-                                </tr>
-                            )} />
-                        </tbody>
-                    </table>
+                    <HeaderMappingsTable values={template.data.headerMappings ?? []}
+                                         onEdit={setEditingMapping}
+                                         onRemove={removeMapping} />
                 </Item>
-                {editingHeaderMapping &&
+                {editingMapping &&
                     <Item as={Box}>
-                        <Button onClick={() => setEditingHeaderMapping(undefined)}>Close</Button>
-                        <HeaderMappingForm value={editingHeaderMapping}
+                        <Button onClick={() => setEditingMapping(undefined)}>Close</Button>
+                        <HeaderMappingForm value={editingMapping}
                                            onSubmit={onSaveMapping}
                                            tags={tags ?? []} />
                     </Item>

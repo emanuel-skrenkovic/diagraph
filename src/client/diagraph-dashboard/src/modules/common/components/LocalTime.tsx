@@ -1,9 +1,9 @@
 import React from 'react';
 
-export interface LocalTimeProps {
+export type LocalTimeProps = {
     date: Date;
 }
 
-export const LocalTime = ({date}: LocalTimeProps) => {
+export const LocalTime = ({ date }: LocalTimeProps) => {
     return <>{new Date(date).toLocaleTimeString()}</>
 }

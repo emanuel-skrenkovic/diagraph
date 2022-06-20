@@ -1,11 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, Middleware, MiddlewareAPI } from '@reduxjs/toolkit';
 
 export interface AuthState {
     authenticated: boolean;
 }
 
-const initialState: AuthState = {
-    authenticated: false
+const authJson = localStorage.getItem('auth');
+const initialState: AuthState = authJson
+    ? JSON.parse(authJson)
+    : { authenticated: false } as AuthState;
+
+export const authMiddleware: Middleware = ({ getState }: MiddlewareAPI) => (next) => (action) => {
+    if (action.type?.startsWith('auth/')) {
+        localStorage.setItem(
+            'auth',
+            JSON.stringify(getState().auth)
+        )
+    }
+
+    return next(action);
 };
 
 export const authSlice = createSlice({

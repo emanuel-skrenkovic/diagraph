@@ -1,21 +1,24 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 
-import { BlueButton, Container, Input } from 'styles';
+import { PrimaryButton, Container, Input } from 'styles';
 import { Rule } from 'types';
+import { Options } from 'modules/common';
 
-export interface RuleFormProps {
-    value?: Rule
+export type RuleFormProps = {
+    value?: Rule;
     onSubmit: (rule: Rule) => void;
     disabled?: boolean;
     buttonText?: string;
 }
 
-export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, buttonText }) => {
+const ALLOWED_FIELDS = ['occurredAtUtc', 'text'];
+
+export const RuleForm = ({ value, onSubmit, disabled, buttonText }: RuleFormProps) => {
     let initialField      = '';
     let initialExpression = '';
-    if (value) {
-        const parts = value.expression.split('=');
 
+    if (value?.expression) {
+        const parts       = value.expression.split('=');
         initialField      = parts[0].trim();
         initialExpression = parts[1].trim();
     }
@@ -26,38 +29,30 @@ export const RuleForm: React.FC<RuleFormProps> = ({ value, onSubmit, disabled, b
     useEffect(() => {
         setField(initialField);
         setExpression(initialExpression);
-    }, [initialField, initialExpression]);
+    }, [value, initialField, initialExpression]);
 
-    function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
+    const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-
-        if (field && expression) {
-            onSubmit({ expression: `${field} = ${expression}` });
-        }
+        if (field && expression) onSubmit({ expression: `${field} = ${expression}` });
     }
 
     return (
-        <>
-            <Container style={{width:"fit-content"}}>
-                <select value={field}
-                        onChange={e => setField(e.currentTarget.value)}
-                        disabled={disabled ?? false}>
-                    <option />
-                    <option>occurredAtUtc</option>
-                    <option>text</option>
-                </select>
-                <span>=</span>
-                <Input type="text"
-                       value={expression}
-                       onChange={e => setExpression(e.currentTarget.value)}
-                       disabled={disabled ?? false} />
-            </Container>
+        <Container style={{width:"fit-content"}}>
+            <select value={field}
+                    onChange={e => setField(e.currentTarget.value)}
+                    disabled={disabled}>
+                <Options elements={ALLOWED_FIELDS} value={v => v} />
+            </select>
+            <span>=</span>
+            <Input type="text"
+                   value={expression}
+                   onChange={e => setExpression(e.currentTarget.value)}
+                   disabled={disabled ?? false} />
             {!disabled &&
-                <BlueButton onClick={onClickSubmit}
-                        disabled={disabled ?? false}>
+                <PrimaryButton onClick={onClickSubmit} disabled={disabled ?? false}>
                     {buttonText ?? 'Save'}
-                </BlueButton>
+                </PrimaryButton>
             }
-        </>
+        </Container>
     );
 };

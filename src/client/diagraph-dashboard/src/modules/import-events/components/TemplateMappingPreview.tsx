@@ -4,16 +4,16 @@ import React, { useState, useEffect } from 'react';
 
 import { Divider, ScrollBar, Title } from 'styles';
 import { Event } from 'types';
-import { CsvPreview } from 'modules/import-events';
 import { For, Loader } from 'modules/common';
+import { CsvPreview } from 'modules/import-events';
 import { useImportEventsDryRunMutation } from 'services';
 
-export interface TemplateMappingPreviewProps {
+export type TemplateMappingPreviewProps = {
     csvFile: File;
     template: string;
 }
 
-export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ csvFile, template }) => {
+export const TemplateMappingPreview = ({ csvFile, template }: TemplateMappingPreviewProps) => {
     const [events, setEvents]           = useState<Event[]>([])
     const [fulfilledAt, setFulfilledAt] = useState(0);
 
@@ -54,8 +54,8 @@ export const TemplateMappingPreview: React.FC<TemplateMappingPreviewProps> = ({ 
                             <td>{event.text}</td>
                             <td>
                                 [<For each={event.tags ?? []} onEach={(tag, tagIndex) => (
-                                <span key={tagIndex}>{`${tag.name} `}</span>
-                            )} />]
+                                    <span key={tagIndex}>{`${tag.name} `}</span>
+                                )} />]
                             </td>
                         </tr>
                     )}/>

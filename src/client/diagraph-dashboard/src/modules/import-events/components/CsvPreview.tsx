@@ -6,11 +6,11 @@ import { For } from 'modules/common';
 
 import './CsvPreview.css';
 
-export interface CsvPreviewProps {
+export type CsvPreviewProps = {
     csvFile: File;
 }
 
-export const CsvPreview: React.FC<CsvPreviewProps> = ({ csvFile }) => {
+export const CsvPreview = ({ csvFile }: CsvPreviewProps) => {
     const [csvData, setCsvData] = useState<string[][]>([]);
 
     useEffect(() => {

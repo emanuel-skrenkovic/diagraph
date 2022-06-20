@@ -6,9 +6,10 @@ import { useGoogleIntegrationConfirmMutation } from 'services';
 
 // This page does nothing except pass on the Google integration parameters
 // back to the API.
-export const GoogleIntegrationConfirm: React.FC = () => {
+export const GoogleIntegrationConfirm = () => {
     const idempotencyKey    = useQuery('state');
     const authorizationCode = useQuery('code');
+    const scope             = useQuery('scope');
 
     const [googleIntegrationConfirm, { isLoading, isSuccess }] = useGoogleIntegrationConfirmMutation();
 
@@ -18,7 +19,7 @@ export const GoogleIntegrationConfirm: React.FC = () => {
         googleIntegrationConfirm({
             code:           authorizationCode,
             redirectUri:    'http://localhost:3000/integrations/google/confirm',
-            scopes:         ['asdf', 'fdsa'], // WTF is this?
+            scope:          scope ? decodeURI(scope).split(' ') : null,
             idempotencyKey: idempotencyKey
         });
     }, []);

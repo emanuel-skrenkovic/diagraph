@@ -1,4 +1,5 @@
+export * from './store';
 export * from './useQuery';
-export * from './handleQuery';
+export * from './useQueryLoading';
 export * from './useValidation';
 export * from './useWindowDimensions';

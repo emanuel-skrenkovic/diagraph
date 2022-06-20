@@ -1,46 +1,35 @@
 import React, { useEffect, ChangeEvent, FormEvent } from 'react';
 
-import { BlueButton, Box, Centered, Container, Input } from 'styles';
+import { PrimaryButton, Box, Centered, Container, Input } from 'styles';
 import { Event, EventTag } from 'types';
 import { useValidation, TagSelector } from 'modules/common';
 
-export interface EventFormProps {
-    value: Event;
+export type EventFormProps = {
+    value?: Event | undefined;
     onSubmit: (e: Event) => void;
-    tagOptions: EventTag[];
     submitButtonText?: string | undefined;
     disabled?: boolean,
 }
 
-function hoursFormat(date: Date) {
-    const hours   = new Date(date).getUTCHours().toString().padStart(2, '0');
-    const minutes = new Date(date).getUTCMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-}
-
-export const EventForm = (props: EventFormProps) => {
+export const EventForm = ({ value, disabled, onSubmit, submitButtonText }: EventFormProps) => {
     const [event, setEvent, error, validateEvent] = useValidation<Event>(
         event => !(event?.text)
             ? [false, 'Event text must not be empty.']
             : [true, ''],
-        props.value
+        value ?? EMPTY_EVENT
     );
 
-    const { value } = props;
+    useEffect(() => value && setEvent(value), [value]);
 
-    useEffect(() => {
-        if (value) setEvent(value);
-    }, [value, setEvent]);
-
-    function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
+    const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         if (!validateEvent()) return;
-        props.onSubmit(event!);
+        onSubmit(event!);
     }
 
     // this seems so bad.
-    function onChangeTime(e: FormEvent<HTMLInputElement>) {
+    const onChangeTime = (e: FormEvent<HTMLInputElement>) => {
         const newOccurredAtUtc = new Date(event!.occurredAtUtc);
 
         const [hours, minutes] = e.currentTarget.value.split(':');
@@ -50,18 +39,17 @@ export const EventForm = (props: EventFormProps) => {
         setEvent({ ...event, occurredAtUtc: newOccurredAtUtc } as Event);
     }
 
-    function onChangeEventText(e: ChangeEvent<HTMLTextAreaElement>) {
-        setEvent({ ...event, text: e.currentTarget.value } as Event)
-    }
+    const onChangeEventText = (e: ChangeEvent<HTMLTextAreaElement>) =>
+        setEvent({ ...event, text: e.currentTarget.value } as Event);
 
-    const { disabled } = props;
+    const setEventTags = (tags: EventTag[]) => setEvent({...event, tags} as Event);
 
     return (
         <Container vertical>
             <Box>
                 {!disabled &&
-                    <Centered as={BlueButton} onClick={onClickSubmit} type="submit">
-                        {props.submitButtonText ?? 'Submit'}
+                    <Centered as={PrimaryButton} onClick={onClickSubmit} type="submit">
+                        {submitButtonText ?? 'Submit'}
                     </Centered>
                 }
                 <Container vertical>
@@ -80,9 +68,20 @@ export const EventForm = (props: EventFormProps) => {
                        disabled={disabled}
                        value={hoursFormat(event!.occurredAtUtc)}
                        onChange={onChangeTime} />
-                <TagSelector initialSelectedTags={event!.tags}
-                             onChange={tags => setEvent({...event, tags} as Event)} />
+                <TagSelector initialSelectedTags={event!.tags} onChange={setEventTags} />
             </Box>
         </Container>
     )
 };
+
+const EMPTY_EVENT = {
+    occurredAtUtc: new Date(),
+    text: '',
+    tags: [] as EventTag[]
+} as Event;
+
+function hoursFormat(date: Date) {
+    const hours   = new Date(date).getHours().toString().padStart(2, '0');
+    const minutes = new Date(date).getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}

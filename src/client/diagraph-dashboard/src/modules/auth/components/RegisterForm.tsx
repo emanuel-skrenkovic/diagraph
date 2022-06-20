@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react';
 
-import { BlueButton, Centered, Container, Input, Item } from 'styles';
+import { PrimaryButton, Centered, Container, Input, Item } from 'styles';
 import { useValidation } from 'modules/common';
 
 function passwordValidation(password: string | undefined): [boolean, string] {
@@ -13,11 +13,11 @@ function emailValidation(email: string | undefined): [boolean, string] {
     return [true, ''];
 }
 
-export interface RegisterFormProps {
+export type RegisterFormProps = {
     onSubmit: (email: string, password: string) => void;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
+export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
     function confirmPasswordValidation(confirmPassword: string | undefined): [boolean, string] {
         if (password !== confirmPassword) return [false, 'Password fields do not match.'];
         return [true, ''];
@@ -70,7 +70,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                            value={confirmPassword}
                            onChange={e => setConfirmPassword(e.currentTarget.value)} />
                 </Item>
-                <Centered as={BlueButton}
+                <Centered as={PrimaryButton}
                           type="submit"
                           disabled={!!emailError || !!passwordError}
                           onClick={onClickSubmit}>

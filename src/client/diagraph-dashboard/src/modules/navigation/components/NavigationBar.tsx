@@ -2,8 +2,9 @@ import React from 'react';
 
 import { Container } from 'styles';
 
-export interface NavigationBarProps {
+export type NavigationBarProps = {
     children?: React.ReactNode;
 }
 
-export const NavigationBar: React.FC<NavigationBarProps> = ({ children }) => <Container>{children}</Container>;
+export const NavigationBar = ({ children }: NavigationBarProps) =>
+    <Container>{children}</Container>;

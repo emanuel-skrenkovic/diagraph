@@ -1,15 +1,11 @@
-import {
-    configureStore,
-    combineReducers,
-    Reducer,
-    AnyAction } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, Reducer, AnyAction } from '@reduxjs/toolkit';
 
 import { diagraphApi } from 'services';
 import { graphReducer } from 'modules/graph';
 import { sharedReducer } from 'modules/common';
 import { profileReducer } from 'modules/profile';
-import { authReducer, logoutActionType } from 'modules/auth';
 import { googleIntegrationReducer } from 'modules/google-integration';
+import { authReducer, logoutActionType, authMiddleware } from 'modules/auth';
 
 const reducer = {
     [diagraphApi.reducerPath]: diagraphApi.reducer,
@@ -34,7 +30,9 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
 export const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(diagraphApi.middleware)
+        getDefaultMiddleware()
+            .concat(diagraphApi.middleware)
+            .concat(authMiddleware)
 });
 
 export type AppDispatch = typeof store.dispatch;

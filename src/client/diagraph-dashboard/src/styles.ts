@@ -1,6 +1,6 @@
 import styled, { css, createGlobalStyle } from 'styled-components';
 
-export interface ContainerProps {
+export type ContainerProps = {
     vertical?: boolean;
     wide?: boolean;
 }
@@ -72,13 +72,13 @@ export const Button = styled.button`
   }
 `;
 
-export const BlueButton = styled(Button)`
+export const PrimaryButton = styled(Button)`
   background-color: rgba(0,111,218,0.58);
   padding: 2px;
   color: white !important; 
 `;
 
-export const RedButton = styled(Button)`
+export const DangerButton = styled(Button)`
   background-color: #cb4b49;
   padding: 2px;
   color: white !important;

@@ -1,29 +1,22 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
 
-import { Container } from 'styles';
-import { handleQuery, Loader } from 'modules/common';
+import { Loader, useQuery } from 'modules/common';
 import { ImportTemplateForm } from 'modules/import-events';
 import { useGetImportTemplateQuery, useUpdateImportTemplateMutation, useGetTagsQuery } from 'services';
 
-export const EditTemplate: React.FC = () => {
-    const [searchParams] = useSearchParams();
-    const id = searchParams.get('template_id');
+export const EditTemplate = () => {
+    const id = useQuery('template_id');
 
-    const getTags           = useGetTagsQuery(undefined);
-    const getImportTemplate = useGetImportTemplateQuery(id);
+    const { data: tags, isLoading: isTagsLoading }                     = useGetTagsQuery(undefined);
+    const { data: importTemplate, isLoading: isImportTemplateLoading } = useGetImportTemplateQuery(id);
 
-    const [updateImportTemplate] = useUpdateImportTemplateMutation();
+    const [updateImportTemplate,
+          { isLoading: isUpdateTemplateLoading }] = useUpdateImportTemplateMutation();
 
-    if (!id)                            return null;
-    if (handleQuery(getTags))           return <Loader />
-    if (handleQuery(getImportTemplate)) return <Loader />
+    if (!id) return null;
+    if (isTagsLoading || isImportTemplateLoading || isUpdateTemplateLoading) return <Loader />
 
-    return (
-        <Container>
-            <ImportTemplateForm initial={getImportTemplate.data}
-                                onSubmit={template => updateImportTemplate({template, id})}
-                                tags={getTags?.data ?? []} />
-        </Container>
-    )
+    return <ImportTemplateForm initial={importTemplate}
+                               onSubmit={template => updateImportTemplate({template, id})}
+                               tags={tags ?? []} />;
 };

@@ -1,14 +1,17 @@
 import * as d3 from 'd3';
 import React, { useState, useEffect, useRef } from 'react';
 
-import { useProfile } from 'modules/profile';
-
 import { Button, Container, Input } from 'styles';
 import { TimeChart } from 'services';
+import { useProfile } from 'modules/profile';
 import { Event, GlucoseMeasurement } from 'types';
 import { useWindowDimensions } from 'modules/common';
 
-export interface GlucoseGraphProps {
+const MARGIN = { top: 20, bottom: 20, left: 20, right: 20 };
+const PADDING = 5;
+const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
+
+export type GlucoseGraphProps = {
     from: Date,
     to: Date,
     points: GlucoseMeasurement[];
@@ -17,33 +20,8 @@ export interface GlucoseGraphProps {
     onClickMeasurement: (measurement: GlucoseMeasurement) => void;
 }
 
-const MARGIN = { top: 20, bottom: 20, left: 20, right: 20 };
-const PADDING = 5;
-const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
-
-function parseNumber(date: Date) {
-    const dateString = new Date(date).toISOString();
-    return Number(d3.timeParse('%Y-%m-%dT%H:%M:%S.%LZ')(dateString));
-}
-
-function getMinMax(pointData: [number, number][]) {
-    const maxMeasurement = pointData.length > 0
-        ? Math.max.apply(null, pointData.map(p => p[1]))
-        : 12;
-
-    const minMeasurement = pointData.length > 0
-        ? Math.min.apply(null, pointData.map(p => p[1]))
-        : 0;
-
-    return { min: minMeasurement, max: maxMeasurement };
-}
-
-export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
-                                                            to,
-                                                            points,
-                                                            events,
-                                                            onClickEvent,
-                                                            onClickMeasurement }) => {
+export const GlucoseGraph = ({ from, to, points, events,
+                               onClickEvent, onClickMeasurement }: GlucoseGraphProps) => {
     const chartElemRef = useRef<HTMLDivElement>(null);
 
     const { width } = useWindowDimensions();
@@ -118,4 +96,21 @@ export const GlucoseGraph :React.FC<GlucoseGraphProps> = ({ from,
             <div ref={chartElemRef} />
         </>
     );
+}
+
+function parseNumber(date: Date) {
+    const dateString = new Date(date).toISOString();
+    return Number(d3.timeParse('%Y-%m-%dT%H:%M:%S.%LZ')(dateString));
+}
+
+function getMinMax(pointData: [number, number][]) {
+    const maxMeasurement = pointData.length > 0
+        ? Math.max.apply(null, pointData.map(p => p[1]))
+        : 12;
+
+    const minMeasurement = pointData.length > 0
+        ? Math.min.apply(null, pointData.map(p => p[1]))
+        : 0;
+
+    return { min: minMeasurement, max: maxMeasurement };
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface ForProps<T> {
+export type ForProps<T> = {
     each: T[];
     onEach: (e: T, index: number) => JSX.Element;
 }

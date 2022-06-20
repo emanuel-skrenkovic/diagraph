@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react';
 
-import { Box, BlueButton, Centered, Container, Input, Item } from 'styles';
+import { Box, PrimaryButton, Centered, Container, Input, Item } from 'styles';
 import { useValidation } from 'modules/common';
 
 const emailValidation = (email: string | undefined): [boolean, string] => {
@@ -15,11 +15,11 @@ const passwordValidation = (password: string | undefined): [boolean, string] => 
     return [true, ''];
 };
 
-export interface LoginFormProps {
+export type LoginFormProps = {
     onSubmit: (email: string, password: string) => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+export const LoginForm = ({ onSubmit }: LoginFormProps) => {
     const [email,
            setEmail,
            emailError,
@@ -62,7 +62,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                                onChange={e => setPassword(e.currentTarget.value)} />
                     </Item>
                     <span className="input label">{passwordError}</span>
-                    <Centered as={BlueButton}
+                    <Centered as={PrimaryButton}
                               type="submit"
                               disabled={!!emailError || !!passwordError}
                               onClick={onClickSubmit}>

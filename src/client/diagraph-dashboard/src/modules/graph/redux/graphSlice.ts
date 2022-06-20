@@ -4,9 +4,9 @@ import { GlucoseMeasurement } from 'types';
 import { toLocalISODateString } from 'modules/common';
 
 export interface GraphState {
-    events: any[];
-    data: GlucoseMeasurement[];
-    dateRange: { from: string, to: string },
+    events:          any[];
+    measurements:    GlucoseMeasurement[];
+    dateRange:       { from: string, to: string },
     selectedEventId: number | undefined;
 }
 
@@ -25,7 +25,7 @@ const { today, tomorrow } = graphDateLimits();
 
 const initialState: GraphState = {
     events: [],
-    data: [],
+    measurements: [],
     dateRange: { from: toLocalISODateString(today), to: toLocalISODateString(tomorrow) },
     selectedEventId: undefined
 };
@@ -38,7 +38,7 @@ export const graphSlice = createSlice({
             state.events = action.payload;
         },
         setData: (state, action: PayloadAction<GlucoseMeasurement[]>) => {
-            state.data = action.payload;
+            state.measurements = action.payload;
         },
         setDateRange: (state, action: PayloadAction<{ from: string, to: string }>) => {
             state.dateRange = action.payload;

@@ -1,14 +1,14 @@
 import React, { useState, useRef, DragEvent, ChangeEvent, FormEvent } from 'react';
 
-import { Box, BlueButton, Container, Input, Item } from 'styles';
+import { Box, PrimaryButton, Container, Input, Item } from 'styles';
 import './FileUploadForm.css';
 
-export interface FileUploadProps {
+export type FileUploadProps = {
     onSubmit: (file: File) => void;
     onSelect?: (file: File) => void;
 }
 
-export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }) => {
+export const FileUploadForm = ({ onSubmit, onSelect }: FileUploadProps) => {
     const fileUploadInput = useRef<HTMLInputElement>(null);
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -42,7 +42,6 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }
         e.stopPropagation()
 
         if (!e.dataTransfer.files[0]) return;
-
         setSelectedFile(e.dataTransfer.files[0]);
     }
 
@@ -68,9 +67,9 @@ export const FileUploadForm: React.FC<FileUploadProps> = ({ onSubmit, onSelect }
 
                 </Box>
                 <Item as={Container} style={{margin:"0.5em"}}>
-                    <BlueButton type="submit" onClick={onClickSubmit}>
+                    <PrimaryButton type="submit" onClick={onClickSubmit}>
                         Upload
-                    </BlueButton>
+                    </PrimaryButton>
                     <span>{error}</span>
                 </Item>
             </Container>

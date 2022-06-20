@@ -1,15 +1,9 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 
-import { RedButton, BlueButton, Centered, Container, Input, Item } from 'styles';
+import { DangerButton, PrimaryButton, Centered, Container, Input, Item } from 'styles';
 import { RuleForm } from 'modules/import-events';
-import { EventTag, Rule, TemplateHeaderMapping } from 'types';
 import { For, TagSelector } from 'modules/common';
-
-export interface HeaderMappingFormProps {
-    value?: TemplateHeaderMapping;
-    onSubmit: (template: TemplateHeaderMapping) => void;
-    tags: EventTag[];
-}
+import { EventTag, Rule, TemplateHeaderMapping } from 'types';
 
 const DEFAULT_MAPPING = {
     header: '',
@@ -17,46 +11,50 @@ const DEFAULT_MAPPING = {
     tags: []
 };
 
-export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onSubmit }) => {
+const DEFAULT_RULE: Rule = { expression: '' };
+
+export type HeaderMappingFormProps = {
+    value?: TemplateHeaderMapping;
+    onSubmit: (template: TemplateHeaderMapping) => void;
+    tags: EventTag[];
+}
+
+export const HeaderMappingForm = ({ value, onSubmit }: HeaderMappingFormProps) => {
     const [editingRuleId, setEditingRuleId] = useState<number>(-1);
-    const [template, setTemplate] = useState<TemplateHeaderMapping>(value ?? DEFAULT_MAPPING);
+    const [template, setTemplate]           = useState<TemplateHeaderMapping>(value ?? DEFAULT_MAPPING);
 
     useEffect(() => setTemplate(value ?? DEFAULT_MAPPING), [value]);
 
-    function onClickSubmit(e: FormEvent<HTMLButtonElement>) {
+    const onClickSubmit = (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         onSubmit(template);
         setTemplate(DEFAULT_MAPPING);
     }
 
-    function setTemplateTags(tags: EventTag[]) {
-        setTemplate({ ...template, tags });
-    }
-
-    function onSaveRule(rule: Rule, index: number) {
+    const onSaveRule = (rule: Rule, index: number) => {
         const newRules = [...template.rules];
         newRules[index] = rule
 
+        setEditingRuleId(-1);
         setTemplateRules(newRules);
-        setEditingRuleId(-1);
     }
 
-    function onAddRule(rule: Rule) {
+    const onAddRule = (rule: Rule) => {
+        setEditingRuleId(-1);
         setTemplateRules([...template.rules, rule]);
-        setEditingRuleId(-1);
     }
 
-    function setTemplateRules(rules: Rule[]) {
-        setTemplate({ ...template, rules })
-    }
-
-    function removeTemplateRule(e: FormEvent<HTMLButtonElement>, index: number) {
+    const removeTemplateRule = (e: FormEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault();
         const updated = [...template.rules];
         updated.splice(index, 1);
 
         setTemplateRules(updated);
     }
+
+    const setTemplateRules = (rules: Rule[]) => setTemplate({ ...template, rules });
+    const setTemplateTags  = (tags: EventTag[]) => setTemplate({ ...template, tags });
+    const setEditingRule   = (index: number) => setEditingRuleId(editingRuleId === index ? -1 : index);
 
     return (
         <Container vertical>
@@ -74,22 +72,21 @@ export const HeaderMappingForm: React.FC<HeaderMappingFormProps> = ({ value, onS
                         <RuleForm value={rule}
                                   onSubmit={newValue => onSaveRule(newValue, index)}
                                   disabled={editingRuleId !== index} />
-                        <BlueButton onClick={() => setEditingRuleId(editingRuleId === index ? -1 : index)}>
+                        <PrimaryButton onClick={() => setEditingRule(index)}>
                             {editingRuleId === index ? 'Close' : 'Edit'}
-                        </BlueButton>
+                        </PrimaryButton>
                         {editingRuleId !== index && (
-                            <RedButton onClick={e => removeTemplateRule(e, index)}>
+                            <DangerButton onClick={e => removeTemplateRule(e, index)}>
                                 Remove
-                            </RedButton>
+                            </DangerButton>
                         )}
                     </Container>
                 )} />
-                {editingRuleId !== -1 && <BlueButton>New</BlueButton>}
-                {editingRuleId === -1 && <RuleForm key={-1} onSubmit={onAddRule} />}
+                {editingRuleId === -1 && <RuleForm value={DEFAULT_RULE} key={-1} onSubmit={onAddRule} />}
             </Item>
             <TagSelector initialSelectedTags={template.tags} onChange={setTemplateTags} />
             <Centered>
-                <BlueButton onClick={onClickSubmit}>Save Mapping</BlueButton>
+                <PrimaryButton onClick={onClickSubmit}>Save Mapping</PrimaryButton>
             </Centered>
         </Container>
     )

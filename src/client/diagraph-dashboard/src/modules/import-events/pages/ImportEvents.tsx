@@ -1,42 +1,34 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { BlueButton, Container, Item } from 'styles';
+import { PrimaryButton, Container, Item } from 'styles';
 import { TemplateMappingPreview } from 'modules/import-events';
 import { useImportEventsMutation, useGetImportTemplatesQuery } from 'services';
-import { FileUploadForm,  For, Loader } from 'modules/common';
+import { FileUploadForm, Loader, Options } from 'modules/common';
 
 export const ImportEvents = () => {
-    const [importEvents]                      = useImportEventsMutation();
-    const { data, isLoading, isError, error } = useGetImportTemplatesQuery(undefined);
-
-    const navigate = useNavigate();
+    const [importEvents, { isLoading: isImportEventsLoading }]    = useImportEventsMutation();
+    const { data: templates, isLoading: isImportTemplateLoading } = useGetImportTemplatesQuery(undefined);
 
     const [file, setFile]                         = useState<File | undefined>();
     const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>();
     const [showPreview, setShowPreview]           = useState(false);
 
-    function onUpload() {
-        importEvents({ file, templateName: selectedTemplate }) ;
-    }
+    const navigate = useNavigate();
 
-    async function onCheckTemplateMapping() {
-        if (!file) return;
-        setShowPreview(true);
-    }
+    const onUpload = () => importEvents({ file, templateName: selectedTemplate });
+    const onNewTemplate = () => navigate('/templates/add');
+    const onCheckTemplateMapping = () => { if (file) setShowPreview(true) };
 
-    function onEditTemplate() {
-        const templateId = data?.find(t => t.name === selectedTemplate)?.id;
+    const onEditTemplate = () => {
+        const templateId = templates?.find(t => t.name === selectedTemplate)?.id;
         if (!templateId) return;
         navigate(`/templates/edit?template_id=${templateId}`)
     }
 
-    function onNewTemplate() {
-        navigate('/templates/add');
-    }
+    if (isImportEventsLoading || isImportTemplateLoading) return <Loader />
 
-    if (isLoading) return <Loader />
-    if (isError) console.error(error); // TODO
+    const previewLoaded = selectedTemplate && showPreview;
 
     return (
         <Container>
@@ -51,31 +43,26 @@ export const ImportEvents = () => {
                         <select id="selectTemplate"
                                 value={selectedTemplate}
                                 onChange={e => setSelectedTemplate(e.currentTarget.value)}>
-                            <option key={undefined}></option>
-                            <For each={data ?? []} onEach={({ name, id }) => (
-                                <option key={id}>
-                                    {name}
-                                </option>
-                            )} />
+                            <Options elements={templates ?? []} value={t => t.name} />
                         </select>
                         <Container>
-                            <Item as={BlueButton} disabled={!selectedTemplate}
+                            <Item as={PrimaryButton} disabled={!selectedTemplate}
                                   onClick={onEditTemplate}>
                                 Edit Template
                             </Item>
-                            <Item as={BlueButton} onClick={onNewTemplate}>
+                            <Item as={PrimaryButton} onClick={onNewTemplate}>
                                 New Template
                             </Item>
                         </Container>
-                        <Item as={BlueButton} onClick={onCheckTemplateMapping}>
+                        <Item as={PrimaryButton} onClick={onCheckTemplateMapping}>
                             Check template mapping
                         </Item>
                     </Container>
                 </Container>
-                {showPreview && file && selectedTemplate && (
+                {previewLoaded && (
                     <Container vertical style={{marginLeft:"10%",marginRight:"10%"}}>
                         <TemplateMappingPreview
-                            csvFile={file}
+                            csvFile={file!}
                             template={selectedTemplate} />
                     </Container>
                 )}

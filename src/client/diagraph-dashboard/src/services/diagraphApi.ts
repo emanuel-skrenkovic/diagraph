@@ -32,7 +32,7 @@ export const diagraphApi = createApi({
                 url: 'events',
                 method: 'POST',
                 body: request
-            })
+            }),
         }),
         updateEvent: builder.mutation<any, Event>({
             query: ({ id, ...request }) => ({

@@ -6,16 +6,14 @@ import { ImportTemplateForm } from 'modules/import-events';
 import { useCreateImportTemplateMutation, useGetTagsQuery } from 'services';
 
 export const Templates = () => {
-    const [createImportTemplate, { data: templateId, isSuccess }] = useCreateImportTemplateMutation();
-    const { data, isLoading, isError, error }                     = useGetTagsQuery(undefined);
+    const [
+        createImportTemplate,
+        { data: templateId, isSuccess, isLoading: isCreateTemplateLoading }
+    ] = useCreateImportTemplateMutation();
+    const { data, isLoading } = useGetTagsQuery(undefined);
 
-    if (isSuccess) {
-        return <Navigate to={`/templates/edit?template_id=${templateId}`} />
-    }
+    if (isSuccess) return <Navigate to={`/templates/edit?template_id=${templateId}`} />
+    if (isLoading || isCreateTemplateLoading) return <Loader />
 
-    if (isLoading) return <Loader />
-    if (isError)   console.error(error); // TODO
-
-    return <ImportTemplateForm onSubmit={createImportTemplate}
-                               tags={data ?? []} />;
+    return <ImportTemplateForm onSubmit={createImportTemplate} tags={data ?? []} />;
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 
-export interface ErrorBoundaryProps { children?: React.ReactNode; }
-interface ErrorBoundaryState { hasError: boolean }
+export type ErrorBoundaryProps = { children?: React.ReactNode; }
+type ErrorBoundaryState = { hasError: boolean }
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     constructor(props: ErrorBoundaryProps) {
@@ -9,7 +9,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         this.state = { hasError: false };
     }
 
-    componentDidCatch = (error: Error, errorInfo: React.ErrorInfo) => {
+    componentDidCatch = (_error: Error, _errorInfo: React.ErrorInfo) => {
         this.setState({ hasError: true })
     }
 

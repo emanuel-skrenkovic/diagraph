@@ -3,22 +3,11 @@ import React from 'react';
 import { Box, Container, Item } from 'styles'
 import { GlucoseMeasurement } from 'types';
 
-export interface StatisticsProps {
+export type StatisticsProps = {
     measurements: GlucoseMeasurement[];
 }
 
-function median(numbers: number[]) {
-    const sorted = numbers.sort();
-    const middle = Math.floor(sorted.length / 2);
-
-    if (numbers.length % 2 === 0) {
-        return (sorted[middle-1] + sorted[middle]) / 2;
-    }
-
-    return sorted[middle];
-}
-
-export const Statistics: React.FC<StatisticsProps> = ({ measurements }) => {
+export const Statistics = ({ measurements }: StatisticsProps) => {
     const levels = measurements.map(m => m.level);
     const n = levels.length;
 
@@ -52,3 +41,14 @@ export const Statistics: React.FC<StatisticsProps> = ({ measurements }) => {
         </Container>
     );
 };
+
+function median(numbers: number[]) {
+    const sorted = numbers.sort();
+    const middle = Math.floor(sorted.length / 2);
+
+    if (numbers.length % 2 === 0) {
+        return (sorted[middle-1] + sorted[middle]) / 2;
+    }
+
+    return sorted[middle];
+}
