@@ -12,23 +12,23 @@ export const Statistics = ({ measurements }: StatisticsProps) => {
     const n = levels.length;
 
     const sum = levels.reduce((a, b) => a + b, 0);
-    const avg = (sum / n) || 0;
+    const mean = (sum / n) || 0;
 
     const med = median(levels);
 
     const stdDev = Math.sqrt(
-        levels.reduce((a, b) => a + Math.pow(b - avg, 2), 0)
+        levels.reduce((a, b) => a + Math.pow(b - mean, 2), 0)
         /
         (n - 1)
     );
 
-    const percentDeviation = (stdDev / avg) * 100;
+    const percentDeviation = (stdDev / mean) * 100;
 
     return (
         <Container vertical as={Box}>
             <Item>
-                <span>Average:</span>
-                <span>{avg.toFixed(1)}</span>
+                <span>Mean:</span>
+                <span>{mean.toFixed(1)}</span>
             </Item>
             <Item>
                 <span>Median:</span>

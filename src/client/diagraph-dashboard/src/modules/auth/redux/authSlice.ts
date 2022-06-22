@@ -10,12 +10,8 @@ const initialState: AuthState = authJson
     : { authenticated: false } as AuthState;
 
 export const authMiddleware: Middleware = ({ getState }: MiddlewareAPI) => (next) => (action) => {
-    if (action.type?.startsWith('auth/')) {
-        localStorage.setItem(
-            'auth',
-            JSON.stringify(getState().auth)
-        )
-    }
+    if (action.type === 'auth/login')  localStorage.setItem('auth', JSON.stringify(getState().auth))
+    if (action.type === 'auth/logout') localStorage.clear()
 
     return next(action);
 };
