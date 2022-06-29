@@ -9,5 +9,7 @@ public class UpdateEventCommand
     
     [Required] public DateTime OccurredAtUtc { get; set; }
     
+    public DateTime? EndedAtUtc { get; set; }
+    
     public ICollection<EventTagDto> Tags { get; set; }
 }

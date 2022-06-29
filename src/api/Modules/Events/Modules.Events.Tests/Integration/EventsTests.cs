@@ -89,6 +89,63 @@ public class EventsTests
         });
     }
     
+    [Theory, CustomizedAutoData]
+    public async Task Updates_Event_With_Added_EndedAtUtc
+    (
+        CreateEventCommand eventCreate, 
+        UpdateEventCommand eventUpdate
+    )
+    {
+        // Arrange
+        HttpResponseMessage insertResponse = await _fixture
+            .Client
+            .PostAsJsonAsync("/events", eventCreate);
+        
+        int id = insertResponse.Headers.Location.AsId<int>();
+        
+        DateTime endedDate = DateTime.Now.AddHours(3);
+        eventUpdate.EndedAtUtc = endedDate;
+        
+        // Act
+        HttpResponseMessage response = await _fixture
+            .Client
+            .PutAsJsonAsync($"/events/{id}", eventUpdate);
+
+        // Assert
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        {
+            Event updatedEvent = await context
+                .Events
+                .Include(nameof(Event.Tags))
+                .FirstOrDefaultAsync(e => e.Id == id);
+            
+            updatedEvent.Should().NotBeNull();
+            updatedEvent!.Text.Should().Be(eventUpdate.Text);
+            updatedEvent!.EndedAtUtc.Should().NotBeNull();
+
+            DateTime eventEndedAt = updatedEvent!.EndedAtUtc!.Value;
+            
+            // TODO: create helper
+            eventEndedAt.Year.Should().Be(endedDate.Year);
+            eventEndedAt.Month.Should().Be(endedDate.Month);
+            eventEndedAt.Day.Should().Be(endedDate.Day);
+            eventEndedAt.Hour.Should().Be(endedDate.Hour);
+            eventEndedAt.Minute.Should().Be(endedDate.Minute);
+            eventEndedAt.Second.Should().Be(endedDate.Second);
+
+            foreach ((EventTag first, EventTagDto second) in updatedEvent
+                         .Tags
+                         .OrderBy(t => t.Name)
+                         .Zip(eventUpdate.Tags.OrderBy(t => t.Name)))
+            {
+                first.Name.Should().Be(second.Name);
+            }
+        });
+    }
+    
      [Theory, CustomizedAutoData]
      public async Task Deletes_Event(CreateEventCommand eventCreate)
      {
