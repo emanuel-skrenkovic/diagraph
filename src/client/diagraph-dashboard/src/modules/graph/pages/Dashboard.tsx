@@ -95,23 +95,24 @@ export const Dashboard = () => {
 
     const NewEventForm = () => (
         <Container vertical>
-            <EventForm onSubmit={onCreateEvent}
-                       submitButtonText="Create Event" />
-            {googleIntegration && (
-                <>
-                    <label htmlFor="eventCreateTask">Create task</label>
-                    <Input id="eventCreateTask"
-                           type="checkbox"
-                           checked={createTask}
-                           onChange={() => setCreateTask(!createTask)}/>
-                    {createTask && (
-                        <>
-                            <NotificationForm onChange={n => setNotification(n)} />
-                            {notificationError && <span>{notificationError}</span>}
-                        </>
-                    )}
-                </>
-            )}
+            <EventForm onSubmit={onCreateEvent} submitButtonText="Create Event" />
+            <Item>
+                {googleIntegration && (
+                    <>
+                        <label htmlFor="eventCreateTask">Create task</label>
+                        <Input id="eventCreateTask"
+                               type="checkbox"
+                               checked={createTask}
+                               onChange={() => setCreateTask(!createTask)}/>
+                        {createTask && (
+                            <>
+                                <NotificationForm onChange={n => setNotification(n)} />
+                                {notificationError && <span>{notificationError}</span>}
+                            </>
+                        )}
+                    </>
+                )}
+            </Item>
         </Container>
     );
 

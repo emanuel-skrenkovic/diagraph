@@ -26,12 +26,17 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .Property(e => e.UpdatedAtUtc)
             .HasColumnName("updated_at_utc")
             .HasColumnType("timestamptz");
-
+        
         builder.Property(e => e.Text).HasColumnName("text");
 
         builder
             .Property(e => e.OccurredAtUtc)
             .HasColumnName("occurred_at_utc")
+            .HasColumnType("timestamptz");
+
+        builder
+            .Property(e => e.EndedAtUtc)
+            .HasColumnName("ended_at_utc")
             .HasColumnType("timestamptz");
     }
 }

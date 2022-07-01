@@ -16,6 +16,8 @@ public class Event : DbEntity, IUserRelated
     
     public DateTime OccurredAtUtc { get; set; }
     
+    public DateTime? EndedAtUtc { get; set; }
+    
     public ICollection<EventTag> Tags { get; set; }
 
     public static Event Create
@@ -24,6 +26,7 @@ public class Event : DbEntity, IUserRelated
         Guid                  userId,
         string                text,
         DateTime              occurredAtUtc,
+        DateTime              endedAtUtc,
         IEnumerable<EventTag> tags
     )
     {
@@ -32,6 +35,7 @@ public class Event : DbEntity, IUserRelated
             UserId        = userId,
             Text          = text,
             OccurredAtUtc = occurredAtUtc,
+            EndedAtUtc    = endedAtUtc, 
             Tags          = tags.ToList()
         };
         @event.Discriminator = @event.ComputeDiscriminator(hashTool);
@@ -40,6 +44,5 @@ public class Event : DbEntity, IUserRelated
     }
 
     public string ComputeDiscriminator(IHashTool hashTool)
-        => hashTool.ComputeHash($"{UserId}:{OccurredAtUtc}:{Text}");
-
+        => hashTool.ComputeHash($"{UserId}:{OccurredAtUtc}:{EndedAtUtc ?? DateTime.MinValue}:{Text}");
 }

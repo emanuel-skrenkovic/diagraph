@@ -1,6 +1,6 @@
 import React, { useEffect, ChangeEvent, FormEvent } from 'react';
 
-import { PrimaryButton, Box, Centered, Container, Input } from 'styles';
+import { Button, PrimaryButton, Box, Centered, Container, Input, Item } from 'styles';
 import { Event, EventTag } from 'types';
 import { useValidation, TagSelector } from 'modules/common';
 
@@ -29,7 +29,7 @@ export const EventForm = ({ value, disabled, onSubmit, submitButtonText }: Event
     }
 
     // this seems so bad.
-    const onChangeTime = (e: FormEvent<HTMLInputElement>) => {
+    const onChangeOccurredAt = (e: FormEvent<HTMLInputElement>) => {
         const newOccurredAtUtc = new Date(event!.occurredAtUtc);
 
         const [hours, minutes] = e.currentTarget.value.split(':');
@@ -38,6 +38,19 @@ export const EventForm = ({ value, disabled, onSubmit, submitButtonText }: Event
 
         setEvent({ ...event, occurredAtUtc: newOccurredAtUtc } as Event);
     }
+
+    const onChangeEndedAt = (e: FormEvent<HTMLInputElement>) => {
+        const newEndedAt = event?.endedAtUtc
+            ? new Date(event.endedAtUtc)
+            : new Date();
+
+        const [hours, minutes] = e.currentTarget.value.split(':');
+        newEndedAt.setHours(Number(hours));
+        newEndedAt.setMinutes(Number(minutes));
+
+        setEvent({ ...event, endedAtUtc: newEndedAt } as Event);
+    }
+    const onClearEndedAt = () => setEvent({ ...event, endedAtUtc: undefined } as Event);
 
     const onChangeEventText = (e: ChangeEvent<HTMLTextAreaElement>) =>
         setEvent({ ...event, text: e.currentTarget.value } as Event);
@@ -62,12 +75,27 @@ export const EventForm = ({ value, disabled, onSubmit, submitButtonText }: Event
                               onChange={onChangeEventText} />
                     {error && <span className="input label">{error}</span>}
                 </Container>
-                <label htmlFor="eventOccurredAt">Occurred at </label>
-                <Input id="eventOccurredAt"
-                       type="time"
-                       disabled={disabled}
-                       value={hoursFormat(event!.occurredAtUtc)}
-                       onChange={onChangeTime} />
+                <Container>
+                    <Item>
+                        <label htmlFor="eventOccurredAt">Occurred at </label>
+                        <Input id="eventOccurredAt"
+                               type="time"
+                               disabled={disabled}
+                               value={hoursFormat(event!.occurredAtUtc)}
+                               onChange={onChangeOccurredAt} />
+                    </Item>
+                    <Item>
+                        <label htmlFor="eventEndedAt">Ended at </label>
+                        <Input id="eventEndedAt"
+                               type="time"
+                               disabled={disabled}
+                               value={hoursFormat(event!.endedAtUtc)}
+                               onChange={onChangeEndedAt} />
+                        <Button onClick={onClearEndedAt}>
+                            Clear
+                        </Button>
+                    </Item>
+                </Container>
                 <TagSelector initialSelectedTags={event!.tags} onChange={setEventTags} />
             </Box>
         </Container>
@@ -80,7 +108,9 @@ const EMPTY_EVENT = {
     tags: [] as EventTag[]
 } as Event;
 
-function hoursFormat(date: Date) {
+function hoursFormat(date: Date | undefined) {
+    if (!date) return '';
+
     const hours   = new Date(date).getHours().toString().padStart(2, '0');
     const minutes = new Date(date).getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;

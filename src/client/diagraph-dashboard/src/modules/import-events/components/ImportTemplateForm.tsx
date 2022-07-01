@@ -1,6 +1,6 @@
 import React, { useState, useEffect, MouseEvent } from 'react';
 
-import { Button, PrimaryButton, Box, Container, Input, Item, Title } from 'styles';
+import { Right, Button, PrimaryButton, Box, Container, Input, Item, Title } from 'styles';
 import { EventTag, ImportTemplate, TemplateHeaderMapping } from 'types';
 import { HeaderMappingForm, HeaderMappingsTable } from 'modules/import-events';
 
@@ -9,17 +9,6 @@ export type ImportTemplateFormProps = {
     onSubmit: (t: ImportTemplate) => void;
     tags?: EventTag[];
 }
-
-const DEFAULT_MAPPING = {
-    header: '',
-    rules: [],
-    tags: []
-};
-
-const DEFAULT_TEMPLATE = {
-    name: '',
-    data: { headerMappings: [] as TemplateHeaderMapping[] }
-} as ImportTemplate;
 
 export const ImportTemplateForm = ({ initial, onSubmit, tags }: ImportTemplateFormProps) => {
     const [template, setTemplate]             = useState(initial ?? DEFAULT_TEMPLATE);
@@ -95,7 +84,9 @@ export const ImportTemplateForm = ({ initial, onSubmit, tags }: ImportTemplateFo
                 </Item>
                 {editingMapping &&
                     <Item as={Box}>
-                        <Button onClick={() => setEditingMapping(undefined)}>Close</Button>
+                        <Right>
+                            <Button onClick={() => setEditingMapping(undefined)}>Close</Button>
+                        </Right>
                         <HeaderMappingForm value={editingMapping}
                                            onSubmit={onSaveMapping}
                                            tags={tags ?? []} />
@@ -105,3 +96,14 @@ export const ImportTemplateForm = ({ initial, onSubmit, tags }: ImportTemplateFo
         </Container>
     );
 };
+
+const DEFAULT_MAPPING = {
+    header: '',
+    rules: [],
+    tags: []
+};
+
+const DEFAULT_TEMPLATE = {
+    name: '',
+    data: { headerMappings: [] as TemplateHeaderMapping[] }
+} as ImportTemplate;
