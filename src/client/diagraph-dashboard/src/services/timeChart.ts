@@ -201,7 +201,7 @@ export class TimeChart {
                 .style('stroke', color)
                 .style('fill', 'black')
                 .each(function() {
-                    if (style == 'dashed') d3.select(this).style('stroke-dasharray', dashes)
+                    if (style === 'dashed') d3.select(this).style('stroke-dasharray', dashes)
                 });
         });
 
