@@ -18,6 +18,7 @@ export interface Event {
     id: number;
     text: string;
     occurredAtUtc: Date;
+    endedAtUtc?: Date | undefined;
     tags: EventTag[];
 }
 

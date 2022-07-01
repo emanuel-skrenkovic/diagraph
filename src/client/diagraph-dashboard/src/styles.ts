@@ -110,6 +110,14 @@ export const Centered = styled.div`
   margin: 0 auto;
 `;
 
+export const Right = styled.div`
+    float: right;
+`;
+
+export const Left = styled.div`
+    float: left;
+`;
+
 export const ScrollBar = styled.div`
   overflow: auto;
 `;

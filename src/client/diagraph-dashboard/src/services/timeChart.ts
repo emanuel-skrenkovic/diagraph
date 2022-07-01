@@ -181,4 +181,30 @@ export class TimeChart {
 
         return this;
     }
+
+    line = (
+        y1: number,
+        y2: number,
+        x1: number,
+        x2: number,
+        color: string,
+        style: 'solid' | 'dashed'
+    ): TimeChart => {
+        this.drawSteps.push(() => {
+            const dashes = 5.5;
+            this.svg.append('line')
+                .attr('x1', this.x!(x1) + this.margin.left + this.padding + (dashes / 2))
+                .attr('y1', this.y!(y1) + this.padding * 2 + this.margin.top + this.margin.bottom)
+                .attr('x2', this.x!(x2) + this.margin.left + this.padding)
+                .attr('y2', this.y!(y2) + this.padding * 2 + this.margin.top + this.margin.bottom)
+                .style('stroke-width', 1)
+                .style('stroke', color)
+                .style('fill', 'black')
+                .each(function() {
+                    if (style == 'dashed') d3.select(this).style('stroke-dasharray', dashes)
+                });
+        });
+
+        return this;
+    }
 }

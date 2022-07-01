@@ -7,10 +7,6 @@ import { useProfile } from 'modules/profile';
 import { Event, GlucoseMeasurement } from 'types';
 import { useWindowDimensions } from 'modules/common';
 
-const MARGIN = { top: 20, bottom: 20, left: 20, right: 20 };
-const PADDING = 5;
-const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
-
 export type GlucoseGraphProps = {
     from: Date,
     to: Date,
@@ -30,7 +26,11 @@ export const GlucoseGraph = ({ from, to, points, events,
     const [profile, setProfile]         = useProfile();
 
     const pointData: [number, number][] = points.map(p => [parseNumber(p.takenAt), p.level]);
-    const eventData: [number, Event][]  = events.map(e => [parseNumber(e.occurredAtUtc), e]);
+    const eventData: EventInfo[] = events.map(e => ({
+            start: parseNumber(e.occurredAtUtc),
+            end:   e.endedAtUtc ? parseNumber(e.endedAtUtc) : undefined,
+            event: e
+        }));
 
     const { showLowLimit, showHighLimit, showAverage } = profile;
 
@@ -41,9 +41,9 @@ export const GlucoseGraph = ({ from, to, points, events,
 
         const chart = new TimeChart(chartElemRef, HEIGHT, width * 0.7, MARGIN, PADDING);
 
-        const { min, max } = getMinMax(pointData);
-        const maxValue = max + 3;
-        const minValue = min > 2 ? min - 2 : 0;
+        const {min, max} = getMinMax(pointData);
+        const maxValue   = max + 3;
+        const minValue   = min > 2 ? min - 2 : 0;
 
         chart.xAxis([from, to])
             .xLabel('Date')
@@ -52,20 +52,28 @@ export const GlucoseGraph = ({ from, to, points, events,
             .data(pointData, (data) =>
                 onClickMeasurement({
                     takenAt: new Date(data[0] as Date),
-                    level: data[1] as number } as GlucoseMeasurement));
+                    level: data[1] as number
+                } as GlucoseMeasurement));
 
-        if (showLowLimit)  chart.horizontalLine(3.9, 'red');
+        if (showLowLimit) chart.horizontalLine(3.9, 'red');
         if (showHighLimit) chart.horizontalLine(10, 'red');
 
         if (pointData.length > 0 && showAverage) {
-            const sum = pointData.reduce((a, b) => a + b[1], 0);
+            const sum     = pointData.reduce((a, b) => a + b[1], 0);
             const average = (sum / pointData.length) || 0;
 
             chart.horizontalLine(average, 'blue');
         }
 
-        for (const event of eventData) {
-            chart.verticalLine(event[0], 'green', () => onClickEvent(event[1]));
+        for (const data of eventData) {
+            chart.verticalLine(data.start, 'green', () => onClickEvent(data.event));
+
+            if (data.end) {
+                chart.verticalLine(data.end, 'green', () => onClickEvent(data.event));
+
+                for (let i = minValue + .2; i < maxValue; i++)
+                    chart.line(i, i + .33, data.start, data.end, 'green', 'dashed')
+           }
         }
 
         chart.draw();
@@ -98,6 +106,10 @@ export const GlucoseGraph = ({ from, to, points, events,
     );
 }
 
+const MARGIN = { top: 20, bottom: 20, left: 20, right: 20 };
+const PADDING = 5;
+const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
+
 function parseNumber(date: Date) {
     const dateString = new Date(date).toISOString();
     return Number(d3.timeParse('%Y-%m-%dT%H:%M:%S.%LZ')(dateString));
@@ -113,4 +125,10 @@ function getMinMax(pointData: [number, number][]) {
         : 0;
 
     return { min: minMeasurement, max: maxMeasurement };
+}
+
+type EventInfo = {
+    start: number;
+    end: number | undefined;
+    event: Event ;
 }
