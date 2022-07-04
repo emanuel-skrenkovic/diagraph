@@ -7,7 +7,6 @@ using Google.Apis.Services;
 
 namespace Diagraph.Infrastructure.Integrations.Google;
 
-// TODO: create interface and return instance from GoogleAuthorizer?
 public class GoogleScopes
 {
     private readonly GoogleConfiguration _configuration;

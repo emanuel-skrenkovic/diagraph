@@ -33,8 +33,13 @@ public static class ServiceCollectionExtensions
         );
         services.AddHttpClient
         (
-            GoogleIntegrationConsts.AuthenticatedClientName,
+            GoogleIntegrationConsts.TasksClientName,
             c => c.BaseAddress = new("https://tasks.googleapis.com")
+        ).AddHttpMessageHandler<GoogleAuthDelegatingHandler>();
+        services.AddHttpClient
+        (
+            GoogleIntegrationConsts.BaseClientName,
+            c => c.BaseAddress = new("https://www.googleapis.com/")
         ).AddHttpMessageHandler<GoogleAuthDelegatingHandler>();
         services.AddTransient<GoogleAuthDelegatingHandler>();
         

@@ -34,10 +34,13 @@ public class GoogleAuthorizer : IIntegrationSession
     
     public async Task<string> EnsureAuthorizedAsync()
     {
-        (string accessToken, long expiresIn) = await _sessionManager
+        TokenData tokenData = await _sessionManager
             .GetAsync<TokenData>(GoogleIntegrationConsts.AccessToken);
 
-        if (accessToken is null || DateTime.UtcNow.AddSeconds(expiresIn) > DateTime.UtcNow) 
+        string accessToken = tokenData?.AccessToken;
+        long expiresIn     = tokenData?.ExpiresIn ?? 0;
+
+        if (accessToken is not null && DateTime.UtcNow.AddSeconds(expiresIn) > DateTime.UtcNow) 
             return accessToken;
 
         string refreshToken = await _sessionManager
@@ -52,6 +55,8 @@ public class GoogleAuthorizer : IIntegrationSession
             GoogleIntegrationConsts.AccessToken, 
             new TokenData(tokenResponse.AccessToken, tokenResponse.ExpiresIn)
         );
+        
+        // TODO: doesn't save or read the current access token from the database.
 
         return tokenResponse.AccessToken;
     }

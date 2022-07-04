@@ -92,7 +92,7 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
             .ToListAsync(ct);
 
         IEnumerable<Event> newEvents = events
-            .Where(e => !discriminators.Contains(e.Discriminator))
+            .ExceptBy(discriminators, e => e.Discriminator)
             .ToList();
 
         if (newEvents.Any())

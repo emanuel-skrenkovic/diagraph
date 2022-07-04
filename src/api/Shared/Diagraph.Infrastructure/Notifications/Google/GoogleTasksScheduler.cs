@@ -18,7 +18,7 @@ public class GoogleTasksScheduler : INotificationScheduler
     
     public async Task ScheduleAsync(Notification notification)
     {
-        HttpClient client = _clientFactory.CreateClient(GoogleIntegrationConsts.AuthenticatedClientName);
+        HttpClient client = _clientFactory.CreateClient(GoogleIntegrationConsts.TasksClientName);
         
         TaskLists tasksListResponse = await client
             .GetFromJsonAsync<TaskLists>("/tasks/v1/users/@me/lists");

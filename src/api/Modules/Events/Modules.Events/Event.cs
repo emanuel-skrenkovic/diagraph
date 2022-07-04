@@ -23,20 +23,18 @@ public class Event : DbEntity, IUserRelated
     public static Event Create
     (
         IHashTool             hashTool,
-        Guid                  userId,
         string                text,
         DateTime              occurredAtUtc,
         DateTime              endedAtUtc,
-        IEnumerable<EventTag> tags
+        IEnumerable<EventTag> tags = null
     )
     {
         Event @event = new()
         {
-            UserId        = userId,
             Text          = text,
             OccurredAtUtc = occurredAtUtc,
             EndedAtUtc    = endedAtUtc, 
-            Tags          = tags.ToList()
+            Tags          = tags?.ToList()
         };
         @event.Discriminator = @event.ComputeDiscriminator(hashTool);
         
