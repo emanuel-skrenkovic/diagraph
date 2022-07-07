@@ -5,6 +5,8 @@ using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports;
 using Diagraph.Modules.Events.DataImports.Contracts;
 using Diagraph.Modules.Events.DataImports.Csv;
+using Diagraph.Modules.Events.DataImports.Extensions;
+using Diagraph.Modules.Events.Extensions;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -53,8 +55,8 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
         }
 
         ImportTemplate template = await _dbContext
-                .Templates
-                .FirstOrDefaultAsync(t => t.Name == templateName, ct);
+            .Templates
+            .FirstOrDefaultAsync(t => t.Name == templateName, ct);
 
         if (template is null)
         {
@@ -68,8 +70,8 @@ public class ImportEventsEndpoint : EndpointWithoutRequest
             (
                 e =>
                 {
-                    e.Discriminator = e.ComputeDiscriminator(_hashTool);
-                    return e;
+                    e.Source = template.SourceName();
+                    return e.WithDiscriminator(_hashTool);
                 }
             ).ToList();
 

@@ -115,21 +115,24 @@ public class EventsDataExportTests
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text1",
                 Tags          = new[] { new EventTag { Name = "tag1" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text2",
                 Tags          = new[] { new EventTag { Name = "tag1" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-02").ToUniversalTime(),
                 Text          = "text3",
                 Tags          = new[] { new EventTag { Name = "tag2" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             }
         };
         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
@@ -171,20 +174,23 @@ public class EventsDataExportTests
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text1",
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text2",
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-02").ToUniversalTime(),
                 Text          = "text3",
                 Tags          = new[] { new EventTag { Name = "tag2" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             }
         };
         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
@@ -221,19 +227,22 @@ public class EventsDataExportTests
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text1",
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text2",
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-02").ToUniversalTime(),
                 Text          = "text3",
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             }
         };
         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
@@ -270,21 +279,24 @@ public class EventsDataExportTests
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text1",
                 Tags          = new[] { new EventTag { Name = "tag1" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text2",
                 Tags          = new[] { new EventTag { Name = "tag2" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-02").ToUniversalTime(),
                 Text          = "text3",
                 Tags          = new[] { new EventTag { Name = "tag3" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             }
         };
         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
@@ -322,21 +334,24 @@ public class EventsDataExportTests
                 OccurredAtUtc = DateTime.Parse("2020-01-01").ToUniversalTime(),
                 Text          = "text1",
                 Tags          = new[] { new EventTag { Name = "tag" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-02").ToUniversalTime(),
                 Text          = "text2",
                 Tags          = new[] { new EventTag { Name = "tag" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             },
             new()
             {
                 OccurredAtUtc = DateTime.Parse("2020-01-03").ToUniversalTime(),
                 Text          = "text3",
                 Tags          = new[] { new EventTag { Name = "tag" } },
-                UserId        = EventsFixture.RegisteredUserId
+                UserId        = EventsFixture.RegisteredUserId,
+                Source        = "custom"
             }
         };
         await _fixture.ExecuteAsync<EventsDbContext>(async context =>

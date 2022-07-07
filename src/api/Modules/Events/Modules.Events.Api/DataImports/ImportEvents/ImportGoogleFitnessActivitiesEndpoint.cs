@@ -11,6 +11,8 @@ namespace Diagraph.Modules.Events.Api.DataImports.ImportEvents;
 
 public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
 {
+    private const string GoogleFitnessSource = "google_fit";
+    
     private readonly EventsDbContext _context;
     private readonly GoogleFit       _fit;
     private readonly IHashTool       _hashTool;
@@ -56,16 +58,13 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
             .Where(s => s.Value.First().IntVal != (int) ActivityType.Still
                         && !string.IsNullOrWhiteSpace(s.StartTimeNanos) 
                         && !string.IsNullOrWhiteSpace(s.EndTimeNanos)
-                        && long.Parse(s.EndTimeNanos) - long.Parse(s.StartTimeNanos) >= 15 * 6e10) // duration is more than 15 minutes
+                        // duration is more than 15 minutes
+                        && long.Parse(s.EndTimeNanos) - long.Parse(s.StartTimeNanos) >= 15 * 6e10) 
             .Select(ActivityToEvent)
             .ToList();
 
         int eventsCreated = await _eventImport.ExecuteAsync(fitnessEvents, ct);
-        await SendOkAsync
-        (
-            new ImportGoogleFitnessActivitiesResult { Count = eventsCreated }, 
-            ct
-        );
+        await SendOkAsync(new ImportGoogleFitnessActivitiesResult { Count = eventsCreated }, ct);
     }
 
     private Event ActivityToEvent(DataPoint dataPoint)
@@ -79,6 +78,7 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
         (
             hashTool:      _hashTool,
             text:          activityType.ToString(),
+            source:        GoogleFitnessSource,
             occurredAtUtc: DateTimeHelpers
                 .FromUnixTimeNanoseconds(long.Parse(dataPoint.StartTimeNanos)),
             endedAtUtc:    DateTimeHelpers

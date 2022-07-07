@@ -9,6 +9,8 @@ namespace Diagraph.Modules.Events.Api.Events;
 
 public class CreateEventEndpoint : Endpoint<CreateEventCommand>
 {
+    private const string EventSource = "custom";
+    
     private readonly EventsDbContext        _dbContext;
     private readonly IMapper                _mapper;
     private readonly IHashTool              _hashTool;
@@ -33,7 +35,9 @@ public class CreateEventEndpoint : Endpoint<CreateEventCommand>
     public override async Task HandleAsync(CreateEventCommand req, CancellationToken ct)
     {
         Event @event = _mapper.Map<Event>(req.Event);
+        
         @event.Discriminator = @event.ComputeDiscriminator(_hashTool);
+        @event.Source        = EventSource;
         
         Event createdEvent = _dbContext.Events.Add(@event).Entity;
         
