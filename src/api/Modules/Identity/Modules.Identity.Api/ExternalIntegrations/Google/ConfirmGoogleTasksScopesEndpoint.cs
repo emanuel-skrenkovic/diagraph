@@ -48,12 +48,20 @@ public class ConfirmGoogleTasksScopesEndpoint : IdempotentEndpoint<ConfirmGoogle
             e => e.UserId == _userContext.UserId && e.Provider == ExternalProvider.Google,
             External.Create(_userContext.UserId, ExternalProvider.Google)
         );
+
+        DateTime tokenIssuedAtUtc = DateTime.UtcNow;
+        
         external.SetData
         (
             new GoogleIntegrationInfo
             {
                 GrantedScopes = req.Scope,
-                AccessToken   = new TokenData(tokenResponse.AccessToken, tokenResponse.ExpiresIn),
+                AccessToken   = new TokenData
+                (
+                    tokenResponse.AccessToken, 
+                    tokenIssuedAtUtc,
+                    tokenResponse.ExpiresIn
+                ),
                 RefreshToken  = tokenResponse.RefreshToken
             }
         );
@@ -72,6 +80,7 @@ public class ConfirmGoogleTasksScopesEndpoint : IdempotentEndpoint<ConfirmGoogle
         await _authorizer.InitializeSessionDataAsync
         (
             tokenResponse.AccessToken,
+            tokenIssuedAtUtc,
             tokenResponse.ExpiresIn,
             tokenResponse.RefreshToken
         );

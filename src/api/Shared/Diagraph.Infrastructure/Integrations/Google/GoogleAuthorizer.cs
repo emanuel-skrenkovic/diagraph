@@ -37,10 +37,11 @@ public class GoogleAuthorizer : IIntegrationSession
         TokenData tokenData = await _sessionManager
             .GetAsync<TokenData>(GoogleIntegrationConsts.AccessToken);
 
-        string accessToken = tokenData?.AccessToken;
-        long expiresIn     = tokenData?.ExpiresIn ?? 0;
+        string   accessToken = tokenData?.AccessToken;
+        DateTime issuedAtUtc = tokenData?.IssuedAtUtc ?? DateTime.MinValue;
+        long     expiresIn   = tokenData?.ExpiresIn ?? 0;
 
-        if (accessToken is not null && DateTime.UtcNow.AddSeconds(expiresIn) > DateTime.UtcNow) 
+        if (tokenData is not null && issuedAtUtc.AddSeconds(expiresIn) > DateTime.UtcNow) 
             return accessToken;
 
         string refreshToken = await _sessionManager
@@ -53,7 +54,7 @@ public class GoogleAuthorizer : IIntegrationSession
         await _sessionManager.SaveAsync
         (
             GoogleIntegrationConsts.AccessToken, 
-            new TokenData(tokenResponse.AccessToken, tokenResponse.ExpiresIn)
+            new TokenData(tokenResponse.AccessToken, DateTime.UtcNow, tokenResponse.ExpiresIn)
         );
         
         // TODO: doesn't save or read the current access token from the database.
@@ -63,15 +64,16 @@ public class GoogleAuthorizer : IIntegrationSession
     
     public async Task InitializeSessionDataAsync
     (
-        string accessToken, 
-        long   expiresIn, 
-        string refreshToken
+        string   accessToken, 
+        DateTime issuedAt,
+        long     expiresIn, 
+        string   refreshToken
     )
     {
         await _sessionManager.SaveAsync
         (
             GoogleIntegrationConsts.AccessToken,
-            new TokenData(accessToken, expiresIn)
+            new TokenData(accessToken, issuedAt, expiresIn)
         );
         await _sessionManager.SaveAsync
         (
@@ -88,10 +90,12 @@ public class GoogleAuthorizer : IIntegrationSession
     {
         var info = dataContainer.GetData<GoogleIntegrationInfo>();
 
+        TokenData token = info.AccessToken;
         return InitializeSessionDataAsync
         (
-            info.AccessToken.AccessToken,
-            info.AccessToken.ExpiresIn,
+            token.AccessToken,
+            token.IssuedAtUtc,
+            token.ExpiresIn,
             info.RefreshToken
         );
     }
