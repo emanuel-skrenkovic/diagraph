@@ -1,5 +1,6 @@
 export * from './For';
 export * from './Tag';
+export * from './Toaster';
 export * from './Loader';
 export * from './Options';
 export * from './WithAuth';

@@ -4,10 +4,12 @@ import { EventTag } from 'types';
 
 export interface SharedState {
     tags: EventTag[];
+    shownToasts: string[];
 }
 
 const initialState: SharedState = {
-    tags: []
+    tags: [],
+    shownToasts: []
 };
 
 export const sharedSlice = createSlice({
@@ -16,9 +18,16 @@ export const sharedSlice = createSlice({
     reducers: {
         setTags: (state, action: PayloadAction<EventTag[]>) => {
             state.tags = action.payload;
+        },
+        showToast: (state, action: PayloadAction<string>) => {
+            state.shownToasts.push(action.payload)
+        },
+        removeToast: (state, action: PayloadAction<string>) => {
+            const index = state.shownToasts.indexOf(action.payload);
+            if (index > -1) state.shownToasts.splice(index, 1);
         }
     }
 });
 
-export const { setTags } = sharedSlice.actions;
+export const { setTags, showToast, removeToast } = sharedSlice.actions;
 export const sharedReducer = sharedSlice.reducer;

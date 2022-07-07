@@ -8,7 +8,7 @@ import { Import } from 'modules/import';
 import { Dashboard } from 'modules/graph';
 import { Login, Register } from 'modules/auth';
 import { NavigationBar } from 'modules/navigation';
-import { ErrorBoundary, Loader, useAppSelector, withAuth } from 'modules/common';
+import { ErrorBoundary, Toaster, Loader, useAppSelector, withAuth } from 'modules/common';
 import { ImportEvents, Templates, EditTemplate } from 'modules/import-events';
 import { GoogleIntegration, GoogleIntegrationConfirm } from 'modules/google-integration';
 
@@ -60,6 +60,7 @@ function App() {
                                 <Route path="integrations/google/confirm" element={<GoogleIntegrationConfirmWithAuth />} />
                             </Routes>
                         </Container>
+                        <Toaster />
                     </Container>
                 </BrowserRouter>
             </ErrorBoundary>

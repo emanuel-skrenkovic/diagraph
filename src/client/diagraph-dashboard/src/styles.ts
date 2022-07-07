@@ -1,4 +1,4 @@
-import styled, { css, createGlobalStyle } from 'styled-components';
+import styled, { keyframes, css, createGlobalStyle } from 'styled-components';
 
 export type ContainerProps = {
     vertical?: boolean;
@@ -134,4 +134,37 @@ export const Divider = styled.span`
   border-top: 1.5px solid #bbb;
   width: 90%;
   margin: auto;
+`;
+
+const fadeIn = keyframes`
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+`
+
+export type ToastProps = {
+    fadingOut: boolean;
+}
+
+export const Toast = styled(Box)`
+  text-align: center;
+  vertical-align: middle !important;
+  
+  color: #3d3d3d !important;
+  
+  padding: 0.5em 1em 0.5em 1em;
+  
+  min-width: 8em;
+  min-height: 2em;
+  
+  animation-name: ${fadeIn};
+  animation-duration: 0.18s;
+
+  ${(props: ToastProps) => {
+    if (props.fadingOut) {
+      return css`
+        opacity: 0;
+        transition: opacity 0.18s ease-in-out;
+      `;
+    }
+  }}
 `;
