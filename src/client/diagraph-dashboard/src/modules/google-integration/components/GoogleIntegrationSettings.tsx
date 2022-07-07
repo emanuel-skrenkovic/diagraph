@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { PrimaryButton, Button, Container, Input, Item } from 'styles';
-import { Loader, useAppSelector } from 'modules/common';
+import { Loader, useToast, useAppSelector } from 'modules/common';
 import { useUpdateProfileMutation, useGoogleImportFitEventsMutation } from 'services';
 
 export const GoogleIntegrationSettings = () => {
     const profile = useAppSelector(state => state.profile.profile);
     const { googleTaskList } = profile;
 
+    const showToast = useToast();
+
     const [taskList, setTaskList] = useState(googleTaskList ?? '');
 
     const [updateProfile, { isLoading: isUpdateProfileLoading }] = useUpdateProfileMutation();
-    const [importFitEvents, { isLoading: isImportLoading }]      = useGoogleImportFitEventsMutation();
+    const [importFitEvents, {
+        isLoading: isImportLoading,
+        isSuccess: isImportSuccess,
+        data: importData }] = useGoogleImportFitEventsMutation();
+
+    useEffect(() => {
+        if (isImportSuccess) {
+            const { count } = importData;
+
+            const message = count == 0
+                ? 'Found no new events to import.'
+                : `Successfully imported ${count} event/s.`;
+
+            showToast(message);
+        }
+    }, [isImportSuccess])
 
     if (isUpdateProfileLoading || isImportLoading) return <Loader />
 
