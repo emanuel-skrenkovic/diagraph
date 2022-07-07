@@ -59,17 +59,29 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
         }
         
         List<Event> fitnessEvents = fitnessSessions
-            .Where(s => (s.Value.First().IntVal != (int) ActivityType.Still 
-                         || s.Value.First().IntVal != (int) ActivityType.InVehicle)
-                        && !string.IsNullOrWhiteSpace(s.StartTimeNanos) 
-                        && !string.IsNullOrWhiteSpace(s.EndTimeNanos)
-                        // duration is more than 15 minutes
-                        && long.Parse(s.EndTimeNanos) - long.Parse(s.StartTimeNanos) >= 15 * 6e10) 
+            .Where(FilterActivity) 
             .Select(ActivityToEvent)
             .ToList();
 
         int eventsCreated = await _eventImport.ExecuteAsync(fitnessEvents, ct);
         await SendOkAsync(new ImportGoogleFitnessActivitiesResult { Count = eventsCreated }, ct);
+    }
+    
+    private bool FilterActivity(DataPoint point)
+    {
+        int? activityType = point.Value?.FirstOrDefault()?.IntVal;
+        if (activityType is null) return false;
+
+        if (activityType is (int)ActivityType.Still or (int)ActivityType.InVehicle)
+        {
+            return false;
+        }
+
+        if (!long.TryParse(point.StartTimeNanos, out long startTimeNanos)) return false;
+        if (!long.TryParse(point.EndTimeNanos, out long endTimeNanos))     return false;
+        if (endTimeNanos - startTimeNanos < 15 * 6e10)                     return false;
+
+        return true; 
     }
 
     private Event ActivityToEvent(DataPoint dataPoint)
