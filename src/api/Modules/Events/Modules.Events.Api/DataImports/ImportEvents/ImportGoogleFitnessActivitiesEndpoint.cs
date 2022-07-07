@@ -36,9 +36,9 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        // TODO: this doesn't work. Should only take GoogleFitness events into account
         Event lastFitnessEvent = await _context
             .Events
+            .Where(e => e.Source == GoogleFitnessSource)
             .OrderByDescending(e => e.OccurredAtUtc)
             .Take(1)
             .SingleOrDefaultAsync(cancellationToken: ct);
@@ -55,7 +55,8 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
         }
         
         List<Event> fitnessEvents = fitnessSessions
-            .Where(s => s.Value.First().IntVal != (int) ActivityType.Still
+            .Where(s => (s.Value.First().IntVal != (int) ActivityType.Still 
+                         || s.Value.First().IntVal != (int) ActivityType.InVehicle)
                         && !string.IsNullOrWhiteSpace(s.StartTimeNanos) 
                         && !string.IsNullOrWhiteSpace(s.EndTimeNanos)
                         // duration is more than 15 minutes
