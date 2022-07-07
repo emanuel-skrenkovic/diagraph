@@ -40,6 +40,8 @@ public class EventsModule : Module
         services.AddScoped<IDataExportStrategy, IndividualDataExportStrategy>();
         services.AddScoped<ExportStrategyContext>();
         services.AddScoped<IDataWriter, CsvDataWriter>();
+        
+        services.AddScoped<EventImport>();
 
         services.AddScoped<GoogleFit>();
     }

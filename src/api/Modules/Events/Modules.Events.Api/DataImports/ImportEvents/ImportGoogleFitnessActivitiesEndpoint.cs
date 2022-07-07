@@ -14,17 +14,20 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
     private readonly EventsDbContext _context;
     private readonly GoogleFit       _fit;
     private readonly IHashTool       _hashTool;
+    private readonly EventImport     _eventImport;
 
     public ImportGoogleFitnessActivitiesEndpoint
     (
         EventsDbContext context, 
         GoogleFit       fit, 
-        IHashTool       hashTool
+        IHashTool       hashTool,
+        EventImport     eventImport
     )
     {
-        _context  = context;
-        _fit      = fit;
-        _hashTool = hashTool;
+        _context     = context;
+        _fit         = fit;
+        _hashTool    = hashTool;
+        _eventImport = eventImport;
     }
     
     public override void Configure() => Post("events/data-import/google/fitness");
@@ -56,31 +59,11 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
                         && long.Parse(s.EndTimeNanos) - long.Parse(s.StartTimeNanos) >= 15 * 6e10) // duration is more than 15 minutes
             .Select(ActivityToEvent)
             .ToList();
-        
-        List<DateTime> dates = fitnessEvents.Select(e => e.OccurredAtUtc).ToList();
-        DateTime       start = dates.Min();
-        DateTime       end   = dates.Max();
-        
-        List<string> discriminators = await _context
-            .Events
-            .Where(e => e.OccurredAtUtc >= start && e.OccurredAtUtc <= end) // TODO: think about limits
-            .Select(e => e.Discriminator)
-            .ToListAsync(ct);
 
-        IEnumerable<Event> newEvents = fitnessEvents
-            .ExceptBy(discriminators, e => e.Discriminator)
-            .ToList();
-
-        int rowsAffected = 0;
-        if (newEvents.Any())
-        {
-            _context.AddRange(newEvents);
-            rowsAffected = await _context.SaveChangesAsync(ct);           
-        }
-        
+        int eventsCreated = await _eventImport.ExecuteAsync(fitnessEvents, ct);
         await SendOkAsync
         (
-            new ImportGoogleFitnessActivitiesResult { Count = rowsAffected }, 
+            new ImportGoogleFitnessActivitiesResult { Count = eventsCreated }, 
             ct
         );
     }
