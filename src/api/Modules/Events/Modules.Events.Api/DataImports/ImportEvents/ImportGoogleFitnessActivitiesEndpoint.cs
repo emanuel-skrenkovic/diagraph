@@ -45,7 +45,11 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
         
         List<DataPoint> fitnessSessions = 
         (
-            await _fit.GetActivitiesAsync(lastFitnessEvent?.OccurredAtUtc, DateTime.UtcNow.AddDays(1))
+            await _fit.GetActivitiesAsync
+            (
+                lastFitnessEvent?.OccurredAtUtc.ToUniversalTime(), 
+                DateTime.UtcNow.AddDays(1)
+            )
         )?.ToList();
 
         if (fitnessSessions?.Any() != true)
