@@ -3,6 +3,7 @@ using System;
 using Diagraph.Modules.Events.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Modules.Events.Migrations
 {
     [DbContext(typeof(EventsDbContext))]
-    partial class EventsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220707091506_event_source_and_discriminator_fix")]
+    partial class event_source_and_discriminator_fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +72,8 @@ namespace Diagraph.Modules.Events.Migrations
                         .HasColumnName("created_at_utc");
 
                     b.Property<string>("Discriminator")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("discriminator");
 
                     b.Property<DateTime?>("EndedAtUtc")
                         .HasColumnType("timestamptz")
@@ -79,6 +82,10 @@ namespace Diagraph.Modules.Events.Migrations
                     b.Property<DateTime>("OccurredAtUtc")
                         .HasColumnType("timestamptz")
                         .HasColumnName("occurred_at_utc");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("text")
+                        .HasColumnName("source");
 
                     b.Property<string>("Text")
                         .HasColumnType("text")

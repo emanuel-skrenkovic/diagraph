@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Diagraph.Modules.Events.Api.DataImports.ImportEvents;
+using Diagraph.Modules.Events.Api.DataImports.ImportEvents.Contracts;
 using Diagraph.Modules.Events.Api.DataImports.ImportTemplates.Contracts;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataImports.Csv;
@@ -79,6 +82,97 @@ public class EventsDataImportTests
             async context =>
             {
                 (await context.Events.AnyAsync()).Should().BeFalse();
+            }
+        );
+    }
+    
+    [Fact]
+    public async Task Imports_Google_Fit_Events()
+    {
+        // Arrange
+        await _fixture.Postgres.CleanAsync();
+        
+        // Act
+        HttpResponseMessage response = await _fixture
+            .Client
+            .PostAsync("events/data-import/google/fitness", null);
+        
+        // Assert
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var result = JsonSerializer.Deserialize<ImportGoogleFitnessActivitiesResult>
+        (
+            await response.Content.ReadAsByteArrayAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
+        
+        result.Should().NotBeNull();
+        result!.Count.Should().BeGreaterThan(0);
+
+        await _fixture.ExecuteAsync<EventsDbContext>
+        (
+            async context =>
+            {
+                List<Event> events = await context
+                    .Events
+                    .Where(e => e.Source == ImportGoogleFitnessActivitiesEndpoint.GoogleFitnessSource)
+                    .ToListAsync();
+                
+                events.Count.Should().BeGreaterThan(0);
+                events.Count.Should().Be(result.Count);
+            }
+        );
+    }
+    
+    [Fact]
+    public async Task Does_Not_Re_Import_Identical_Google_Fit_Events()
+    {
+        // Arrange
+        await _fixture.Postgres.CleanAsync();
+        HttpResponseMessage initialResponse = await _fixture
+            .Client
+            .PostAsync("events/data-import/google/fitness", null);
+        
+        var initialResult = JsonSerializer.Deserialize<ImportGoogleFitnessActivitiesResult>
+        (
+            await initialResponse.Content.ReadAsByteArrayAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
+
+        int count = initialResult!.Count;
+        
+        // Act
+        HttpResponseMessage response = await _fixture
+            .Client
+            .PostAsync("events/data-import/google/fitness", null);
+        
+        // Assert
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var result = JsonSerializer.Deserialize<ImportGoogleFitnessActivitiesResult>
+        (
+            await response.Content.ReadAsByteArrayAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
+        
+        result.Should().NotBeNull();
+        result!.Count.Should().Be(0);
+
+        await _fixture.ExecuteAsync<EventsDbContext>
+        (
+            async context =>
+            {
+                List<Event> events = await context
+                    .Events
+                    .Where(e => e.Source == ImportGoogleFitnessActivitiesEndpoint.GoogleFitnessSource)
+                    .ToListAsync();
+                
+                events.Count.Should().BeGreaterThan(0);
+                events.Count.Should().Be(initialResult.Count);
+
+                events.DistinctBy(e => e.Discriminator).Count().Should().Be(count);
             }
         );
     }

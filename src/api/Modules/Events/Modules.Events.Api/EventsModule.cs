@@ -1,5 +1,6 @@
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Integrations.Extensions;
+using Diagraph.Infrastructure.Integrations.Google.Fit;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Events.Api.AutoMapper;
@@ -39,5 +40,9 @@ public class EventsModule : Module
         services.AddScoped<IDataExportStrategy, IndividualDataExportStrategy>();
         services.AddScoped<ExportStrategyContext>();
         services.AddScoped<IDataWriter, CsvDataWriter>();
+        
+        services.AddScoped<EventImport>();
+
+        services.AddScoped<IGoogleFit, GoogleFit>();
     }
 }

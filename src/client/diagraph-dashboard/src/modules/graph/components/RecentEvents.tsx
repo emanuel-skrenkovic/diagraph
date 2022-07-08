@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PrimaryButton, DangerButton, Box, Container, Item, ScrollBar } from 'styles';
+import { PrimaryButton, DangerButton, Divider, Box, Container, Item, ScrollBar } from 'styles';
 import { Event } from 'types';
 import { For, LocalTime } from 'modules/common';
 
@@ -29,6 +29,8 @@ export const RecentEvents = ({ events, onEdit, onDelete }: RecentEventsProps) =>
                     <td className="box">
                         <Container vertical>
                             <Item as={LocalTime} date={e.occurredAtUtc} />
+                            <Divider />
+                            {e.endedAtUtc && <Item as={LocalTime} date={e.endedAtUtc} />}
                             <Item as={PrimaryButton} onClick={() => onEdit(e)}>Edit</Item>
                             <Item as={DangerButton} onClick={() => onDelete(e)}>Delete</Item>
                         </Container>

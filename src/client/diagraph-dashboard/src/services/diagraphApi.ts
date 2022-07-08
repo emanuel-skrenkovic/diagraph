@@ -215,7 +215,7 @@ export const diagraphApi = createApi({
 
         googleIntegration: builder.query<any, { redirect: string, state?: string }>({
             query: ({redirect, state}) => ({
-                url: `/auth/external-access/google/tasks/scopes/required?redirectUri=${redirect}${state && `&state=${state}`}`
+                url: `/auth/external-access/google/scopes/required?redirectUri=${redirect}${state && `&state=${state}`}`
             })
         }),
         googleIntegrationConfirm: builder.mutation<any, any>({
@@ -223,6 +223,12 @@ export const diagraphApi = createApi({
                 url: '/auth/external-access/google/scopes/confirm',
                 method: 'PUT',
                 body: request,
+            })
+        }),
+        googleImportFitEvents: builder.mutation<any, any>({
+            query: () => ({
+                url: 'events/data-import/google/fitness',
+                method: 'POST',
             })
         })
     })
@@ -251,4 +257,5 @@ export const {
     useLogoutMutation,
     useRegisterMutation,
     useGoogleIntegrationQuery,
-    useGoogleIntegrationConfirmMutation } = diagraphApi;
+    useGoogleIntegrationConfirmMutation,
+    useGoogleImportFitEventsMutation } = diagraphApi;

@@ -13,6 +13,7 @@
       <PackageReference Include="CsvHelper" Version="27.2.1" />
       <PackageReference Include="FastEndpoints" Version="4.2.0" />
       <PackageReference Include="Google.Apis.Discovery.v1" Version="1.57.0" />
+      <PackageReference Include="Google.Apis.Fitness.v1" Version="1.57.0.2454" />
       <PackageReference Include="Google.Apis.Tasks.v1" Version="1.57.0.2384" />
       <PackageReference Include="MailKit" Version="3.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.2.0" />

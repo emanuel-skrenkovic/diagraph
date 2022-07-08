@@ -28,6 +28,8 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .HasColumnType("timestamptz");
         
         builder.Property(e => e.Text).HasColumnName("text");
+        builder.Property(e => e.Source).HasColumnName("source").IsRequired();
+        builder.Property(e => e.Discriminator).HasColumnName("discriminator");
 
         builder
             .Property(e => e.OccurredAtUtc)
