@@ -11,17 +11,17 @@ namespace Diagraph.Modules.Events.Api.DataImports.ImportEvents;
 
 public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
 {
-    private const string GoogleFitnessSource = "google_fit";
+    public const string GoogleFitnessSource = "google_fit";
     
     private readonly EventsDbContext _context;
-    private readonly GoogleFit       _fit;
+    private readonly IGoogleFit      _fit;
     private readonly IHashTool       _hashTool;
     private readonly EventImport     _eventImport;
 
     public ImportGoogleFitnessActivitiesEndpoint
     (
         EventsDbContext context, 
-        GoogleFit       fit, 
+        IGoogleFit      fit, 
         IHashTool       hashTool,
         EventImport     eventImport
     )
@@ -63,6 +63,12 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
             .Select(ActivityToEvent)
             .ToList();
 
+        if (!fitnessEvents.Any())
+        {
+            await SendOkAsync(new ImportGoogleFitnessActivitiesResult { Count = 0 }, ct);
+            return;
+        }
+        
         int eventsCreated = await _eventImport.ExecuteAsync(fitnessEvents, ct);
         await SendOkAsync(new ImportGoogleFitnessActivitiesResult { Count = eventsCreated }, ct);
     }

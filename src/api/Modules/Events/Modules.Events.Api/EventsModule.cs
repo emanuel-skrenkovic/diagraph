@@ -43,6 +43,6 @@ public class EventsModule : Module
         
         services.AddScoped<EventImport>();
 
-        services.AddScoped<GoogleFit>();
+        services.AddScoped<IGoogleFit, GoogleFit>();
     }
 }

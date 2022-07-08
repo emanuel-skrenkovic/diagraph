@@ -9,7 +9,13 @@ using Dataset = Diagraph.Infrastructure.Integrations.Google.Fit.Contracts.Datase
 
 namespace Diagraph.Infrastructure.Integrations.Google.Fit;
 
-public class GoogleFit
+// I hate mocking frameworks -_-.
+public interface IGoogleFit
+{
+    Task<IEnumerable<DataPoint>> GetActivitiesAsync(DateTime? from, DateTime? to);
+}
+
+public class GoogleFit : IGoogleFit
 {
     private const string DataStreamName = "merge_activity_segments";
     
