@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Diagraph.Infrastructure.EventSourcing.Contracts;
 
 namespace Diagraph.Infrastructure.EventSourcing;
@@ -20,16 +19,18 @@ public abstract class AggregateEntity<TKey>
             
         RegisterAppliers();
     }
-        
+    
     protected void ApplyEvent(IEvent domainEvent)
     {
         Type eventType = domainEvent.GetType();
 
         if (!_eventAppliers.ContainsKey(eventType))
         {
-            throw new InvalidOperationException(
+            throw new InvalidOperationException
+            (
                 $@"'Apply' method for event type {eventType.FullName} is not registered in aggregate {GetType().FullName}. 
-Please call the 'RegisterApplier' in the 'RegisterAppliers' method in the aggregate implementation for the relevant event.'");
+Please call the 'RegisterApplier' in the 'RegisterAppliers' method in the aggregate implementation for the relevant event.'"
+            );
         }
                 
                 
@@ -54,7 +55,14 @@ Please call the 'RegisterApplier' in the 'RegisterAppliers' method in the aggreg
     }
 
     // TODO: should probably dequeue, i.e., clear the list.
-    public IReadOnlyCollection<IEvent> GetUncommittedEvents() => _events.ToImmutableList();
+    public IReadOnlyCollection<IEvent> GetUncommittedEvents()
+    {
+        List<IEvent> events = new(_events);
+        _events.Clear();
+        return events;
+    }
+
+    public string Key() => $"{GetType().FullName}-{Id}";
 
     protected abstract void RegisterAppliers();
         

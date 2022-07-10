@@ -28,12 +28,7 @@ public class EventStoreAggregateRepository : IAggregateRepository
             .GetUncommittedEvents()
             .Select(e => e.ToEventData(e.Metadata(_context)));
         
-        await _client.AppendToStreamAsync
-        (
-            StreamName<T, TKey>(aggregate.Id),
-            StreamState.Any,
-            events
-        );
+        await _client.AppendToStreamAsync(aggregate.Key(), StreamState.Any, events);
     }
 
     public async Task<T> LoadAsync<T, TKey>(TKey key) 
@@ -41,10 +36,11 @@ public class EventStoreAggregateRepository : IAggregateRepository
     {
         Ensure.NotNull(key);
         
+        T aggregate = new() { Id = key };
         EventStoreClient.ReadStreamResult eventStream = _client.ReadStreamAsync
         (
             Direction.Forwards, 
-            StreamName<T, TKey>(key),
+            aggregate.Key(),
             StreamPosition.Start
         );
         if (await eventStream.ReadState == ReadState.StreamNotFound) return null;
@@ -53,10 +49,7 @@ public class EventStoreAggregateRepository : IAggregateRepository
             .Select(e => e.ToEvent())
             .ToArrayAsync();
 
-        T aggregate = new();
         aggregate.Hydrate(key, events);
         return aggregate;
     }
-    
-    private string StreamName<T, TKey>(TKey id) => $"{typeof(T).FullName}-{id}";
 }

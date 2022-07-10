@@ -4,7 +4,5 @@ namespace Diagraph.Shared.Tests.Integration.Redis;
 
 public class RedisFixture : RedisModuleFixture
 {
-    public RedisFixture() : base("shared")
-    {
-    }
+    public RedisFixture() : base("shared") { }
 }
