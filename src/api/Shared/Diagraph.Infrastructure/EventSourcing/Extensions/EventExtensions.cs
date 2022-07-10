@@ -31,6 +31,9 @@ public static class EventExtensions
         );
     }
 
+    public static EventMetadata Metadata(this ResolvedEvent resolvedEvent)
+        => JsonSerializer.Deserialize<EventMetadata>(resolvedEvent.Event.Metadata.ToArray());
+
     // TODO: think about if this is needed.
     public static EventMetadata Metadata(this IEvent @event, ICorrelationContext context)
         => new()
