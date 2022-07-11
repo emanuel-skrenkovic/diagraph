@@ -1,6 +1,6 @@
 namespace Diagraph.Infrastructure.EventSourcing.Contracts;
 
-public interface IEventStreamSubscription
+public interface IEventSubscription
 {
     Task StartAsync();
 

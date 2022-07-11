@@ -16,6 +16,8 @@ public class EventStoreModuleFixture : IAsyncLifetime
 {
     public readonly EventStoreContainer EventStore;
     
+    public EventSubscriber Subscriber => new(EventStore.EventStore);
+    
     // TODO
     public IAggregateRepository Repository => new EventStoreAggregateRepository
     (
