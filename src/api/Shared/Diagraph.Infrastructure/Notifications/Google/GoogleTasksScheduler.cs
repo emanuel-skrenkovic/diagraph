@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Xml;
 using Diagraph.Infrastructure.Integrations.Google;
 using Google.Apis.Tasks.v1.Data;
 using GoogleTask = Google.Apis.Tasks.v1.Data.Task;
@@ -13,8 +14,7 @@ public class GoogleTasksScheduler : INotificationScheduler
 {
     private readonly IHttpClientFactory _clientFactory;
 
-    public GoogleTasksScheduler(IHttpClientFactory clientFactory)
-        => _clientFactory = clientFactory;
+    public GoogleTasksScheduler(IHttpClientFactory clientFactory) => _clientFactory = clientFactory;
     
     public async Task ScheduleAsync(Notification notification)
     {
@@ -28,18 +28,24 @@ public class GoogleTasksScheduler : INotificationScheduler
             ?.Items
             .FirstOrDefault(l => l.Title == notification.Parent)
             ?.Id;
-
-        HttpResponseMessage response = await client
-            .PostAsJsonAsync
-            (
-               $"/tasks/v1/lists/{taskList}/tasks",
-                new GoogleTask
-                {
-                    Title = notification.Text,
-                    // Due   = notification.NotifyAtUtc.ToString(CultureInfo.InvariantCulture)
-                }
-            );
         
+        if (string.IsNullOrWhiteSpace(taskList))
+            throw new InvalidOperationException($"Could not find {notification.Parent} task list.");
+
+        GoogleTask task = new()
+        {
+            Title = notification.Text,
+            Due   = notification.NotifyAtUtc > DateTime.MinValue 
+                ? XmlConvert
+                    .ToString(notification.NotifyAtUtc.ToLocalTime(), XmlDateTimeSerializationMode.Local)
+                : null
+        };
+
+        HttpResponseMessage response = await client.PostAsJsonAsync
+        (
+            $"/tasks/v1/lists/{taskList}/tasks",
+            task
+        );
         response.EnsureSuccessStatusCode(); // TODO: proper error handling
     }
 }

@@ -1,49 +1,75 @@
-import React, { useState, useEffect } from 'react';
+import React, { ChangeEvent } from 'react';
 
 import { Container, Input } from 'styles';
 import { Notification } from 'types';
+import { useValidation } from 'modules/common';
 
 export type NotificationFormProps = {
     value?: Notification;
     onChange: (notification: Notification) => void;
 }
 
-const EMPTY_NOTIFICATION: Notification = {
-    notifyAtUtc: new Date(),
-    text: '',
-    parent: 'My Tasks'
-};
-
 function hoursFormat(date: Date) {
-    const hours   = new Date(date).getUTCHours().toString().padStart(2, '0');
-    const minutes = new Date(date).getUTCMinutes().toString().padStart(2, '0');
+    const hours   = new Date(date).getHours().toString().padStart(2, '0');
+    const minutes = new Date(date).getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
 }
 
 export const NotificationForm = ({ value, onChange }: NotificationFormProps) => {
-    const [notification, setNotification] = useState<Notification>(value ?? EMPTY_NOTIFICATION);
+    const [notification, setNotification, notificationError] = useValidation<Notification>(
+        notificationValidation,
+        value ?? EMPTY_NOTIFICATION
+    );
 
-    useEffect(() => value && setNotification(value), [value])
+    const onChangeText = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const updated: Notification = { ...notification!, text: e.currentTarget.value };
+        setNotification(updated);
+        onChange(updated);
+    };
 
-    const updateNotification = (newNotification: Notification) => {
-        setNotification(newNotification);
-        onChange(newNotification);
+    const onChangeNotifyAt = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+
+        const date = new Date();
+        const parts = e.currentTarget.value.split(':');
+
+        date.setHours(Number(parts[0]));
+        date.setMinutes(Number(parts[1]))
+
+        console.log(date)
+
+        const updated: Notification = { ...notification!, notifyAtUtc: new Date(date) };
+        setNotification(updated)
+        onChange(updated);
     }
 
     return (
-        <Container>
-            <Input type="text"
-                   value={notification.text}
-                   onChange={e => updateNotification({
-                       ...notification,
-                       text: e.currentTarget.value
-                   })} />
-            <Input type="time"
-                   value={hoursFormat(notification.notifyAtUtc)}
-                   onChange={e => updateNotification({
-                       ...notification,
-                       notifyAtUtc: new Date(e.currentTarget.value)
-                   })} />
+        <Container vertical>
+            <Container>
+                <Input type="text"
+                       value={notification!.text}
+                       onChange={onChangeText} />
+                <Input type="time"
+                       value={hoursFormat(notification!.notifyAtUtc)}
+                       onChange={onChangeNotifyAt} />
+            </Container>
+            {notificationError && <span>{notificationError}</span>}
         </Container>
+
     );
+};
+
+function notificationValidation(notification: Notification | undefined): [boolean, string] {
+    if (!notification)                         return [false, ''];
+    if (notification.notifyAtUtc < new Date()) return [false, 'Cannot set time to before now.'];
+    if (!notification.text)                    return [false, 'Notification text cannot be empty.'];
+
+    return [true, ''];
+}
+
+const EMPTY_NOTIFICATION: Notification = {
+    notifyAtUtc: new Date(),
+    text: '',
+    parent: 'My Tasks'
 };

@@ -15,4 +15,4 @@ stop:
 test: test-api
 
 test-api:
-	dotnet test src/api
+	dotnet build src/api && dotnet test src/api --no-build -l="console;verbosity=normal"

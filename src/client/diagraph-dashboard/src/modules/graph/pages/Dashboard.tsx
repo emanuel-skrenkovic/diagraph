@@ -6,8 +6,8 @@ import { AppDispatch } from 'store';
 import { diagraphApi, useCreateEventMutation, useUpdateEventMutation, useDeleteEventMutation,
     useGetEventQuery, useGetEventsQuery, useGetDataQuery, useGetProfileQuery, useGetTagsQuery
 } from 'services';
-import { NotificationForm, Loader, DateRangePicker, toLocalISODateString, useValidation,
-    useAppSelector, withLoading } from 'modules/common';
+import { NotificationForm, Loader, DateRangePicker, toLocalISODateString, useAppSelector,
+    withLoading } from 'modules/common';
 import { Notification, CreateEventCommand, Event, GlucoseMeasurement } from 'types';
 import { GlucoseManagementIndicator, Statistics, GlucoseGraph, EventForm, RecentEvents, setDateRange,
     setSelectedEventId, GlucoseMeasurementView } from 'modules/graph';
@@ -20,11 +20,7 @@ export const Dashboard = () => {
     const [editing, setEditing]                         = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<GlucoseMeasurement | undefined>();
     const [selectedEvent, setSelectedEvent]             = useState<Event | undefined>();
-
-    const [notification, setNotification, notificationError] = useValidation(
-        notificationValidation,
-        {} as Notification
-    );
+    const [notification, setNotification]               = useState<Notification>(EMPTY_NOTIFICATION);
 
     const [createEvent, { isLoading: isCreateEventLoading }] = useCreateEventMutation();
     const [updateEvent, { isLoading: isUpdateEventLoading }] = useUpdateEventMutation();
@@ -93,29 +89,6 @@ export const Dashboard = () => {
         setEditing(false);
     }
 
-    const NewEventForm = () => (
-        <Container vertical>
-            <EventForm onSubmit={onCreateEvent} submitButtonText="Create Event" />
-            <Item>
-                {googleIntegration && (
-                    <>
-                        <label htmlFor="eventCreateTask">Create task</label>
-                        <Input id="eventCreateTask"
-                               type="checkbox"
-                               checked={createTask}
-                               onChange={() => setCreateTask(!createTask)}/>
-                        {createTask && (
-                            <>
-                                <NotificationForm onChange={n => setNotification(n)} />
-                                {notificationError && <span>{notificationError}</span>}
-                            </>
-                        )}
-                    </>
-                )}
-            </Item>
-        </Container>
-    );
-
     const EditEventFormWithLoading = withLoading(() => (
         <Box>
             <Centered>
@@ -160,7 +133,30 @@ export const Dashboard = () => {
                 <Item style={{width:"50%"}}>
                     {selectedEvent
                         ? <EditEventFormWithLoading isLoading={isEventLoading} />
-                        : <NewEventForm />}
+                        :  (
+                            <Container vertical>
+                                <EventForm onSubmit={onCreateEvent} submitButtonText="Create Event" />
+                                <Item>
+                                    {googleIntegration && (
+                                        <>
+                                            <label htmlFor="eventCreateTask">Create task</label>
+                                            <Input id="eventCreateTask"
+                                                   type="checkbox"
+                                                   checked={createTask}
+                                                   onChange={() => {
+                                                       setCreateTask(!createTask)
+                                                       setNotification(EMPTY_NOTIFICATION);
+                                                   }}/>
+                                            {createTask && (
+                                                <NotificationForm value={notification}
+                                                                  onChange={n => setNotification(n)} />
+
+                                            )}
+                                        </>
+                                    )}
+                                </Item>
+                            </Container>
+                        )}
                 </Item>
                 <Item style={{width:"35%"}}>
                     {selectedMeasurement && (
@@ -193,10 +189,8 @@ function toLocalDate(dateString: string): Date {
     return date;
 }
 
-function notificationValidation(notification: Notification | undefined): [boolean, string] {
-    if (!notification)                         return [false, ''];
-    if (notification.notifyAtUtc < new Date()) return [false, ''];
-    if (!notification.text)                    return [false, ''];
-
-    return [true, ''];
-}
+const EMPTY_NOTIFICATION: Notification = {
+    notifyAtUtc: new Date(),
+    text: '',
+    parent: 'My Tasks'
+};
