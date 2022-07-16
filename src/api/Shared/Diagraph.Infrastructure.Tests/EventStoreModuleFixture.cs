@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Diagraph.Infrastructure.Events.Contracts;
+using Diagraph.Infrastructure.Events.EventStore;
 using Diagraph.Infrastructure.EventSourcing;
 using Diagraph.Infrastructure.EventSourcing.Contracts;
 using Diagraph.Infrastructure.EventSourcing.Extensions;
@@ -17,6 +19,17 @@ public class EventStoreModuleFixture : IAsyncLifetime
     public readonly EventStoreContainer EventStore;
     
     public EventSubscriber Subscriber => new(EventStore.EventStore);
+
+    public IEventDispatcher Dispatcher => new EventStoreEventDispatcher
+    (
+        new MockCorrelationContext
+        {
+            CausationId   = Guid.NewGuid(),
+            CorrelationId = Guid.NewGuid(),
+            MessageId     = Guid.NewGuid()
+        },
+        EventStore.EventStore
+    );
     
     // TODO
     public IAggregateRepository Repository => new EventStoreAggregateRepository
