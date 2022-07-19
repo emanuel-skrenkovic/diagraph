@@ -1,3 +1,4 @@
+using Diagraph.Infrastructure.Api;
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Events.Api;
@@ -68,7 +69,9 @@ app.UseAuthorization();
 app.UseSession();
 
 // Needs to be after UserAuthentication.
+app.Use(CorrelationIdMiddleware.Handle);
 app.Use(UserContextMiddleware.Handle);
+
 app.UseFastEndpoints();
 
 app.Run();

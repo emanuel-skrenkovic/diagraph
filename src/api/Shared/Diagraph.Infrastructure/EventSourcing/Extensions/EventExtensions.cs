@@ -7,6 +7,17 @@ namespace Diagraph.Infrastructure.EventSourcing.Extensions;
 
 public static class EventExtensions
 {
+    public static object ToEventObject(this ResolvedEvent resolvedEvent)
+    {
+        EventRecord record = resolvedEvent.Event;
+
+        return JsonSerializer.Deserialize
+        (
+            record.Data.ToArray(),
+            Type.GetType(record.EventType)!
+        );
+    }
+    
     public static IEvent ToEvent(this ResolvedEvent resolvedEvent)
     {
         EventRecord record = resolvedEvent.Event;

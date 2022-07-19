@@ -27,4 +27,8 @@ public static class EndpointExtensions
         response.StatusCode = 201;
         return response.StartAsync(cancellation); 
     }
+
+    public static string CorrelationId<TRequest, TResponse>(this Endpoint<TRequest, TResponse> endpoint)
+        where TRequest : notnull, new() where TResponse : notnull, new()
+        => endpoint.HttpContext.Request.Headers["correlation-id"];
 }

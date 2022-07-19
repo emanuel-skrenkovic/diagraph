@@ -19,6 +19,8 @@ public class DatabaseModuleFixture<TContext> : IAsyncLifetime where TContext : D
      public readonly PostgreSqlContainer<TContext> Postgres;
  
      public HttpClient Client => _webApplicationFactory.CreateClient();
+
+     public T Service<T>() => _webApplicationFactory.Services.GetRequiredService<T>();
  
      public DatabaseModuleFixture(string moduleName, Action<IServiceCollection> configureServices = null)
      {

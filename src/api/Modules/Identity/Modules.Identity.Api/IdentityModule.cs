@@ -1,13 +1,20 @@
+using Diagraph.Infrastructure.Api;
 using Diagraph.Infrastructure.Cache.Redis;
 using Diagraph.Infrastructure.Cache.Redis.Extensions;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
+using Diagraph.Infrastructure.EventSourcing;
+using Diagraph.Infrastructure.EventSourcing.Contracts;
+using Diagraph.Infrastructure.EventSourcing.EventStore;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Integrations.Extensions;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
+using Diagraph.Infrastructure.ProcessManager.Contracts;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.Registration;
+using Diagraph.Modules.Identity.UserData;
+using EventStore.Client;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -53,6 +60,24 @@ public class IdentityModule : Module
         services.AddScoped<UserConfirmation>();
 
         services.AddGoogleIntegration(configuration);
+
+        services.AddScoped<IAggregateRepository, EventStoreAggregateRepository>();
+        services.AddScoped<ICorrelationContext, CorrelationContext>();
+        services.AddScoped<IProcessManager<UserDataRemovalState>, UserDataDeletionProcessManager>();
+        services.AddTransient<EventSubscriber>();
+        services.AddSingleton
+        (
+            _ => new EventStoreClient
+            (
+                EventStoreClientSettings.Create
+                (
+                    configuration
+                        .GetSection(EventStoreConfiguration.SectionName)
+                        .Get<EventStoreConfiguration>()
+                        .ConnectionString
+                )
+            )
+        );
 
         services.AddAuthentication
         (

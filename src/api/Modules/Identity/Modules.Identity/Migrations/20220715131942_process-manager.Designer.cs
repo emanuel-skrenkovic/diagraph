@@ -3,6 +3,7 @@ using System;
 using Diagraph.Modules.Identity.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Modules.Identity.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    partial class IdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220715131942_process-manager")]
+    partial class processmanager
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,8 +56,7 @@ namespace Diagraph.Modules.Identity.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("created_at_utc");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Data")
                         .HasColumnType("jsonb")
@@ -74,8 +75,7 @@ namespace Diagraph.Modules.Identity.Migrations
                         .HasColumnName("process_id");
 
                     b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("timestamptz")
-                        .HasColumnName("updated_at_utc");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

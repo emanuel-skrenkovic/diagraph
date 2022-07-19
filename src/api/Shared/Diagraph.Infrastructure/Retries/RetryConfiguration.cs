@@ -2,7 +2,10 @@ namespace Diagraph.Infrastructure.Retries;
 
 public class RetryConfiguration
 {
-    public int MaxRetryCount { get; set; } = 5;
+    public int MaxRetryCount { get; init; }
 
-    public int RetryDelayMilliseconds { get; set; } = 500;
+    public int RetryDelayMilliseconds { get; init;  }
+
+    public static RetryConfiguration Default
+        => new() { MaxRetryCount = 15, RetryDelayMilliseconds = 500 };
 }

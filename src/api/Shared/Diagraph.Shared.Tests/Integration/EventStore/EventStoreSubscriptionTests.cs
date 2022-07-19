@@ -60,11 +60,11 @@ public class EventStoreSubscriptionTests
         
         var agg = EventStoreFixture.TestAggregate.Create();
         await _fixture.Repository.SaveAsync<EventStoreFixture.TestAggregate, Guid>(agg);
-
+    
         int counter = 0;
         
         var subscription = new TestSubscription
-        (
+        ( 
             (_, _) =>
             {
                 handles[counter++].Set();
@@ -95,7 +95,7 @@ public class EventStoreSubscriptionTests
         agg.SetInt(10);
         agg.SetString(Guid.NewGuid().ToString());
         await _fixture.Repository.SaveAsync<EventStoreFixture.TestAggregate, Guid>(agg);
-
+    
         int counter = 0;
         
         var subscription = new TestSubscription
