@@ -5,16 +5,18 @@ using Diagraph.Modules.GlucoseData.Api;
 using Diagraph.Modules.Identity.Api;
 using FastEndpoints;
 using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables(prefix: "DIAGRAPH_");
 
+ApplicationPartManager partManager = builder.Services.AddControllers().PartManager;
 builder.Services.AddFastEndpoints();
 
 string env = builder.Environment.EnvironmentName;
-builder.Services.LoadModule<IdentityModule>(env);
-builder.Services.LoadModule<GlucoseDataModule>(env);
-builder.Services.LoadModule<EventsModule>(env);
+builder.Services.LoadModule<IdentityModule>(partManager, env);
+builder.Services.LoadModule<GlucoseDataModule>(partManager, env);
+builder.Services.LoadModule<EventsModule>(partManager, env);
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(opts =>
@@ -32,8 +34,6 @@ builder.Services.AddProblemDetails(opts =>
 
 builder.Services.AddScoped<IUserContext, UserContext>();
 
-// AddProblemDetails breaks if AddControllers is removed.
-builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

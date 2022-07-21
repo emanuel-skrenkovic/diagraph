@@ -1,4 +1,5 @@
 using Diagraph.Infrastructure.Database;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,12 +11,19 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection LoadModule<T>
     (
         this IServiceCollection services, 
+        ApplicationPartManager partManager,
         string environment = null
     ) 
         where T: Module, new()
     {
+        partManager.ApplicationParts.Add
+        (
+            new AssemblyPart(typeof(T).Assembly)
+        );
+        
         T module = new();
         module.Load(services, environment); // TODO: fix
+        
         return services;
     }
     
