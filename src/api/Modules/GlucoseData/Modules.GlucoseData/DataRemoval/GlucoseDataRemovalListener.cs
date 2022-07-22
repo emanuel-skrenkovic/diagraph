@@ -2,24 +2,24 @@ using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Events.Contracts;
 using Diagraph.Infrastructure.EventSourcing;
 using Diagraph.Infrastructure.EventSourcing.Contracts;
-using Diagraph.Modules.Events.Database;
+using Diagraph.Modules.GlucoseData.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Identity.Integration.UserData;
 using Modules.Identity.Integration.UserData.Events;
 
-namespace Diagraph.Modules.Events.DataRemoval;
+namespace Diagraph.Modules.GlucoseData.DataRemoval;
 
-public class EventDataRemovalListener : IEventSubscription, IEventHandler
+public class GlucoseDataRemovalListener : IEventSubscription, IEventHandler
 {
     private readonly IEventDispatcher     _dispatcher;
     private readonly EventSubscriber      _subscriber;
     private readonly IServiceScopeFactory _scopeFactory;
 
-    public EventDataRemovalListener
+    public GlucoseDataRemovalListener
     (
-        IEventDispatcher dispatcher,
-        EventSubscriber subscriber, 
+        IEventDispatcher     dispatcher,
+        EventSubscriber      subscriber,
         IServiceScopeFactory scopeFactory
     )
     {
@@ -30,35 +30,35 @@ public class EventDataRemovalListener : IEventSubscription, IEventHandler
     
     public async Task HandleAsync(IEvent @event, EventMetadata metadata)
     {
-        IServiceScope scope     = _scopeFactory.CreateScope();
-        EventsDbContext context = scope.GetContext<EventsDbContext>();
+        IServiceScope        scope   = _scopeFactory.CreateScope();
+        GlucoseDataDbContext context = scope.GetContext<GlucoseDataDbContext>();
 
-        if (@event is not RequestedEventDataRemovalEvent removalEvent) return;
+        if (@event is not RequestedGlucoseDataRemovalEvent removalEvent) return;
 
-        List<Event> userEvents = await context
-            .Events
+        List<GlucoseMeasurement> measurements = await context
+            .GlucoseMeasurements
             .Where(e => e.UserId == Guid.Parse(removalEvent.UserName))
             .ToListAsync();
 
-        if (!userEvents.Any())
+        if (!measurements.Any())
         {
             // Dispatch the event either way so the process manager doesn't get stuck.
             await _dispatcher.DispatchAsync
             (
                 UserDataRemovalConsts.IntegrationStreamName,
-                new EventDataRemovedEvent(removalEvent.UserName)
+                new GlucoseDataRemovedEvent(removalEvent.UserName)
             );
             return;
         }
 
-        context.Events.RemoveRange(userEvents);
+        context.GlucoseMeasurements.RemoveRange(measurements);
         await context.SaveChangesAsync();
 
         await _dispatcher.DispatchAsync
         (
             UserDataRemovalConsts.IntegrationStreamName,
-            new EventDataRemovedEvent(removalEvent.UserName)
-        );
+            new GlucoseDataRemovedEvent(removalEvent.UserName)
+        ); 
     }
     
     public Task StartAsync() => _subscriber.SubscribeAsync(HandleAsync);

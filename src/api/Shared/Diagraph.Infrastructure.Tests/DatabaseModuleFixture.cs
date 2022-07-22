@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Diagraph.Infrastructure.Tests.Docker;
@@ -21,6 +23,15 @@ public class DatabaseModuleFixture<TContext> : IAsyncLifetime where TContext : D
      public HttpClient Client => _webApplicationFactory.CreateClient();
 
      public T Service<T>() => _webApplicationFactory.Services.GetRequiredService<T>();
+     
+     public T ServiceOfType<T, TBase>() where T : TBase
+     {
+         IEnumerable<TBase> services = _webApplicationFactory
+             .Services
+             .GetRequiredService<IEnumerable<TBase>>();
+
+         return (T) services.First(s => s.GetType().IsAssignableTo(typeof(T)));
+     }
  
      public DatabaseModuleFixture(string moduleName, Action<IServiceCollection> configureServices = null)
      {
@@ -61,10 +72,7 @@ public class DatabaseModuleFixture<TContext> : IAsyncLifetime where TContext : D
      {
          using IServiceScope scope = _webApplicationFactory.Services.CreateScope();
          
-         await action
-         (
-             scope.ServiceProvider.GetRequiredService<TService>()
-         );
+         await action(scope.ServiceProvider.GetRequiredService<TService>());
      }
  
      public Task InitializeAsync() => Postgres.InitializeAsync();

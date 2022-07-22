@@ -13,7 +13,8 @@ using Xunit;
 
 namespace Diagraph.Modules.GlucoseData.Tests.Integration;
 
-public class GlucoseDataImportTests : IClassFixture<GlucoseDataFixture>, IAsyncLifetime
+[Collection(nameof(GlucoseDataCollectionFixture))]
+public class GlucoseDataImportTests : IAsyncLifetime
 {
     private readonly GlucoseDataFixture _fixture;
 

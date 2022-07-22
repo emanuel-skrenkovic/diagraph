@@ -1,16 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Diagraph.Infrastructure.Dynamic.Extensions;
-using Diagraph.Infrastructure.EventSourcing.Contracts;
-using Diagraph.Infrastructure.EventSourcing.Extensions;
+using Diagraph.Infrastructure.EventSourcing;
 using Diagraph.Infrastructure.ProcessManager.Contracts;
+using Diagraph.Infrastructure.Tests;
 using Diagraph.Infrastructure.Tests.AutoFixture;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.UserData;
-using EventStore.Client;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Modules.Identity.Integration.UserData.Events;
 using Xunit;
+// ReSharper disable CoVariantArrayConversion
 
 namespace Diagraph.Modules.Identity.Tests.Integration;
 
@@ -93,21 +97,26 @@ public class DataRemovalProcessManagerTests
         await _fixture.ExecuteAsync<IdentityDbContext>(async context => { process = await context.Processes.SingleOrDefaultAsync(p => p.ProcessId == email); });
 
         await pm.WakeUpAsync(process);
-        await pm.StartAsync();
-        var correlationContext = _fixture.Service<ICorrelationContext>();
+        
+        AutoResetEvent handle = new(false);
+        
+        await TestHandlerWrapper.RunAsync
+        (
+            _fixture.Service<EventSubscriber>(), 
+            pm, 
+            (@event, _) =>
+            {
+                if (@event is EventDataRemovedEvent)
+                    handle.Set();
+            }
+        );
     
         // Act
         var @event = new EventDataRemovedEvent(email);
-        await _fixture.EventStoreFixture.EventStore.EventStore.AppendToStreamAsync
-        (
-            initialState.Key(),
-            StreamState.Any,
-            new[] { @event.ToEventData(@event.Metadata(correlationContext)) }
-        );
-    
-        // #horribleways
-        await Task.Delay(300);
-    
+        await _fixture.EventStoreFixture.DispatchEvent(initialState.Key(), @event);
+
+        handle.WaitOne();
+
         // Assert
         var events = await _fixture.EventStoreFixture.Events(initialState.Key());
         events.Should().NotBeNullOrEmpty();
@@ -119,8 +128,6 @@ public class DataRemovalProcessManagerTests
             var     latestState    = updatedProcess.GetData<UserDataRemovalState>();
             latestState.EventDataRemoved.Should().BeTrue();
         });
-
-        // TODO: definitely need WaitOne here.
     }
     
     [Theory, CustomizedAutoData]
@@ -140,36 +147,31 @@ public class DataRemovalProcessManagerTests
 
         await pm.WakeUpAsync(process);
         
-        await pm.StartAsync();
-        var correlationContext = _fixture.Service<ICorrelationContext>();
-    
-        var eventDataRemovedEvent = new EventDataRemovedEvent(email);
-        await _fixture.EventStoreFixture.EventStore.EventStore.AppendToStreamAsync
+        Dictionary<Type, AutoResetEvent> handles = new()
+        {
+            [typeof(EventDataRemovedEvent)] = new AutoResetEvent(false),
+            [typeof(GlucoseDataRemovedEvent)] = new AutoResetEvent(false)
+        };
+        await TestHandlerWrapper.RunAsync
         (
-            initialState.Key(),
-            StreamState.Any,
-            new[]
+            _fixture.Service<EventSubscriber>(), 
+            pm, 
+            (@event, _) =>
             {
-                eventDataRemovedEvent
-                    .ToEventData(eventDataRemovedEvent.Metadata(correlationContext))
+                Type type = @event.GetType();
+                if (handles.ContainsKey(type))
+                    handles[type].Set();
             }
         );
+
+        // Act
+        var eventDataRemovedEvent = new EventDataRemovedEvent(email);
+        await _fixture.EventStoreFixture.DispatchEvent(initialState.Key(), eventDataRemovedEvent);
     
         var glucoseDataRemovedEvent = new GlucoseDataRemovedEvent(email);
-        await _fixture.EventStoreFixture.EventStore.EventStore.AppendToStreamAsync
-        (
-            initialState.Key(),
-            StreamState.Any,
-            new[]
-            {
-                glucoseDataRemovedEvent
-                    .ToEventData(glucoseDataRemovedEvent.Metadata(correlationContext))
-            }
-        );
+        await _fixture.EventStoreFixture.DispatchEvent(initialState.Key(), glucoseDataRemovedEvent);
     
-        // Act
-        // #horribleways
-        await Task.Delay(300);
+        WaitHandle.WaitAll(handles.Values.ToArray()).Should().BeTrue();
     
         // Assert
         var events = await _fixture.EventStoreFixture.Events(initialState.Key());
@@ -185,7 +187,5 @@ public class DataRemovalProcessManagerTests
 
             latestState.DataRemoved.Should().BeTrue();
         });
-
-        // TODO: definitely need WaitOne here.
     }
 }

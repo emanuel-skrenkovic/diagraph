@@ -53,13 +53,17 @@ public class EventStoreModuleFixture : IAsyncLifetime
         EventStore.EventStore
     );
 
+    // TODO: clean this up - moduleName not needed.
     public EventStoreModuleFixture(string moduleName)
     {
          IConfiguration configuration = new ConfigurationManager()
-             .AddJsonFile($"module.{moduleName}.integration-test.json")
+             .AddJsonFile($"appsettings.integration-test.json")
              .Build();
  
-         EventStore = new EventStoreContainer(configuration["EventStoreConfiguration:ConnectionString"]);       
+         EventStore = new EventStoreContainer
+         (
+             configuration["EventStoreConfiguration:ConnectionString"]
+         );
     }
 
     public ValueTask<List<IEvent>> Events(string stream)
@@ -68,6 +72,30 @@ public class EventStoreModuleFixture : IAsyncLifetime
             .ReadStreamAsync(Direction.Forwards, stream, StreamPosition.Start)
             .Select(e => e.ToEvent())
             .ToListAsync();
+
+    public async Task DispatchEvent(string stream, IEvent @event)
+    {
+        await EventStore.EventStore.AppendToStreamAsync
+        (
+            stream,
+            StreamState.Any,
+            new[]
+            {
+                @event.ToEventData
+                (
+                    @event.Metadata
+                    (
+                        new CorrelationContext
+                        {
+                            CausationId   = Guid.NewGuid(),
+                            CorrelationId = Guid.NewGuid(),
+                            MessageId     = Guid.NewGuid()
+                        }
+                    )
+                )
+            }
+        ); 
+    }
 
     public Task InitializeAsync() => EventStore.InitializeAsync();
 

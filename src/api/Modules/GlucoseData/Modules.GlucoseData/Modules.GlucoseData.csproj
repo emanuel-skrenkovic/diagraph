@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Shared\Diagraph.Infrastructure\Diagraph.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Identity\Modules.Identity.Integration\Modules.Identity.Integration.csproj" />
     </ItemGroup>
 
     <ItemGroup>

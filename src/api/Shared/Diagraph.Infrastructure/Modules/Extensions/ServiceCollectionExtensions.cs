@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         );
         
         T module = new();
-        module.Load(services, environment); // TODO: fix
+        module.Load(partManager, services, environment); // TODO: fix
         
         return services;
     }
@@ -30,25 +30,16 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection LoadModule<T>
     (
         this IServiceCollection services, 
-        IConfiguration configuration
+        ApplicationPartManager  partManager,
+        IConfiguration          configuration
     )
         where T: Module, new()
     {
         T module = new();
-        module.Load(services, configuration);
+        module.Load(partManager, services, configuration);
         return services;
     }
-
-    public static IServiceCollection Clone(this IServiceCollection services)
-    {
-        IServiceCollection clonedServices = new ServiceCollection();
-        
-        foreach (ServiceDescriptor service in services)
-            clonedServices.Add(service);
-        
-        return clonedServices;
-    }
-
+    
     public static IServiceCollection AddPostgres<TContext>
     (
         this IServiceCollection services,
