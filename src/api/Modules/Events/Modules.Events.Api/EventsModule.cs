@@ -1,4 +1,9 @@
+using Diagraph.Infrastructure.Api;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Infrastructure.Events.Contracts;
+using Diagraph.Infrastructure.Events.EventStore;
+using Diagraph.Infrastructure.EventSourcing;
+using Diagraph.Infrastructure.EventSourcing.Contracts;
 using Diagraph.Infrastructure.Integrations.Extensions;
 using Diagraph.Infrastructure.Integrations.Google.Fit;
 using Diagraph.Infrastructure.Modules;
@@ -10,6 +15,8 @@ using Diagraph.Modules.Events.DataImports.Contracts;
 using Diagraph.Modules.Events.DataImports.Csv;
 using Diagraph.Modules.Events.DataImports.Csv.AutoMapper;
 using Diagraph.Modules.Events.DataImports.Templates;
+using Diagraph.Modules.Events.DataRemoval;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +26,12 @@ public class EventsModule : Module
 {
     public override string ModuleName => "events";
     
-    protected override void RegisterServices(IConfiguration configuration, IServiceCollection services)
+    protected override void RegisterServices
+    (
+        ApplicationPartManager partManager, 
+        IConfiguration configuration, 
+        IServiceCollection services
+    )
     {
         services.AddAutoMapper(typeof(EventsAutoMapperProfile));
         services.AddAutoMapper(typeof(EventsCsvImportAutoMapperProfile));
@@ -44,5 +56,11 @@ public class EventsModule : Module
         services.AddScoped<EventImport>();
 
         services.AddScoped<IGoogleFit, GoogleFit>();
+
+        services.AddScoped<IEventDispatcher, EventStoreEventDispatcher>();
+        services.AddScoped<ICorrelationContext, CorrelationContext>();
+        
+        services.AddTransient<EventSubscriber>();
+        services.AddScoped<IEventSubscription, EventDataRemovalListener>();
     }
 }

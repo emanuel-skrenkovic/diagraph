@@ -22,6 +22,66 @@ namespace Diagraph.Modules.Identity.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Diagraph.Infrastructure.EventSourcing.SubscriptionCheckpoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Position")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("position");
+
+                    b.Property<string>("SubscriptionId")
+                        .HasColumnType("text")
+                        .HasColumnName("subscription_id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("subscription_checkpoint", (string)null);
+                });
+
+            modelBuilder.Entity("Diagraph.Infrastructure.ProcessManager.Contracts.Process", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("data");
+
+                    b.Property<bool>("Finished")
+                        .HasColumnType("boolean")
+                        .HasColumnName("finished");
+
+                    b.Property<bool>("Initiated")
+                        .HasColumnType("boolean")
+                        .HasColumnName("initiated");
+
+                    b.Property<string>("ProcessId")
+                        .HasColumnType("text")
+                        .HasColumnName("process_id");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("process", (string)null);
+                });
+
             modelBuilder.Entity("Diagraph.Modules.Identity.ExternalIntegrations.External", b =>
                 {
                     b.Property<int>("Id")

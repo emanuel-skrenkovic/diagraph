@@ -1,8 +1,8 @@
 {
   "RedisConfiguration": {
-    "ConnectionString": "localhost:6379"
+    "ConnectionString": "localhost:63790"
   },
   "EventStoreConfiguration": {
-    "ConnectionString": "esdb://localhost:2113?tls=false&tlsVerifyCert=false"
+    "ConnectionString": "esdb://localhost:21133?tls=false&tlsVerifyCert=false"
   }
 }

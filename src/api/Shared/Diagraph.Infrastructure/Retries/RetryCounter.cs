@@ -13,7 +13,7 @@ public class RetryCounter
     {
         while (_retryCount < _configuration.MaxRetryCount)
         {
-            await Task.Delay(_configuration.RetryDelayMilliseconds).ConfigureAwait(false);
+            await Task.Delay(_configuration.RetryDelayMilliseconds);
             
             try
             {
@@ -30,6 +30,10 @@ public class RetryCounter
             } 
         }
 
-        throw new AggregateException(_exceptions);
+        throw new AggregateException
+        (
+            $"Failed to connect after {_retryCount} attempts.", 
+            _exceptions
+        ); 
     }
 }

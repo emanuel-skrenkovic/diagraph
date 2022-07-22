@@ -2,14 +2,19 @@ using Diagraph.Infrastructure.Cache.Redis;
 using Diagraph.Infrastructure.Cache.Redis.Extensions;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
+using Diagraph.Infrastructure.EventSourcing;
+using Diagraph.Infrastructure.EventSourcing.Contracts;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Integrations.Extensions;
 using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
+using Diagraph.Infrastructure.ProcessManager.Contracts;
 using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.Registration;
+using Diagraph.Modules.Identity.UserData;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,7 +27,12 @@ public class IdentityModule : Module
     
     public override string ModuleName => "identity";
 
-    protected override void RegisterServices(IConfiguration configuration, IServiceCollection services)
+    protected override void RegisterServices
+    (
+        ApplicationPartManager partManager, 
+        IConfiguration configuration, 
+        IServiceCollection services
+    )
     {
         services.AddAutoMapper(typeof(IdentityDbContext).Assembly);
         
@@ -53,6 +63,9 @@ public class IdentityModule : Module
         services.AddScoped<UserConfirmation>();
 
         services.AddGoogleIntegration(configuration);
+
+        services.AddScoped<IAggregateRepository, EventStoreAggregateRepository>();
+        services.AddScoped<IProcessManager<UserDataRemovalState>, UserDataDeletionProcessManager>();
 
         services.AddAuthentication
         (

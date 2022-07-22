@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,11 +8,19 @@ public abstract class Module
 {
     public abstract string ModuleName { get; }
     
-    public void Load(IServiceCollection services, string environment = null)
-        => RegisterServices(LoadConfiguration(environment), services);
+    public void Load
+    (
+        ApplicationPartManager partManager, 
+        IServiceCollection services, 
+        string environment = null
+    ) => RegisterServices(partManager, LoadConfiguration(environment), services);
 
-    public void Load(IServiceCollection services, IConfiguration configuration)
-        => RegisterServices(configuration, services);
+    public void Load
+    (
+        ApplicationPartManager partManager, 
+        IServiceCollection     services, 
+        IConfiguration         configuration
+    ) => RegisterServices(partManager, configuration, services);
     
     protected IConfiguration LoadConfiguration(string environment = null)
     {
@@ -26,5 +35,10 @@ public abstract class Module
             .Build();
     }
     
-    protected abstract void RegisterServices(IConfiguration configuration, IServiceCollection services);
+    protected abstract void RegisterServices
+    (
+        ApplicationPartManager partManager, 
+        IConfiguration configuration, 
+        IServiceCollection services
+    );
 }

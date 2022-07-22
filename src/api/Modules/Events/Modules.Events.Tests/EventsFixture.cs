@@ -10,15 +10,19 @@ using Diagraph.Modules.Events.Database;
 using Google.Apis.Fitness.v1.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Xunit;
 using DataPoint = Diagraph.Infrastructure.Integrations.Google.Fit.Contracts.DataPoint;
 
 namespace Diagraph.Modules.Events.Tests;
 
-public class EventsFixture : DatabaseModuleFixture<EventsDbContext>
+public class EventsFixture : DatabaseModuleFixture<EventsDbContext>, IAsyncLifetime
 {
     public static readonly Guid RegisteredUserId = new("f0e7608f-e19a-450d-af66-ab9466f0a7fe");
     
-    public EventsFixture() : base("events", ConfigureServices) { }
+    public EventStoreModuleFixture EventStoreFixture { get; }
+
+    public EventsFixture() : base("events", ConfigureServices) 
+        => EventStoreFixture = new("events"); 
 
     private static void ConfigureServices(IServiceCollection services)
     {
@@ -68,4 +72,16 @@ public class EventsFixture : DatabaseModuleFixture<EventsDbContext>
             );
         services.AddScoped(_ => googleFitMock.Object);
     }
+    
+    public new Task InitializeAsync() => Task.WhenAll
+    (
+        base.InitializeAsync(),
+        EventStoreFixture.InitializeAsync()
+    );
+
+    public new Task DisposeAsync() => Task.WhenAll
+    (
+        base.DisposeAsync(),
+        EventStoreFixture.DisposeAsync()
+    );
 }
