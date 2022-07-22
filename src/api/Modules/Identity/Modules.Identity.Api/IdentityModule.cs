@@ -2,6 +2,7 @@ using Diagraph.Infrastructure.Cache.Redis;
 using Diagraph.Infrastructure.Cache.Redis.Extensions;
 using Diagraph.Infrastructure.Database;
 using Diagraph.Infrastructure.Emails;
+using Diagraph.Infrastructure.Events.EventStore;
 using Diagraph.Infrastructure.Hashing;
 using Diagraph.Infrastructure.Integrations.Extensions;
 using Diagraph.Infrastructure.Modules;
@@ -10,6 +11,7 @@ using Diagraph.Modules.Identity.Database;
 using Diagraph.Modules.Identity.Registration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,8 +24,15 @@ public class IdentityModule : Module
     
     public override string ModuleName => "identity";
 
-    protected override void RegisterServices(IConfiguration configuration, IServiceCollection services)
+    protected override void RegisterServices
+    (
+        ApplicationPartManager partManager, 
+        IConfiguration configuration, 
+        IServiceCollection services
+    )
     {
+        services.LoadModule<EventStoreModule>(partManager, configuration);
+        
         services.AddAutoMapper(typeof(IdentityDbContext).Assembly);
         
         services.AddPostgres<IdentityDbContext>
@@ -53,7 +62,7 @@ public class IdentityModule : Module
         services.AddScoped<UserConfirmation>();
 
         services.AddGoogleIntegration(configuration);
-
+        
         services.AddAuthentication
         (
             opts =>

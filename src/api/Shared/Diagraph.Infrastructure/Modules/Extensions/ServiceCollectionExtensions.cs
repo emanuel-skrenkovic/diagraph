@@ -22,7 +22,9 @@ public static class ServiceCollectionExtensions
         );
         
         T module = new();
-        module.Load(services, environment); // TODO: fix
+        module.Load(partManager, services, environment); // TODO: fix
+
+        services.AddSingleton(module);
         
         return services;
     }
@@ -30,12 +32,21 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection LoadModule<T>
     (
         this IServiceCollection services, 
-        IConfiguration configuration
+        ApplicationPartManager  partManager,
+        IConfiguration          configuration
     )
         where T: Module, new()
     {
+        partManager.ApplicationParts.Add
+        (
+            new AssemblyPart(typeof(T).Assembly)
+        );
+        
         T module = new();
-        module.Load(services, configuration);
+        module.Load(partManager, services, configuration);
+        
+        services.AddSingleton(module);
+        
         return services;
     }
 

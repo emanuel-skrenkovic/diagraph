@@ -6,6 +6,7 @@ using Diagraph.Modules.GlucoseData.Api.AutoMapper;
 using Diagraph.Modules.GlucoseData.Database;
 using Diagraph.Modules.GlucoseData.Imports;
 using Diagraph.Modules.GlucoseData.Imports.Contracts;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +15,13 @@ namespace Diagraph.Modules.GlucoseData.Api;
 public class GlucoseDataModule : Module
 {
     public override string ModuleName => "glucose-data";
-    protected override void RegisterServices(IConfiguration configuration, IServiceCollection services)
+    
+    protected override void RegisterServices
+    (
+        ApplicationPartManager partManager,
+        IConfiguration configuration, 
+        IServiceCollection services
+    )
     {
         services.AddAutoMapper(typeof(GlucoseDataAutoMapperProfile));
         services.AddPostgres<GlucoseDataDbContext>
