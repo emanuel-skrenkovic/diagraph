@@ -17,7 +17,7 @@ using Xunit;
 namespace Diagraph.Modules.Identity.Tests.Integration;
 
 [Collection(nameof(IdentityFixtureCollection))]
-public class GoogleIntegrationsTests
+public class GoogleIntegrationsTests : IAsyncLifetime
 {
     private readonly IdentityFixture _fixture;
 
@@ -31,7 +31,7 @@ public class GoogleIntegrationsTests
         await RegisterUser();
         
         // Act
-        HttpResponseMessage response = await _fixture.Client.PutAsJsonAsync
+        HttpResponseMessage response = await _fixture.Module.Client.PutAsJsonAsync
         (
             "auth/external-access/google/scopes/confirm",
             command
@@ -41,7 +41,7 @@ public class GoogleIntegrationsTests
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             (await context.UserExternalIntegrations.AnyAsync()).Should().BeTrue();
             
@@ -53,8 +53,6 @@ public class GoogleIntegrationsTests
             info.GrantedScopes.Should().IntersectWith(command.Scope);
             info.RefreshToken.Should().NotBeNullOrWhiteSpace();
         });
-        
-        await _fixture.Postgres.CleanAsync();
     }
     
     [Theory, CustomizedAutoData]
@@ -67,7 +65,7 @@ public class GoogleIntegrationsTests
         // Arrange
         await RegisterUser();
         
-        await _fixture.Client.PutAsJsonAsync
+        await _fixture.Module.Client.PutAsJsonAsync
         (
             "auth/external-access/google/scopes/confirm",
             command
@@ -76,7 +74,7 @@ public class GoogleIntegrationsTests
         command2.Scope = command2.Scope.Concat(command.Scope).ToArray();
         
         // Act
-        HttpResponseMessage response = await _fixture.Client.PutAsJsonAsync
+        HttpResponseMessage response = await _fixture.Module.Client.PutAsJsonAsync
         (
             "auth/external-access/google/scopes/confirm",
             command
@@ -86,7 +84,7 @@ public class GoogleIntegrationsTests
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             (await context.UserExternalIntegrations.AnyAsync()).Should().BeTrue();
             
@@ -99,13 +97,11 @@ public class GoogleIntegrationsTests
             info.GrantedScopes.Should().IntersectWith(command2.Scope);
             info.RefreshToken.Should().NotBeNullOrWhiteSpace();
         });
-
-        await _fixture.Postgres.CleanAsync();
     }
 
     private async Task RegisterUser()
     {
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             if (await context.Users.AnyAsync(u => u.Id == IdentityFixture.RegisteredUserId)) return;
             
@@ -123,4 +119,8 @@ public class GoogleIntegrationsTests
             await context.SaveChangesAsync();
         });        
     }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public Task DisposeAsync() => _fixture.Database.CleanAsync();
 }

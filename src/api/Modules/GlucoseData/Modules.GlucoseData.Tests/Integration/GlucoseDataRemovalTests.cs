@@ -31,7 +31,7 @@ public class GlucoseDataRemovalTests
     )
     {
         // Arrange
-        await _fixture.ExecuteAsync<GlucoseDataDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<GlucoseDataDbContext>(async context =>
         {
             Import import = context.Add
             (
@@ -53,10 +53,10 @@ public class GlucoseDataRemovalTests
 
         AutoResetEvent handle = new AutoResetEvent(false);
         
-        var listener = _fixture.ServiceOfType<GlucoseDataRemovalListener, IEventSubscription>();
+        var listener = _fixture.Module.ServiceOfType<GlucoseDataRemovalListener, IEventSubscription>();
         await TestHandlerWrapper.RunAsync
         (
-            _fixture.Service<EventSubscriber>(),
+            _fixture.Module.Service<EventSubscriber>(),
             listener, 
             (_, _) => handle.Set()
         );
@@ -66,7 +66,7 @@ public class GlucoseDataRemovalTests
         (
             GlucoseDataFixture.RegisteredUserId.ToString()
         );
-        await _fixture.EventStoreFixture.DispatchEvent
+        await _fixture.EventStore.DispatchEvent
         (
             UserDataRemovalConsts.IntegrationStreamName, 
             requestedEventDataRemovalEvent
@@ -76,12 +76,12 @@ public class GlucoseDataRemovalTests
         
         // Assert
         var savedEvents = await _fixture
-            .EventStoreFixture
+            .EventStore
             .Events(UserDataRemovalConsts.IntegrationStreamName);
         savedEvents.Should().NotBeNullOrEmpty();
         savedEvents.Should().ContainItemsAssignableTo<GlucoseDataRemovedEvent>();
         
-        await _fixture.ExecuteAsync<GlucoseDataDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<GlucoseDataDbContext>(async context =>
         {
             (await context.GlucoseMeasurements.AnyAsync()).Should().BeFalse();
         });

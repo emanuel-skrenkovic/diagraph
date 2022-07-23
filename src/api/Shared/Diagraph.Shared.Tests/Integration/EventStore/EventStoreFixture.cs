@@ -4,9 +4,9 @@ using Diagraph.Infrastructure.Tests;
 
 namespace Diagraph.Shared.Tests.Integration.EventStore;
 
-public class EventStoreFixture : EventStoreModuleFixture
+public class EventStoreFixture : Infrastructure.Tests.EventStoreFixture
 {
-    public EventStoreFixture() : base("shared") { }
+    public EventStoreFixture() : base() { }
     
     #region TestClasses
     

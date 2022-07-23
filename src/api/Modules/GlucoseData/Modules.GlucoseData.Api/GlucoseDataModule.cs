@@ -30,7 +30,8 @@ public class GlucoseDataModule : Module
         services.AddAutoMapper(typeof(GlucoseDataAutoMapperProfile));
         services.AddPostgres<GlucoseDataDbContext>
         (
-            // TODO: why not make pulling configuration also automatic?
+            // TODO: why not make pulling configuration also automatic? Because the configuration
+            // instance is defined per module. Still, could be better
             configuration
                 .GetSection(DatabaseConfiguration.SectionName)
                 .Get<DatabaseConfiguration>()

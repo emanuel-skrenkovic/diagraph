@@ -20,8 +20,7 @@ public class EventsTests
 {
     private readonly EventsFixture _fixture;
 
-    public EventsTests(EventsFixture fixture)
-        => _fixture = fixture;
+    public EventsTests(EventsFixture fixture) => _fixture = fixture;
     
     [Theory, CustomizedAutoData]
     public async Task Creates_Event(CreateEventCommand command)
@@ -31,6 +30,7 @@ public class EventsTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PostAsJsonAsync("/events", command);
 
@@ -43,7 +43,7 @@ public class EventsTests
         
         int id = location.AsId<int>();
         
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             Event newEvent = await context.FindAsync<Event>(id);
             newEvent.Should().NotBeNull();
@@ -55,6 +55,7 @@ public class EventsTests
     {
         // Arrange
         HttpResponseMessage insertResponse = await _fixture
+            .Module
             .Client
             .PostAsJsonAsync("/events", eventCreate);
         
@@ -62,6 +63,7 @@ public class EventsTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PutAsJsonAsync($"/events/{id}", eventUpdate);
 
@@ -69,7 +71,7 @@ public class EventsTests
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             Event updatedEvent = await context
                 .Events
@@ -98,6 +100,7 @@ public class EventsTests
     {
         // Arrange
         HttpResponseMessage insertResponse = await _fixture
+            .Module
             .Client
             .PostAsJsonAsync("/events", eventCreate);
         
@@ -108,6 +111,7 @@ public class EventsTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PutAsJsonAsync($"/events/{id}", eventUpdate);
 
@@ -115,7 +119,7 @@ public class EventsTests
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             Event updatedEvent = await context
                 .Events
@@ -150,8 +154,9 @@ public class EventsTests
      public async Task Deletes_Event(CreateEventCommand eventCreate)
      {
          // Arrange
-         await _fixture.Postgres.CleanAsync();
+         await _fixture.Database.CleanAsync();
          HttpResponseMessage insertResponse = await _fixture
+             .Module
              .Client
              .PostAsJsonAsync("/events", eventCreate);
         
@@ -159,6 +164,7 @@ public class EventsTests
         
          // Act
          HttpResponseMessage response = await _fixture
+             .Module
              .Client
              .DeleteAsync($"/events/{id}");
 
@@ -166,7 +172,7 @@ public class EventsTests
          response.IsSuccessStatusCode.Should().BeTrue();
          response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+         await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
          { 
              (await context.Events.AnyAsync()).Should().BeFalse();
          }); 
@@ -176,19 +182,22 @@ public class EventsTests
      public async Task Delete_Event_Succeeds_After_Event_Deleted(CreateEventCommand eventCreate)
      {
          // Arrange
-         await _fixture.Postgres.CleanAsync();
+         await _fixture.Database.CleanAsync();
          HttpResponseMessage insertResponse = await _fixture
+             .Module
              .Client
              .PostAsJsonAsync("/events", eventCreate);
         
          int id = insertResponse.Headers.Location.AsId<int>();
          
          await _fixture
+             .Module
              .Client
              .DeleteAsync($"/events/{id}");
         
          // Act
          HttpResponseMessage response = await _fixture
+             .Module
              .Client
              .DeleteAsync($"/events/{id}");
 
@@ -196,7 +205,7 @@ public class EventsTests
          response.IsSuccessStatusCode.Should().BeFalse();
          response.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-         await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+         await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
          { 
              (await context.Events.AnyAsync()).Should().BeFalse();
          }); 

@@ -25,6 +25,7 @@ public class ImportTemplatesTests
     {
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PostAsJsonAsync("/events/import-templates", createImportTemplate);
         
@@ -34,7 +35,7 @@ public class ImportTemplatesTests
 
         int id = response.CreatedId<int>();
 
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             ImportTemplate createdTemplate = await context.FindAsync<ImportTemplate>(id);
             
@@ -52,6 +53,7 @@ public class ImportTemplatesTests
     {
         // Arrange
         HttpResponseMessage createResponse = await _fixture
+            .Module
             .Client
             .PostAsJsonAsync("/events/import-templates", create);
         
@@ -59,13 +61,14 @@ public class ImportTemplatesTests
         
         // Act
         HttpResponseMessage updateResponse = await _fixture
+            .Module
             .Client
             .PutAsJsonAsync($"/events/import-templates/{id}", update);
 
         updateResponse.IsSuccessStatusCode.Should().BeTrue();
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             ImportTemplate updatedTemplate = await context.FindAsync<ImportTemplate>(id);
 

@@ -15,14 +15,20 @@ using DataPoint = Diagraph.Infrastructure.Integrations.Google.Fit.Contracts.Data
 
 namespace Diagraph.Modules.Events.Tests;
 
-public class EventsFixture : DatabaseModuleFixture<EventsDbContext>, IAsyncLifetime
+public class EventsFixture : IAsyncLifetime
 {
     public static readonly Guid RegisteredUserId = new("f0e7608f-e19a-450d-af66-ab9466f0a7fe");
     
-    public EventStoreModuleFixture EventStoreFixture { get; }
+    public ModuleFixture Module { get; }
+    public EventStoreFixture EventStore { get; }
+    public DatabaseFixture<EventsDbContext> Database   { get;  }
 
-    public EventsFixture() : base("events", ConfigureServices) 
-        => EventStoreFixture = new("events"); 
+    public EventsFixture()
+    {
+        Module     = new(ConfigureServices);
+        EventStore = new();
+        Database   = new("events", Module.Service<EventsDbContext>);
+    }
 
     private static void ConfigureServices(IServiceCollection services)
     {
@@ -73,15 +79,15 @@ public class EventsFixture : DatabaseModuleFixture<EventsDbContext>, IAsyncLifet
         services.AddScoped(_ => googleFitMock.Object);
     }
     
-    public new Task InitializeAsync() => Task.WhenAll
+    public Task InitializeAsync() => Task.WhenAll
     (
-        base.InitializeAsync(),
-        EventStoreFixture.InitializeAsync()
+        Database.InitializeAsync(),
+        EventStore.InitializeAsync()
     );
 
-    public new Task DisposeAsync() => Task.WhenAll
+    public Task DisposeAsync() => Task.WhenAll
     (
-        base.DisposeAsync(),
-        EventStoreFixture.DisposeAsync()
+        Database.DisposeAsync(),
+        EventStore.DisposeAsync()
     );
 }

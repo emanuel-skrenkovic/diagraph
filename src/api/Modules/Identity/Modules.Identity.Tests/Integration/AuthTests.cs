@@ -25,13 +25,13 @@ public class AuthTests
     public async Task Registers_User(UserRegisterCommand command)
     {
         // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsJsonAsync("auth/register", command);
+        HttpResponseMessage response = await _fixture.Module.Client.PostAsJsonAsync("auth/register", command);
         
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             User user = await context.Users.FirstOrDefaultAsync(u => u.Email == command.Email);
             user.Should().NotBeNull();
@@ -48,8 +48,8 @@ public class AuthTests
     public async Task Registers_User_With_Same_Email_Once(UserRegisterCommand command)
     {
         // Act
-        HttpResponseMessage response1 = await _fixture.Client.PostAsJsonAsync("auth/register", command);
-        HttpResponseMessage response2 = await _fixture.Client.PostAsJsonAsync("auth/register", command); 
+        HttpResponseMessage response1 = await _fixture.Module.Client.PostAsJsonAsync("auth/register", command);
+        HttpResponseMessage response2 = await _fixture.Module.Client.PostAsJsonAsync("auth/register", command); 
         
         // Assert
         response1.IsSuccessStatusCode.Should().BeTrue();
@@ -58,7 +58,7 @@ public class AuthTests
         response2.IsSuccessStatusCode.Should().BeTrue();
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             int usersCount = await context.Users.CountAsync(u => u.Email == command.Email);
             usersCount.Should().Be(1);
@@ -72,13 +72,13 @@ public class AuthTests
         command.Email = null;
         
         // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsJsonAsync("auth/register", command);
+        HttpResponseMessage response = await _fixture.Module.Client.PostAsJsonAsync("auth/register", command);
         
         // Assert
         response.IsSuccessStatusCode.Should().BeFalse();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             int usersCount = await context.Users.CountAsync(u => u.Email == command.Email);
             usersCount.Should().Be(0);
@@ -92,13 +92,13 @@ public class AuthTests
         command.Password = null;
         
         // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsJsonAsync("auth/register", command);
+        HttpResponseMessage response = await _fixture.Module.Client.PostAsJsonAsync("auth/register", command);
         
         // Assert
         response.IsSuccessStatusCode.Should().BeFalse();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             int usersCount = await context.Users.CountAsync(u => u.Email == command.Email);
             usersCount.Should().Be(0);
@@ -109,8 +109,8 @@ public class AuthTests
     public async Task Logs_In(UserRegisterCommand register)
     {
         // Arrange
-        await _fixture.Client.PostAsJsonAsync("auth/register", register);
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.Client.PostAsJsonAsync("auth/register", register);
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             User user = await context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
             user!.EmailConfirmed = true;
@@ -126,7 +126,7 @@ public class AuthTests
         };
 
         // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsJsonAsync("auth/login", login);
+        HttpResponseMessage response = await _fixture.Module.Client.PostAsJsonAsync("auth/login", login);
         
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -140,8 +140,8 @@ public class AuthTests
     public async Task Raises_Unsuccessful_Login_Attempts_Count(UserRegisterCommand register)
     {
         // Arrange
-        await _fixture.Client.PostAsJsonAsync("auth/register", register);
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.Client.PostAsJsonAsync("auth/register", register);
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             User user = await context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
             user!.EmailConfirmed = true;
@@ -157,10 +157,10 @@ public class AuthTests
         }; 
         
         // Act
-        await _fixture.Client.PostAsJsonAsync("auth/login", login);
+        await _fixture.Module.Client.PostAsJsonAsync("auth/login", login);
         
         // Assert
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             User user = await context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
             user!.UnsuccessfulLoginAttempts.Should().Be(1);
@@ -172,8 +172,8 @@ public class AuthTests
     public async Task Locks_User_After_Three_Unsuccessful_Logins(UserRegisterCommand register)
     {
         // Arrange
-        await _fixture.Client.PostAsJsonAsync("auth/register", register);
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.Client.PostAsJsonAsync("auth/register", register);
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             User user = await context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
             user!.EmailConfirmed = true;
@@ -189,12 +189,12 @@ public class AuthTests
         }; 
         
         // Act
-        await _fixture.Client.PostAsJsonAsync("auth/login", login);
-        await _fixture.Client.PostAsJsonAsync("auth/login", login);
-        await _fixture.Client.PostAsJsonAsync("auth/login", login);
+        await _fixture.Module.Client.PostAsJsonAsync("auth/login", login);
+        await _fixture.Module.Client.PostAsJsonAsync("auth/login", login);
+        await _fixture.Module.Client.PostAsJsonAsync("auth/login", login);
         
         // Assert
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             User user = await context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
             user!.UnsuccessfulLoginAttempts.Should().Be(3);
@@ -206,8 +206,8 @@ public class AuthTests
     public async Task Logs_Out(UserRegisterCommand register)
     {
         // Arrange
-        await _fixture.Client.PostAsJsonAsync("auth/register", register);
-        await _fixture.ExecuteAsync<IdentityDbContext>(async context =>
+        await _fixture.Module.Client.PostAsJsonAsync("auth/register", register);
+        await _fixture.Module.ExecuteAsync<IdentityDbContext>(async context =>
         {
             User user = await context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
             user!.EmailConfirmed = true;
@@ -216,7 +216,7 @@ public class AuthTests
             await context.SaveChangesAsync();
         });
         
-        await _fixture.Client.PostAsJsonAsync
+        await _fixture.Module.Client.PostAsJsonAsync
         (
             "auth/login", 
             new LoginCommand 
@@ -227,7 +227,7 @@ public class AuthTests
         );
 
         // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsync("auth/logout", null);
+        HttpResponseMessage response = await _fixture.Module.Client.PostAsync("auth/logout", null);
             
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();

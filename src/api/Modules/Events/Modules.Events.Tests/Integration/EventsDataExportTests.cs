@@ -16,7 +16,7 @@ using Xunit;
 namespace Diagraph.Modules.Events.Tests.Integration;
 
 [Collection(nameof(EventsCollectionFixture))]
-public class EventsDataExportTests
+public class EventsDataExportTests : IAsyncLifetime
 {
     private readonly EventsFixture _fixture;
 
@@ -26,11 +26,9 @@ public class EventsDataExportTests
     [Fact]
     public async Task Returns_Ok_When_No_Events()
     {
-        // Arrange
-        await _fixture.Postgres.CleanAsync();
-        
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv");
          
@@ -46,10 +44,8 @@ public class EventsDataExportTests
     public async Task Exports_Events_Individually(List<Event> events)
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
-        
         events.ToList().ForEach(e => e.UserId = EventsFixture.RegisteredUserId);
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events);
             await context.SaveChangesAsync();
@@ -57,6 +53,7 @@ public class EventsDataExportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv");
          
@@ -78,9 +75,8 @@ public class EventsDataExportTests
     )
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
         events.ToList().ForEach(e => e.UserId = EventsFixture.RegisteredUserId);
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events);
             await context.SaveChangesAsync();
@@ -88,6 +84,7 @@ public class EventsDataExportTests
 
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv?mergeSequential=false");
          
@@ -106,8 +103,6 @@ public class EventsDataExportTests
     public async Task Exports_Events_Merged()
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
-
         List<Event> events = new()
         {
             new()
@@ -135,7 +130,7 @@ public class EventsDataExportTests
                 Source        = "custom"
             }
         };
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events);
             await context.SaveChangesAsync();
@@ -143,6 +138,7 @@ public class EventsDataExportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv?mergeSequential=true");
          
@@ -166,8 +162,6 @@ public class EventsDataExportTests
     public async Task Does_Not_Merge_Events_When_Tags_Missing()
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
-
         List<Event> events = new()
         {
             new()
@@ -193,7 +187,7 @@ public class EventsDataExportTests
                 Source        = "custom"
             }
         };
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events);
             await context.SaveChangesAsync();
@@ -201,6 +195,7 @@ public class EventsDataExportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv?mergeSequential=true");
          
@@ -219,8 +214,6 @@ public class EventsDataExportTests
     public async Task Exports_Events_Merged_When_Tags_Missing()
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
-
         List<Event> events = new()
         {
             new()
@@ -245,7 +238,7 @@ public class EventsDataExportTests
                 Source        = "custom"
             }
         };
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events);
             await context.SaveChangesAsync();
@@ -253,6 +246,7 @@ public class EventsDataExportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv?mergeSequential=true");
          
@@ -271,7 +265,6 @@ public class EventsDataExportTests
     public async Task Does_Not_Merge_Events_With_Same_Date_And_Different_Tags()
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
         List<Event> events = new()
         {
             new()
@@ -299,7 +292,7 @@ public class EventsDataExportTests
                 Source        = "custom"
             }
         };
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events);
             await context.SaveChangesAsync();
@@ -307,6 +300,7 @@ public class EventsDataExportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv?mergeSequential=true");
          
@@ -325,8 +319,6 @@ public class EventsDataExportTests
     public async Task Does_Not_Merge_Events_With_Same_Tags_And_Different_Dates()
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
-
         List<Event> events = new()
         {
             new()
@@ -354,7 +346,7 @@ public class EventsDataExportTests
                 Source        = "custom"
             }
         };
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events);
             await context.SaveChangesAsync();
@@ -362,6 +354,7 @@ public class EventsDataExportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .GetAsync("events/data-export/csv?mergeSequential=true");
          
@@ -394,4 +387,8 @@ public class EventsDataExportTests
 
         return events;
     }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public Task DisposeAsync() => _fixture.Database.CleanAsync();
 }

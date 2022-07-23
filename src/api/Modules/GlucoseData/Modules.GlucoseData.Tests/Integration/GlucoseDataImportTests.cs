@@ -28,13 +28,13 @@ public class GlucoseDataImportTests : IAsyncLifetime
         HttpContent content = await ImportContent(file);
         
         // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsync("/data/imports", content);
+        HttpResponseMessage response = await _fixture.Module.Client.PostAsync("/data/imports", content);
         
         // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        await _fixture.ExecuteAsync<GlucoseDataDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<GlucoseDataDbContext>(async context =>
         {
             (await context.Imports.CountAsync()).Should().Be(1);
         });
@@ -48,8 +48,8 @@ public class GlucoseDataImportTests : IAsyncLifetime
         HttpContent content2 = await ImportContent(file2);
 
         // Act
-        HttpResponseMessage response1 = await _fixture.Client.PostAsync("/data/imports", content1);
-        HttpResponseMessage response2 = await _fixture.Client.PostAsync("/data/imports", content2);
+        HttpResponseMessage response1 = await _fixture.Module.Client.PostAsync("/data/imports", content1);
+        HttpResponseMessage response2 = await _fixture.Module.Client.PostAsync("/data/imports", content2);
         
         // Assert
         response1.IsSuccessStatusCode.Should().BeTrue();
@@ -58,7 +58,7 @@ public class GlucoseDataImportTests : IAsyncLifetime
         response2.IsSuccessStatusCode.Should().BeTrue();
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await _fixture.ExecuteAsync<GlucoseDataDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<GlucoseDataDbContext>(async context =>
         {
             (await context.Imports.CountAsync()).Should().Be(1);
         }); 
@@ -68,7 +68,7 @@ public class GlucoseDataImportTests : IAsyncLifetime
     public async Task Returns_400_If_No_File_Sent()
     {
         // Act
-        HttpResponseMessage response = await _fixture.Client.PostAsync("/data/imports", null); 
+        HttpResponseMessage response = await _fixture.Module.Client.PostAsync("/data/imports", null); 
         
         // Assert
         response.IsSuccessStatusCode.Should().BeFalse();
@@ -93,5 +93,5 @@ public class GlucoseDataImportTests : IAsyncLifetime
 
     public Task InitializeAsync() => Task.CompletedTask;
 
-    public Task DisposeAsync() => _fixture.Postgres.CleanAsync();
+    public Task DisposeAsync() => _fixture.Database.CleanAsync();
 }

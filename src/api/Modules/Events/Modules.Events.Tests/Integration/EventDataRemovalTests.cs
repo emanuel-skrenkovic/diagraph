@@ -30,7 +30,7 @@ public class EventDataRemovalTests
     )
     {
         // Arrange
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             context.AddRange(events.Select(e =>
             {
@@ -42,10 +42,10 @@ public class EventDataRemovalTests
 
         AutoResetEvent handle = new AutoResetEvent(false);
         
-        var listener = _fixture.ServiceOfType<EventDataRemovalListener, IEventSubscription>();
+        var listener = _fixture.Module.ServiceOfType<EventDataRemovalListener, IEventSubscription>();
         await TestHandlerWrapper.RunAsync
         (
-            _fixture.Service<EventSubscriber>(),
+            _fixture.Module.Service<EventSubscriber>(),
             listener, 
             (_, _) => handle.Set()
         );
@@ -55,7 +55,7 @@ public class EventDataRemovalTests
         (
             EventsFixture.RegisteredUserId.ToString()
         );
-        await _fixture.EventStoreFixture.DispatchEvent
+        await _fixture.EventStore.DispatchEvent
         (
             UserDataRemovalConsts.IntegrationStreamName, 
             requestedEventDataRemovalEvent
@@ -65,12 +65,12 @@ public class EventDataRemovalTests
         
         // Assert
         var savedEvents = await _fixture
-            .EventStoreFixture
+            .EventStore
             .Events(UserDataRemovalConsts.IntegrationStreamName);
         savedEvents.Should().NotBeNullOrEmpty();
         savedEvents.Should().ContainItemsAssignableTo<EventDataRemovedEvent>();
         
-        await _fixture.ExecuteAsync<EventsDbContext>(async context =>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
         {
             (await context.Events.AnyAsync()).Should().BeFalse();
         });

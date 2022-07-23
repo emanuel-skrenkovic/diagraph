@@ -13,15 +13,19 @@ using Xunit;
 
 namespace Diagraph.Modules.Identity.Tests;
 
-public class IdentityFixture : DatabaseModuleFixture<IdentityDbContext>, IAsyncLifetime
+public class IdentityFixture : IAsyncLifetime
 {
     public static readonly Guid RegisteredUserId = new("f0e7608f-e19a-450d-af66-ab9466f0a7fe");
     
-    public EventStoreModuleFixture EventStoreFixture { get; }
+    public ModuleFixture Module { get; }
+    public EventStoreFixture EventStore { get; }
+    public DatabaseFixture<IdentityDbContext> Database   { get; }
 
-    public IdentityFixture() : base("identity", ConfigureServices)
+    public IdentityFixture()
     {
-        EventStoreFixture = new("identity");
+        Module     = new(ConfigureServices);
+        EventStore = new();
+        Database   = new("identity", Module.Service<IdentityDbContext>);
     }
 
     private static void ConfigureServices(IServiceCollection services)
@@ -55,15 +59,15 @@ public class IdentityFixture : DatabaseModuleFixture<IdentityDbContext>, IAsyncL
         services.AddScoped(_ => cacheMock.Object);
     }
 
-    public new Task InitializeAsync() => Task.WhenAll
+    public Task InitializeAsync() => Task.WhenAll
     (
-        base.InitializeAsync(),
-        EventStoreFixture.InitializeAsync()
+        Database.InitializeAsync(),
+        EventStore.InitializeAsync()
     );
 
-    public new Task DisposeAsync() => Task.WhenAll
+    public Task DisposeAsync() => Task.WhenAll
     (
-        base.DisposeAsync(),
-        EventStoreFixture.DisposeAsync()
+        Database.DisposeAsync(),
+        EventStore.DisposeAsync()
     );
 }

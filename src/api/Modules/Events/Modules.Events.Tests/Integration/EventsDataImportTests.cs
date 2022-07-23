@@ -19,7 +19,7 @@ using Xunit;
 namespace Diagraph.Modules.Events.Tests.Integration;
 
 [Collection(nameof(EventsCollectionFixture))]
-public class EventsDataImportTests
+public class EventsDataImportTests : IAsyncLifetime
 {
     private readonly EventsFixture _fixture;
 
@@ -36,6 +36,7 @@ public class EventsDataImportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PostAsync("events/data-import", content);
         
@@ -43,7 +44,7 @@ public class EventsDataImportTests
         response.IsSuccessStatusCode.Should().BeTrue();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        await _fixture.ExecuteAsync<EventsDbContext>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>
         (
             async context =>
             {
@@ -56,14 +57,13 @@ public class EventsDataImportTests
     public async Task Dry_Run_Does_Not_Create_Events()
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
-        
         const string templateName = "Integration-Test-Template";
         await InsertTemplate(templateName);
         HttpContent content = EventDataImportContent(templateName);
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PostAsync("events/data-import/dry-run", content);
         
@@ -77,7 +77,7 @@ public class EventsDataImportTests
         );
         events.Should().NotBeEmpty();
 
-        await _fixture.ExecuteAsync<EventsDbContext>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>
         (
             async context =>
             {
@@ -89,11 +89,9 @@ public class EventsDataImportTests
     [Fact]
     public async Task Imports_Google_Fit_Events()
     {
-        // Arrange
-        await _fixture.Postgres.CleanAsync();
-        
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PostAsync("events/data-import/google/fitness", null);
         
@@ -110,7 +108,7 @@ public class EventsDataImportTests
         result.Should().NotBeNull();
         result!.Count.Should().BeGreaterThan(0);
 
-        await _fixture.ExecuteAsync<EventsDbContext>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>
         (
             async context =>
             {
@@ -129,8 +127,8 @@ public class EventsDataImportTests
     public async Task Does_Not_Re_Import_Identical_Google_Fit_Events()
     {
         // Arrange
-        await _fixture.Postgres.CleanAsync();
         HttpResponseMessage initialResponse = await _fixture
+            .Module
             .Client
             .PostAsync("events/data-import/google/fitness", null);
         
@@ -144,6 +142,7 @@ public class EventsDataImportTests
         
         // Act
         HttpResponseMessage response = await _fixture
+            .Module
             .Client
             .PostAsync("events/data-import/google/fitness", null);
         
@@ -160,7 +159,7 @@ public class EventsDataImportTests
         result.Should().NotBeNull();
         result!.Count.Should().Be(0);
 
-        await _fixture.ExecuteAsync<EventsDbContext>
+        await _fixture.Module.ExecuteAsync<EventsDbContext>
         (
             async context =>
             {
@@ -203,6 +202,7 @@ public class EventsDataImportTests
         };
         
         await _fixture
+            .Module
             .Client
             .PostAsJsonAsync("events/import-templates", createTemplate); 
     }
@@ -223,4 +223,8 @@ public class EventsDataImportTests
         
         return content;
     }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public Task DisposeAsync() => _fixture.Database.CleanAsync();
 }
