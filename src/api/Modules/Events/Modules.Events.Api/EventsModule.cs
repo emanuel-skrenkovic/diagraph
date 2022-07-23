@@ -16,7 +16,6 @@ using Diagraph.Modules.Events.DataImports.Csv;
 using Diagraph.Modules.Events.DataImports.Csv.AutoMapper;
 using Diagraph.Modules.Events.DataImports.Templates;
 using Diagraph.Modules.Events.DataRemoval;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,7 +27,6 @@ public class EventsModule : Module
     
     protected override void RegisterServices
     (
-        ApplicationPartManager partManager, 
         IConfiguration configuration, 
         IServiceCollection services
     )

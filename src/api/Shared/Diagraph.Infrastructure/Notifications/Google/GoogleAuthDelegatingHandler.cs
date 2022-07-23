@@ -1,4 +1,5 @@
 using Diagraph.Infrastructure.Integrations.Google;
+using Microsoft.Net.Http.Headers;
 
 namespace Diagraph.Infrastructure.Notifications.Google;
 
@@ -16,13 +17,16 @@ public class GoogleAuthDelegatingHandler : DelegatingHandler
     )
     {
         string accessToken = await _authorizer.EnsureAuthorizedAsync();
+        string headerName  = HeaderNames.Authorization;
 
-        // TODO: inefficient
-        if (request.Headers.Contains("Authorization"))
+        // Seems that there is no way to replace the value of a header without
+        // removing it and adding a new value with the same key.
+        if (request.Headers.Contains(headerName)) 
         {
-            request.Headers.Remove("Authorization");
+            request.Headers.Remove(headerName);
         }
-        request.Headers.Add("Authorization", $"Bearer {accessToken}");
+        
+        request.Headers.Add(headerName, $"Bearer {accessToken}");
         
         return await base.SendAsync(request, cancellationToken);
     }

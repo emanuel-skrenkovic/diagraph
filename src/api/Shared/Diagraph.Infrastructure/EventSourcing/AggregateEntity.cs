@@ -50,11 +50,9 @@ Please call the 'RegisterApplier' in the 'RegisterAppliers' method in the aggreg
             Version++;
         }
 
-        // TODO: check if correct
         _events.Clear();
     }
 
-    // TODO: should probably dequeue, i.e., clear the list.
     public IReadOnlyCollection<IEvent> GetUncommittedEvents()
     {
         List<IEvent> events = new(_events);

@@ -11,18 +11,12 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection LoadModule<T>
     (
         this IServiceCollection services, 
-        ApplicationPartManager partManager,
         string environment = null
     ) 
         where T: Module, new()
     {
-        partManager.ApplicationParts.Add
-        (
-            new AssemblyPart(typeof(T).Assembly)
-        );
-        
         T module = new();
-        module.Load(partManager, services, environment); // TODO: fix
+        module.Load(services, environment);
         
         return services;
     }
@@ -30,13 +24,12 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection LoadModule<T>
     (
         this IServiceCollection services, 
-        ApplicationPartManager  partManager,
         IConfiguration          configuration
     )
         where T: Module, new()
     {
         T module = new();
-        module.Load(partManager, services, configuration);
+        module.Load(services, configuration);
         return services;
     }
     

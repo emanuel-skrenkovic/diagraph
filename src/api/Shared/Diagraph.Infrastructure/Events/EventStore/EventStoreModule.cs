@@ -1,7 +1,6 @@
 using Diagraph.Infrastructure.EventSourcing.EventStore;
 using Diagraph.Infrastructure.Modules;
 using EventStore.Client;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +12,6 @@ public class EventStoreModule : Module
     
     protected override void RegisterServices
     (
-        ApplicationPartManager partManager, 
         IConfiguration         configuration, 
         IServiceCollection     services
     )

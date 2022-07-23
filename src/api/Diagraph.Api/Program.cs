@@ -24,12 +24,12 @@ partManager.ApplicationParts.Clear();
 builder.Services.AddFastEndpoints();
 
 string env = builder.Environment.EnvironmentName;
-builder.Services.LoadModule<IdentityModule>(partManager, env);
-builder.Services.LoadModule<GlucoseDataModule>(partManager, env);
-builder.Services.LoadModule<EventsModule>(partManager, env);
+builder.Services.LoadModule<IdentityModule>(env);
+builder.Services.LoadModule<GlucoseDataModule>(env);
+builder.Services.LoadModule<EventsModule>(env);
 builder.Services.LoadModule<EventStoreModule>
 (
-    partManager,
+    // TODO: helper
     configuration: new ConfigurationManager()
         .AddJsonFile($"appsettings.{env}.json", optional: true)
         .Build()

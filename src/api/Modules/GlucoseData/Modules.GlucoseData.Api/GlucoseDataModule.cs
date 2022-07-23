@@ -22,7 +22,6 @@ public class GlucoseDataModule : Module
     public override string ModuleName => "glucose-data";
     protected override void RegisterServices    
     (
-        ApplicationPartManager partManager, 
         IConfiguration         configuration, 
         IServiceCollection     services
     )

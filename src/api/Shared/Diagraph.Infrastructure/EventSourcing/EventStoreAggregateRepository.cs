@@ -6,7 +6,6 @@ namespace Diagraph.Infrastructure.EventSourcing;
 
 public class EventStoreAggregateRepository : IAggregateRepository
 {
-    // TODO: ICorrelationContext?
     private readonly ICorrelationContext _context;
     private readonly EventStoreClient    _client;
     

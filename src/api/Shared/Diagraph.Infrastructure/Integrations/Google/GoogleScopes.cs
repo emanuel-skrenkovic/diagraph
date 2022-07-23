@@ -39,11 +39,11 @@ public class GoogleScopes
         query.Add(OAuth2Constants.ClientId, _configuration.ClientId);
         query.Add(OAuth2Constants.RedirectUri, redirectUri);
         query.Add(OAuth2Constants.ResponseType, OAuth2Constants.ResponseTypes.Code);
-        query.Add("access_type", "offline"); // TODO: constant
+        query.Add(GoogleOAuth2Constants.AccessType, GoogleOAuth2Constants.AccessTypes.Offline);
 
         if (state is not null)
         {
-            query.Add(OAuth2Constants.State, state); // TODO: constant 
+            query.Add(OAuth2Constants.State, state);
         }
         
         builder.Query = query.ToString()!;

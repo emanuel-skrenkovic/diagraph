@@ -19,11 +19,6 @@ public class ModuleFixture
     
     public ModuleFixture(Action<IServiceCollection> configureServices = null)
     {
-        // TODO: delete
-        // IConfiguration configuration = new ConfigurationManager()
-        //     .AddJsonFile($"module.{moduleName}.integration-test.json")
-        //     .Build();
-         
         _webApplicationFactory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {

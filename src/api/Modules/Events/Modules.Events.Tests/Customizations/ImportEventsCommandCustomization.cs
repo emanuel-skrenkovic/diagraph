@@ -60,6 +60,4 @@ public class ImportEventsCommandCustomization : ICustomization
                 TemplateName = TemplateName
             }));
     }
-    
-
 }

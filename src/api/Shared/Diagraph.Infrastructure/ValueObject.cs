@@ -34,7 +34,7 @@ public abstract class ValueObject<T> : IEquatable<T>
     {
         if (obj == null)                     return false;
         if (obj.GetType() != this.GetType()) return false;
-        if (ReferenceEquals(this, obj))      return true; // TODO: think about this one.
+        if (ReferenceEquals(this, obj))      return true;
 
         ValueObject<T> otherValueObject = (ValueObject<T>)obj;
 

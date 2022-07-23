@@ -39,7 +39,6 @@ public class EventStoreFixture : IAsyncLifetime
         _container.EventStore
     );
     
-    // TODO
     public IAggregateRepository Repository => new EventStoreAggregateRepository
     (
         CorrelationContext,

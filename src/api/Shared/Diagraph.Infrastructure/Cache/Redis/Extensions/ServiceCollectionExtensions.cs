@@ -19,7 +19,6 @@ public static class ServiceCollectionExtensions
             ConnectionMultiplexer.Connect
             (
                 configuration.ConnectionString, 
-                // TODO: need to be able to have database per module
                 options => options.DefaultDatabase = configuration.Database ?? 0
             )
         );

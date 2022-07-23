@@ -19,7 +19,7 @@ public class EmailClient : IEmailClient
             _configuration.Host, 
             _configuration.Port, 
             false
-        ); // TODO: configuration
+        );
 
         await smtp.SendAsync(CreateMessage(email));
         await smtp.DisconnectAsync(true);

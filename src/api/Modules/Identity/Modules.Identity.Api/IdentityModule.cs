@@ -14,7 +14,6 @@ using Diagraph.Modules.Identity.Registration;
 using Diagraph.Modules.Identity.UserData;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,7 +28,6 @@ public class IdentityModule : Module
 
     protected override void RegisterServices
     (
-        ApplicationPartManager partManager, 
         IConfiguration configuration, 
         IServiceCollection services
     )
