@@ -1,7 +1,9 @@
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Auth.OAuth2;
 using Diagraph.Infrastructure.Dynamic;
+using Diagraph.Infrastructure.Integrations.Google.InterModuleIntegration;
 using Diagraph.Infrastructure.Sessions;
+using MediatR;
 
 namespace Diagraph.Infrastructure.Integrations.Google;
 
@@ -11,19 +13,22 @@ public class GoogleAuthorizer : IIntegrationSession
     private readonly IRefreshTokenAction    _refreshToken;
     private readonly GoogleScopes           _scopes;
     private readonly SessionManager         _sessionManager;
+    private readonly IMediator              _mediator;
 
     public GoogleAuthorizer
     (
         IAuthorizationCodeFlow authFlow,
         IRefreshTokenAction    refreshToken, 
         GoogleScopes           scopes,
-        SessionManager         sessionManager
+        SessionManager         sessionManager,
+        IMediator              mediator
     )
     {
         _authFlow       = authFlow;
         _refreshToken   = refreshToken;
         _scopes         = scopes;
         _sessionManager = sessionManager;
+        _mediator       = mediator;
     }
 
     public IAuthorizationCodeFlow AuthFlow => _authFlow;
@@ -32,7 +37,7 @@ public class GoogleAuthorizer : IIntegrationSession
 
     public GoogleScopes Scopes => _scopes;
     
-    public async Task<string> EnsureAuthorizedAsync()
+    public async Task<string> EnsureAuthorizedAsync(Guid userId)
     {
         TokenData tokenData = await _sessionManager
             .GetAsync<TokenData>(GoogleIntegrationConsts.AccessToken);
@@ -44,8 +49,10 @@ public class GoogleAuthorizer : IIntegrationSession
         if (tokenData is not null && issuedAtUtc.AddSeconds(expiresIn) > DateTime.UtcNow) 
             return accessToken;
 
-        string refreshToken = await _sessionManager
-            .GetAsync<string>(GoogleIntegrationConsts.RefreshToken);
+        string refreshToken = await _sessionManager.GetAsync<string>
+        (
+            GoogleIntegrationConsts.RefreshToken
+        );
             
         if (refreshToken is null) 
             throw new InvalidOperationException("User is not integrated with Google.");
@@ -57,7 +64,7 @@ public class GoogleAuthorizer : IIntegrationSession
             new TokenData(tokenResponse.AccessToken, DateTime.UtcNow, tokenResponse.ExpiresIn)
         );
         
-        // TODO: doesn't save or read the current access token from the database.
+        await _mediator.Publish(new AccessTokenRefreshedNotification(userId, tokenResponse.AccessToken));
 
         return tokenResponse.AccessToken;
     }

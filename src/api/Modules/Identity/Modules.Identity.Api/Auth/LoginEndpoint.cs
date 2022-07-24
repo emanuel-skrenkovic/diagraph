@@ -1,5 +1,6 @@
 using Diagraph.Infrastructure.Database.Extensions;
 using Diagraph.Infrastructure.Integrations;
+using Diagraph.Infrastructure.Sessions;
 using Diagraph.Modules.Identity.Api.Auth.Contracts;
 using Diagraph.Modules.Identity.Api.Extensions;
 using Diagraph.Modules.Identity.Database;
@@ -16,18 +17,21 @@ public class LoginEndpoint : Endpoint<LoginCommand, LoginResult>
     
     private readonly IdentityDbContext           _context;
     private readonly PasswordTool                _passwordTool;
+    private readonly SessionManager              _sessionManager;
     private readonly IIntegrationSessionProvider _integration;
 
     public LoginEndpoint
     (
         IdentityDbContext           context, 
         PasswordTool                passwordTool, 
+        SessionManager              sessionManager,
         IIntegrationSessionProvider integration
     )
     {
-        _context      = context;
-        _passwordTool = passwordTool;
-        _integration  = integration;
+        _context        = context;
+        _passwordTool   = passwordTool;
+        _sessionManager = sessionManager;
+        _integration    = integration;
     }
 
     public override void Configure()
@@ -64,6 +68,7 @@ public class LoginEndpoint : Endpoint<LoginCommand, LoginResult>
         }
 
         await HttpContext.SignInUserAsync(user, AuthScheme);
+        await _sessionManager.SaveAsync(SessionConstants.UserId, user.Id);
 
         List<External> externals = await _context
             .UserExternalIntegrations

@@ -10,8 +10,10 @@ using Diagraph.Infrastructure.Modules;
 using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Infrastructure.ProcessManager.Contracts;
 using Diagraph.Modules.Identity.Database;
+using Diagraph.Modules.Identity.ExternalIntegrations.Google;
 using Diagraph.Modules.Identity.Registration;
 using Diagraph.Modules.Identity.UserData;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +34,7 @@ public class IdentityModule : Module
         IServiceCollection services
     )
     {
+        services.AddMediatR(typeof(AccessTokenRefreshedHandler));
         services.AddAutoMapper(typeof(IdentityDbContext).Assembly);
         
         services.AddPostgres<IdentityDbContext>
