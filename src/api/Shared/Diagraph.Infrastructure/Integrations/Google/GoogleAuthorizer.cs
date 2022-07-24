@@ -39,8 +39,10 @@ public class GoogleAuthorizer : IIntegrationSession
     
     public async Task<string> EnsureAuthorizedAsync(Guid userId)
     {
-        TokenData tokenData = await _sessionManager
-            .GetAsync<TokenData>(GoogleIntegrationConsts.AccessToken);
+        TokenData tokenData = await _sessionManager.GetAsync<TokenData>
+        (
+            GoogleIntegrationConsts.AccessToken
+        );
 
         string   accessToken = tokenData?.AccessToken;
         DateTime issuedAtUtc = tokenData?.IssuedAtUtc ?? DateTime.MinValue;

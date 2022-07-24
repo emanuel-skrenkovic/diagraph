@@ -45,7 +45,9 @@ public class SessionManager
 
     private async Task<ISession> LoadSessionAsync()
     {
-        ISession session = _contextAccessor.HttpContext.Session;
+        ISession session = _contextAccessor?.HttpContext?.Session;
+        if (session is null) throw new InvalidOperationException("Session is not available.");
+        
         await session.LoadAsync();
 
         return session;
