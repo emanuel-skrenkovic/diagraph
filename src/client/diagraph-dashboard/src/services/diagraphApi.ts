@@ -126,8 +126,16 @@ export const diagraphApi = createApi({
         getProfile: builder.query<Profile, undefined>({
             query: () => ({ url: 'my/profile' }),
             async onQueryStarted(api, { dispatch, queryFulfilled }) {
-                const { data } = await queryFulfilled;
-                dispatch(setProfile(data ?? defaultProfile))
+                try {
+                    const { data, meta } = await queryFulfilled;
+                    if (meta?.response?.status === 403) {
+                        dispatch(logout());
+                    } else {
+                        dispatch(setProfile(data ?? defaultProfile));
+                    }
+                } catch {
+                    dispatch(logout());
+                }
             },
             providesTags: [{ type: 'Profile', id: 'logged-in' }]
         }),
