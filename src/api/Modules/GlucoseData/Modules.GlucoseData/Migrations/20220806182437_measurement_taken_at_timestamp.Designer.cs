@@ -3,6 +3,7 @@ using System;
 using Diagraph.Modules.GlucoseData.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diagraph.Modules.GlucoseData.Migrations
 {
     [DbContext(typeof(GlucoseDataDbContext))]
-    partial class GlucoseDataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220806182437_measurement_taken_at_timestamp")]
+    partial class measurement_taken_at_timestamp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

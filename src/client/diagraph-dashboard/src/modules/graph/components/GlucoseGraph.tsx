@@ -7,6 +7,9 @@ import { useProfile } from 'modules/profile';
 import { Event, GlucoseMeasurement } from 'types';
 import { useWindowDimensions } from 'modules/common';
 
+// All dates received should be *local*.
+// No dates will be modified in this component,
+// they will only be used as-is.
 export type GlucoseGraphProps = {
     from: Date,
     to: Date,
@@ -111,8 +114,22 @@ const PADDING = 5;
 const HEIGHT = 300 - MARGIN.top - MARGIN.bottom;
 
 function parseNumber(date: Date) {
-    const dateString = new Date(date).toISOString();
+    const dateString = formatDate(date);
     return Number(d3.timeParse('%Y-%m-%dT%H:%M:%S.%LZ')(dateString));
+}
+
+// Converts the date into the ISO format that d3 understands,
+// but does not convert the time to UTC.
+function formatDate(dateInput: Date) {
+    const date = new Date(dateInput);
+    const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+    const msLocal =  date.getTime() - offsetMs;
+
+    const dateLocal = new Date(msLocal);
+    const iso = dateLocal.toISOString();
+
+    const isoLocal = iso.slice(0, 19);
+    return isoLocal + '.000Z';
 }
 
 function getMinMax(pointData: [number, number][]) {

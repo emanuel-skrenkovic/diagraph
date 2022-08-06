@@ -6,8 +6,9 @@ import { AppDispatch } from 'store';
 import { diagraphApi, useCreateEventMutation, useUpdateEventMutation, useDeleteEventMutation,
     useGetEventQuery, useGetEventsQuery, useGetDataQuery, useGetProfileQuery, useGetTagsQuery
 } from 'services';
-import { NotificationForm, Loader, DateRangePicker, toLocalISODateString, useAppSelector,
-    withLoading } from 'modules/common';
+import {
+    NotificationForm, Loader, DateRangePicker, useAppSelector, withLoading
+} from 'modules/common';
 import { Notification, CreateEventCommand, Event, GlucoseMeasurement } from 'types';
 import { GlucoseManagementIndicator, Statistics, GlucoseGraph, EventForm, RecentEvents, setDateRange,
     setSelectedEventId, GlucoseMeasurementView } from 'modules/graph';
@@ -58,7 +59,8 @@ export const Dashboard = () => {
     }
 
     const onChangeDateRange = (from: Date, to: Date) => {
-        const dateRange = {from: toLocalISODateString(from), to: toLocalISODateString(to)};
+        // convert parameters to UTC
+        const dateRange = { from: from.toISOString(), to: to.toISOString() };
         dispatch(setDateRange(dateRange));
 
         const fetchOptions = { subscribe: false, forceRefetch: true };
@@ -103,6 +105,12 @@ export const Dashboard = () => {
         </Box>
     ));
 
+    const localTimeEvents = events.map(e => ({
+        ...e,
+        occurredAtUtc: new Date(e.occurredAtUtc),
+        endedAtUtc: e.endedAtUtc ? new Date(e.endedAtUtc) : undefined
+    }));
+
     return (
         <Container vertical>
             <Button onClick={onExportEvents} style={{marginLeft:"90%",whiteSpace:"nowrap"}}>
@@ -124,7 +132,7 @@ export const Dashboard = () => {
                     <GlucoseGraph from={toLocalDate(dateRange.from)}
                                   to={toLocalDate(dateRange.to)}
                                   points={measurements}
-                                  events={events}
+                                  events={localTimeEvents}
                                   onClickEvent={selectEvent}
                                   onClickMeasurement={setSelectedMeasurement} />
                 </Item>

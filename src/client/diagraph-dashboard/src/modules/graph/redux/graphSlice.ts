@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { GlucoseMeasurement } from 'types';
-import { toLocalISODateString } from 'modules/common';
 
 export interface GraphState {
     events:          any[];
@@ -26,7 +25,7 @@ const { today, tomorrow } = graphDateLimits();
 const initialState: GraphState = {
     events: [],
     measurements: [],
-    dateRange: { from: toLocalISODateString(today), to: toLocalISODateString(tomorrow) },
+    dateRange: { from: new Date(today).toISOString(), to: new Date(tomorrow).toISOString() },
     selectedEventId: undefined
 };
 

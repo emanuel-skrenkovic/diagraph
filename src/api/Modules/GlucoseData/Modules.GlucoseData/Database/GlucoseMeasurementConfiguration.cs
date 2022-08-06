@@ -28,7 +28,7 @@ public class GlucoseMeasurementConfiguration : IEntityTypeConfiguration<GlucoseM
         builder
             .Property(m => m.TakenAt)
             .HasColumnName("taken_at")
-            .HasColumnType("timestamptz");
+            .HasColumnType("timestamp");
         builder.Property(m => m.Unit).HasColumnName("unit");
 
         builder.Property(m => m.ImportId).HasColumnName("import_id");
