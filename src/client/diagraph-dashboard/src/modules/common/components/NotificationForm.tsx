@@ -37,8 +37,6 @@ export const NotificationForm = ({ value, onChange }: NotificationFormProps) => 
         date.setHours(Number(parts[0]));
         date.setMinutes(Number(parts[1]))
 
-        console.log(date)
-
         const updated: Notification = { ...notification!, notifyAtUtc: new Date(date) };
         setNotification(updated)
         onChange(updated);
@@ -56,7 +54,6 @@ export const NotificationForm = ({ value, onChange }: NotificationFormProps) => 
             </Container>
             {notificationError && <span>{notificationError}</span>}
         </Container>
-
     );
 };
 
