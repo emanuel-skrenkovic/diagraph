@@ -13,7 +13,7 @@ public class UpdateImportTemplateEndpoint : Endpoint<UpdateImportTemplateCommand
  
     public UpdateImportTemplateEndpoint(IMapper mapper, EventsDbContext dbContext)
     {
-        _mapper  = mapper;
+        _mapper    = mapper;
         _dbContext = dbContext;
     }
 
