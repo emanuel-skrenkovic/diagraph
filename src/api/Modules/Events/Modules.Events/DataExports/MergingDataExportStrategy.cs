@@ -1,21 +1,11 @@
 using System.Text;
+using Diagraph.Modules.Events.DataExports.Contracts;
 
 namespace Diagraph.Modules.Events.DataExports;
 
 public class MergingDataExportStrategy : IDataExportStrategy
 {
-    private readonly IDataWriter _writer;
-
-    public MergingDataExportStrategy(IDataWriter writer) => _writer = writer;
-    
-    // Everything about this seems pointless. Do it cleaner.
-    public Task<byte[]> ExportAsync(IEnumerable<Event> events)
-        => _writer.WriteEventAsync(MergeEvents(events));
-
-    public Task<Stream> ExportStreamAsync(IEnumerable<Event> events)
-        => _writer.WriteEventStreamAsync(MergeEvents(events));
-
-    private IEnumerable<Event> MergeEvents(IEnumerable<Event> events)
+    public IEnumerable<Event> Run(IEnumerable<Event> events)
     {
         var groupedEvents = events
             .OrderBy(e => e.OccurredAtUtc)
@@ -49,8 +39,8 @@ public class MergingDataExportStrategy : IDataExportStrategy
 
     private class EventGroupingData
     {
-        public string[] Tags          { get; set; }
-        public DateTime OccurredAtUtc { get; set; }
+        public string[] Tags          { get; init; }
+        public DateTime OccurredAtUtc { get; init; }
     }
     
     private class EventTagsComparer : IEqualityComparer<EventGroupingData>

@@ -1,3 +1,5 @@
+using Diagraph.Modules.Events.DataExports.Contracts;
+
 namespace Diagraph.Modules.Events.DataExports;
 
 public enum DataExportStrategy

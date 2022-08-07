@@ -1,5 +1,6 @@
 using Diagraph.Infrastructure.Auth;
 using Diagraph.Infrastructure.Database;
+using Diagraph.Modules.Events.DataExports;
 using Diagraph.Modules.Events.DataImports;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,9 +11,9 @@ namespace Diagraph.Modules.Events.Database;
 public class EventsDbContext : UserOwnedDbContext
 {
     public DbSet<Event> Events { get; set; }
-
     public DbSet<EventTag> EventTags { get; set; }
     public DbSet<ImportTemplate> Templates { get; set; }
+    public DbSet<ExportTemplate> ExportTemplates { get; set; }
     
     public EventsDbContext
     (

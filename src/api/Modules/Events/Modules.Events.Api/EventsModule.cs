@@ -11,6 +11,8 @@ using Diagraph.Infrastructure.Modules.Extensions;
 using Diagraph.Modules.Events.Api.AutoMapper;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataExports;
+using Diagraph.Modules.Events.DataExports.Contracts;
+using Diagraph.Modules.Events.DataExports.Csv;
 using Diagraph.Modules.Events.DataImports.Contracts;
 using Diagraph.Modules.Events.DataImports.Csv;
 using Diagraph.Modules.Events.DataImports.Csv.AutoMapper;
@@ -49,6 +51,7 @@ public class EventsModule : Module
         services.AddScoped<IDataExportStrategy, MergingDataExportStrategy>();
         services.AddScoped<IDataExportStrategy, IndividualDataExportStrategy>();
         services.AddScoped<ExportStrategyContext>();
+        services.AddScoped<ITemplatedEventExport, TemplatedCsvEventExport>();
         services.AddScoped<IDataWriter, CsvDataWriter>();
         
         services.AddScoped<EventImport>();

@@ -1,4 +1,4 @@
-namespace Diagraph.Modules.Events.DataExports;
+namespace Diagraph.Modules.Events.DataExports.Contracts;
 
 public interface IDataWriter
 {

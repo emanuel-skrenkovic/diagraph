@@ -1,7 +1,8 @@
 using System.Globalization;
 using CsvHelper;
+using Diagraph.Modules.Events.DataExports.Contracts;
 
-namespace Diagraph.Modules.Events.DataExports;
+namespace Diagraph.Modules.Events.DataExports.Csv;
 
 public class CsvDataWriter : IDataWriter
 {
