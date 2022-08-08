@@ -35,16 +35,22 @@ public class TemplatedCsvEventExport: ITemplatedEventExport
         {
             // TODO: this is bad and incorrect. Need to be able to select a "primary"
             // tag instead of simply choosing the first one.
-            IDictionary<string, Event> taggedEvents = group.ToDictionary
-            (
-                e => e.Tags.FirstOrDefault()?.Name,
-                e => e
-            );
+            IDictionary<string, Event> taggedEvents = group
+                .Where(e => !string.IsNullOrWhiteSpace(e.Tags?.FirstOrDefault()?.Name))
+                .ToDictionary
+                (
+                    e => e.Tags.FirstOrDefault()?.Name,
+                    e => e
+                );
             
-            foreach (string header in csvTemplate.Headers) 
+            foreach (string header in csvTemplate.Headers)
             {
-                if (!taggedEvents.TryGetValue(header, out Event @event)) continue;
-                csv.WriteField(@event.Text);
+                csv.WriteField
+                (
+                    taggedEvents.TryGetValue(header, out Event @event) 
+                        ? @event.Text 
+                        : string.Empty
+                );
             }    
             
             await csv.NextRecordAsync();

@@ -23,7 +23,7 @@ public class ExportEventsEndpoint : EndpointWithoutRequest
         _events          = dbContext.Events;
         _exportTemplates = dbContext.ExportTemplates;
         _exportContext   = exportContext;
-        _csvEventExport     = csvEventExport;
+        _csvEventExport  = csvEventExport;
     }
     
     public override void Configure() => Get("events/data-export/csv");

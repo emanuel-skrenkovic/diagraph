@@ -31,7 +31,8 @@ public class MergingDataExportStrategy : IDataExportStrategy
                 return new Event
                 {
                     OccurredAtUtc = group.First().OccurredAtUtc,
-                    Text          = text.ToString()
+                    Text          = text.ToString(),
+                    Tags          = group.First().Tags
                 };
             }
         );        
