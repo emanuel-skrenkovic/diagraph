@@ -17,7 +17,7 @@ public class GlucoseStatistics
         
         float mean = levels.Sum() / levels.Count;
         
-        List<float> ordered = levels.OrderBy(l => l).ToList();
+        List<float> ordered = levels.OrderBy(static l => l).ToList();
         int         middle  = (int) Math.Floor((float) (ordered.Count() / 2));
 
         float median;

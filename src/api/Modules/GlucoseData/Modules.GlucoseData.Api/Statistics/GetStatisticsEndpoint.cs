@@ -30,7 +30,7 @@ public class GetStatisticsEndpoint : EndpointWithoutRequest<GlucoseStatisticsVie
         
         List<GlucoseMeasurement> measurements = await _measurements
             .Where(m => m.TakenAt >= from && m.TakenAt < to && m.Level > 0)
-            .OrderBy(m => m.TakenAt)
+            .OrderBy(static m => m.TakenAt)
             .ToListAsync(ct);
         
         GlucoseStatistics statistics = GlucoseStatistics.Calculate(measurements);

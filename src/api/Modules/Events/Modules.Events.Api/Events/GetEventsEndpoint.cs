@@ -22,7 +22,7 @@ public class GetEventsEndpoint : EndpointWithoutRequest
         (
             await _events
                 .Where(m => m.OccurredAtUtc >= from && m.OccurredAtUtc < to)
-                .OrderBy(e => e.OccurredAtUtc)
+                .OrderBy(static e => e.OccurredAtUtc)
                 .ToListAsync(ct),
             ct
         );

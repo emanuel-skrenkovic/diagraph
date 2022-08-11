@@ -10,7 +10,7 @@ namespace Diagraph.Modules.Events.Api.DataImports.ImportTemplates;
 
 public class GetImportTemplatesEndpoint : Endpoint<List<ImportTemplateView>>
 {
-    private readonly IMapper         _mapper;
+    private readonly IMapper               _mapper;
     private readonly DbSet<ImportTemplate> _templates;
     
     public GetImportTemplatesEndpoint(IMapper mapper, EventsDbContext dbContext)

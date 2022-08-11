@@ -13,7 +13,7 @@ public class GlucoseDataImport
     public async Task<Import> CreateAsync(IEnumerable<GlucoseMeasurement> measurementData)
     {
         GlucoseMeasurement lastMeasurement = await _measurements
-            .OrderByDescending(m => m.TakenAt)
+            .OrderByDescending(static m => m.TakenAt)
             .FirstOrDefaultAsync();
         DateTime? lastMeasurementAt = lastMeasurement?.TakenAt;
 

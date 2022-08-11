@@ -8,7 +8,7 @@ public class MergingDataExportStrategy : IDataExportStrategy
     public IEnumerable<Event> Run(IEnumerable<Event> events)
     {
         var groupedEvents = events
-            .OrderBy(e => e.OccurredAtUtc)
+            .OrderBy(static e => e.OccurredAtUtc)
             .GroupBy
             (
                 e => new EventGroupingData

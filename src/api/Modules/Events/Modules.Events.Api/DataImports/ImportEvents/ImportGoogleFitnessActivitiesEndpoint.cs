@@ -39,7 +39,7 @@ public class ImportGoogleFitnessActivitiesEndpoint : EndpointWithoutRequest
         Event lastFitnessEvent = await _context
             .Events
             .Where(e => e.Source == GoogleFitnessSource)
-            .OrderByDescending(e => e.OccurredAtUtc)
+            .OrderByDescending(static e => e.OccurredAtUtc)
             .Take(1)
             .SingleOrDefaultAsync(cancellationToken: ct);
         

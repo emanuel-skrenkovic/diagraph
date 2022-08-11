@@ -26,7 +26,7 @@ public class GetGlucoseDataEndpoint : EndpointWithoutRequest<List<GlucoseMeasure
 
         List<GlucoseMeasurement> measurements = await _measurements
             .Where(m => m.TakenAt >= from && m.TakenAt < to && m.Level > 0)
-            .OrderBy(m => m.TakenAt)
+            .OrderBy(static m => m.TakenAt)
             .ToListAsync(ct);
         
         await SendOkAsync(_mapper.Map<List<GlucoseMeasurementView>>(measurements), ct);
