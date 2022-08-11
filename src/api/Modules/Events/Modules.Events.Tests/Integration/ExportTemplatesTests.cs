@@ -8,6 +8,7 @@ using Diagraph.Modules.Events.Api.DataExports.ExportTemplates.Contracts;
 using Diagraph.Modules.Events.Database;
 using Diagraph.Modules.Events.DataExports;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Diagraph.Modules.Events.Tests.Integration;
@@ -73,6 +74,38 @@ public class ExportTemplatesTests
 
             updatedTemplate.Should().NotBeNull();
             updatedTemplate!.Name.Should().Be(update.Name);
+        });
+    }
+    
+    [Theory, CustomizedAutoData]
+    public async Task Deletes_ExportTemplate
+    (
+        CreateExportTemplateCommand create
+    )
+    {
+        // Arrange
+        HttpResponseMessage createResponse = await _fixture
+            .Module
+            .Client
+            .PostAsJsonAsync("/events/export-templates", create);
+        
+        int id = createResponse.CreatedId<int>();
+        
+        // Act
+        HttpResponseMessage deleteResponse = await _fixture
+            .Module
+            .Client
+            .DeleteAsync($"/events/export-templates/{id}");
+
+        deleteResponse.IsSuccessStatusCode.Should().BeTrue();
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        await _fixture.Module.ExecuteAsync<EventsDbContext>(async context =>
+        {
+            var deletedTemplate = await context
+                .ExportTemplates
+                .SingleOrDefaultAsync(t => t.Id == id);
+            deletedTemplate.Should().BeNull();
         });
     }
 }
