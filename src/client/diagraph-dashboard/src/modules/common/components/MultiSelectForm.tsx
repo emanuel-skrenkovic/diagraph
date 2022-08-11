@@ -7,9 +7,10 @@ export type MultiSelectFormProps<T> = {
     options: T[];
     keySelector: (option: T) => string;
     onAdd: (selected: T[]) => void;
+    buttonText?: string | undefined
 }
 
-export const MultiSelectForm = <T extends any>({ options, keySelector, onAdd }: MultiSelectFormProps<T>) => {
+export const MultiSelectForm = <T extends any>({ options, keySelector, onAdd, buttonText }: MultiSelectFormProps<T>) => {
     const [selectedOptions, setSelectedOptions] = useState<T[]>([]);
     useEffect(() => {}, [options, onAdd]); // TODO: check if necessary
 
@@ -33,7 +34,7 @@ export const MultiSelectForm = <T extends any>({ options, keySelector, onAdd }: 
                 )} />
             </Item>
             <PrimaryButton onClick={onClickAdd}>
-                Select
+                {buttonText ? buttonText : 'Select'}
             </PrimaryButton>
         </Container>
     );

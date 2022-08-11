@@ -4,7 +4,9 @@ import { setTags } from 'modules/common';
 import { login, logout } from 'modules/auth';
 import { setData, setEvents } from 'modules/graph';
 import { setProfile, defaultProfile, Profile } from 'modules/profile';
-import { CreateEventCommand, Event, GlucoseMeasurement, EventTag, ImportTemplate } from 'types';
+import {
+    ExportTemplate, CreateEventCommand, Event, GlucoseMeasurement, EventTag, ImportTemplate
+} from 'types';
 
 export const diagraphApi = createApi({
     reducerPath: 'diagraphApi',
@@ -12,7 +14,8 @@ export const diagraphApi = createApi({
         baseUrl: 'https://localhost:7053', // TODO: configuration
         credentials: 'include'
     }),
-    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data', 'Graph', 'ImportTemplates'],
+    tagTypes: ['Authenticated', 'Profile', 'Events', 'Data', 'Graph', 'ImportTemplates',
+        'ExportTemplates'],
     endpoints: (builder) => ({
         getEvents: builder.query<Event[], any>({
             query: ({from, to}) => ({ url: 'events', params: {from, to} }),
@@ -238,8 +241,46 @@ export const diagraphApi = createApi({
                 url: 'events/data-import/google/fitness',
                 method: 'POST',
             })
+        }),
+
+        getExportTemplate: builder.query<any, number>({
+            query: id => ({
+                url: `events/export-templates/${id}`,
+                method: 'GET'
+            }),
+            providesTags: [{ type: 'ImportTemplates', id: 'all'}]
+        }),
+        getExportTemplates: builder.query<any, any>({
+            query: () => ({
+                url: 'events/export-templates',
+                method: 'GET',
+            }),
+            providesTags: [{ type: 'ExportTemplates', id: 'all'}]
+        }),
+        createExportTemplate: builder.mutation<any, any>({
+            query: template => ({
+                url: 'events/export-templates',
+                method: 'POST',
+                body: template
+            }),
+            invalidatesTags: [{ type: 'ExportTemplates', id: 'all'}]
+        }),
+        updateExportTemplate: builder.mutation<any, ExportTemplate>({
+            query: template => ({
+                url: `events/export-templates/${template.id}`,
+                method: 'PUT',
+                body: template
+            }),
+            invalidatesTags: [{ type: 'ExportTemplates', id: 'all'}]
+        }),
+        deleteExportTemplate: builder.mutation<any, any>({
+            query: id => ({
+                url: `events/export-templates/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: [{ type: 'ExportTemplates', id: 'all'}]
         })
-    })
+    }),
 });
 
 export const {
@@ -266,4 +307,9 @@ export const {
     useRegisterMutation,
     useGoogleIntegrationQuery,
     useGoogleIntegrationConfirmMutation,
-    useGoogleImportFitEventsMutation } = diagraphApi;
+    useGoogleImportFitEventsMutation,
+    useGetExportTemplateQuery,
+    useGetExportTemplatesQuery,
+    useCreateExportTemplateMutation,
+    useUpdateExportTemplateMutation,
+    useDeleteExportTemplateMutation } = diagraphApi;

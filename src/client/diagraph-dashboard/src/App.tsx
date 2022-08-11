@@ -8,6 +8,7 @@ import { Import } from 'modules/import';
 import { Dashboard } from 'modules/graph';
 import { Login, Register } from 'modules/auth';
 import { NavigationBar } from 'modules/navigation';
+import { ExportEvents } from 'modules/export-events';
 import { ErrorBoundary, Toaster, Loader, useAppSelector, withAuth } from 'modules/common';
 import { ImportEvents, Templates, EditTemplate } from 'modules/import-events';
 import { GoogleIntegration, GoogleIntegrationConfirm } from 'modules/google-integration';
@@ -15,6 +16,7 @@ import { GoogleIntegration, GoogleIntegrationConfirm } from 'modules/google-inte
 const DashboardWithAuth                = withAuth(Dashboard);
 const ImportWithAuth                   = withAuth(Import);
 const ImportEventsWithAuth             = withAuth(ImportEvents);
+const ExportEventsWithAuth             = withAuth(ExportEvents);
 const TemplatesWithAuth                = withAuth(Templates);
 const EditTemplateWithAuth             = withAuth(EditTemplate);
 const GoogleIntegrationWithAuth        = withAuth(GoogleIntegration);
@@ -42,6 +44,7 @@ function App() {
                                         <Item as={Link} to="/">Dashboard</Item>
                                         <Item as={Link} to="/import">Import</Item>
                                         <Item as={Link} to="/import-events">Import Events</Item>
+                                        <Item as={Link} to="/export-events">Export Events</Item>
                                         <Item as={Link} to="/integrations/google">Google integration</Item>
                                     </Container>
                                 </NavigationBar>
@@ -54,6 +57,7 @@ function App() {
                                 <Route index element={<DashboardWithAuth />} />
                                 <Route path="import" element={<ImportWithAuth />} />
                                 <Route path="import-events" element={<ImportEventsWithAuth />} />
+                                <Route path="export-events" element={<ExportEventsWithAuth />} />
                                 <Route path="templates/add" element={<TemplatesWithAuth />} />
                                 <Route path="templates/edit" element={<EditTemplateWithAuth />} />
                                 <Route path="integrations/google" element={<GoogleIntegrationWithAuth />} />

@@ -68,11 +68,6 @@ export const Dashboard = () => {
         dispatch(diagraphApi.endpoints.getEvents.initiate(dateRange, fetchOptions));
     }
 
-    const onExportEvents = () => {
-        // TODO: there is, most certainly, a way better way.
-        window.location.href = 'https://localhost:7053/events/data-export/csv?mergeSequential=true';
-    }
-
     const selectEvent = (event: Event) => dispatch(setSelectedEventId(event.id));
 
     const deselectEvent = () => {
@@ -113,9 +108,6 @@ export const Dashboard = () => {
 
     return (
         <Container vertical>
-            <Button onClick={onExportEvents} style={{marginLeft:"90%",whiteSpace:"nowrap"}}>
-                Export Events
-            </Button>
             <Item as={DateRangePicker}
                   from={toLocalDate(dateRange.from)}
                   to={toLocalDate(dateRange.to)}
