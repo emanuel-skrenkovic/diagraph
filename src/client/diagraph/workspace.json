@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "diagraph-dashboard": "apps/diagraph-dashboard",
+    "diagraph-dashboard-e2e": "apps/diagraph-dashboard-e2e",
+    "diagraph-mobile": "apps/diagraph-mobile",
+    "diagraph-mobile-e2e": "apps/diagraph-mobile-e2e"
+  }
+}

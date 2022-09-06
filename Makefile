@@ -4,10 +4,10 @@ build:
 run-api:
 	docker-compose -f docker-compose.yml -f docker-compose.local.yml --env-file .env.local up -d
 
-run-client:
-	npm run --prefix src/client/diagraph-dashboard start
+run-web-client:
+	make -C ./src/client/diagraph run-web-client
 
-run: run-api run-client
+run: run-api run-web-client
 
 stop:
 	docker-compose stop

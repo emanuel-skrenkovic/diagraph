@@ -71,7 +71,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors(opts =>
 {
-    opts.WithOrigins("http://localhost:3000");
+    opts.WithOrigins("http://localhost:4200");
     opts.WithHeaders("content-type");
     opts.WithExposedHeaders("location");
     opts.AllowAnyMethod();
